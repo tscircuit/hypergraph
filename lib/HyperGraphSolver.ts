@@ -12,6 +12,7 @@ import type {
   RegionId,
   SolvedRoute,
   RegionPortAssignment,
+  GScore,
 } from "./types"
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { PriorityQueue } from "./PriorityQueue"
@@ -41,7 +42,7 @@ export class HyperGraphSolver<
 
   lastCandidate: Candidate | null = null
 
-  visitedPointsForCurrentConnection: Set<PortId> = new Set()
+  visitedPointsForCurrentConnection: Map<PortId, GScore> = new Map()
 
   constructor(
     public input: {
@@ -195,9 +196,9 @@ export class HyperGraphSolver<
     let cursorCandidate = finalCandidate
     let anyRipsRequired = false
     while (cursorCandidate.parent) {
+      anyRipsRequired ||= !!cursorCandidate.ripRequired
       solvedRoute.path.unshift(cursorCandidate)
       cursorCandidate = cursorCandidate.parent as CandidateType
-      anyRipsRequired = anyRipsRequired || cursorCandidate.ripRequired
     }
 
     // Rip any routes that are connected to the solved route and requeue
@@ -286,11 +287,18 @@ export class HyperGraphSolver<
 
   override _step() {
     let currentCandidate = this.candidateQueue.dequeue() as CandidateType
-    while (
-      currentCandidate &&
-      this.visitedPointsForCurrentConnection.has(currentCandidate.port.portId)
-    ) {
+    let visitedPointGScore: GScore | undefined =
+      this.visitedPointsForCurrentConnection.get(currentCandidate.port.portId)
+    while (true) {
+      if (!currentCandidate) break
+      // This candidate has not been visited yet, let's move to processing it
+      if (!visitedPointGScore) break
+      // If this candidate has a better g score than the visited point, let's move to processing it
+      if (currentCandidate.g < visitedPointGScore) break
       currentCandidate = this.candidateQueue.dequeue() as CandidateType
+      visitedPointGScore = this.visitedPointsForCurrentConnection.get(
+        currentCandidate.port.portId,
+      )
     }
     if (!currentCandidate) {
       this.failed = true
@@ -298,7 +306,10 @@ export class HyperGraphSolver<
       return
     }
     this.lastCandidate = currentCandidate
-    this.visitedPointsForCurrentConnection.add(currentCandidate.port.portId)
+    this.visitedPointsForCurrentConnection.set(
+      currentCandidate.port.portId,
+      currentCandidate.g,
+    )
 
     if (currentCandidate.nextRegion === this.currentEndRegion) {
       this.processSolvedRoute(currentCandidate)

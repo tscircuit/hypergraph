@@ -3,6 +3,7 @@ export type GraphEdgeId = string
 export type RegionId = string
 export type ConnectionId = string
 export type NetworkId = string
+export type GScore = number
 
 export type RegionPort = {
   portId: PortId
