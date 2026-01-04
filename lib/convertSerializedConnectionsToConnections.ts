@@ -9,11 +9,11 @@ export const convertSerializedConnectionsToConnections = (
     if ("startPointId" in inputConn) {
       connections.push({
         connectionId: inputConn.connectionId,
-        startPoint: graph.points.find(
-          (point) => point.pointId === inputConn.startPointId,
+        startRegion: graph.ports.find(
+          (point) => point.portId === inputConn.startPortId,
         )!,
-        endPoint: graph.points.find(
-          (point) => point.pointId === inputConn.endPointId,
+        endPort: graph.ports.find(
+          (point) => point.portId === inputConn.endPointId,
         )!,
       })
     } else {

@@ -1,66 +1,59 @@
-export type GraphPointId = string
+export type PortId = string
 export type GraphEdgeId = string
-export type GraphRegionId = string
+export type RegionId = string
 export type ConnectionId = string
 
-export type GraphEdge = {
-  edgeId: GraphEdgeId
-  fromPointId: GraphPointId
-  toPointId: GraphPointId
-}
-
-export type GraphPoint = {
-  pointId: GraphPointId
-  edges: GraphEdge[]
+export type RegionPort = {
+  portId: PortId
+  region1: Region
+  region2: Region
   d: any
 }
 
-export type GraphRegion = {
-  regionId: GraphRegionId
-  points: GraphPoint[]
+export type Region = {
+  regionId: RegionId
+  ports: RegionPort[]
   d: any
 }
 
 export type Candidate = {
-  point: GraphPoint
+  port: RegionPort
   g: number
   h: number
   f: number
   hops: number
   parent?: Candidate
-  lastPoint?: GraphPoint
-  lastEdge?: GraphEdge
-  lastRegion?: GraphRegion
-  nextRegion?: GraphRegion
+  lastPort?: RegionPort
+  lastRegion?: Region
+  nextRegion?: Region
 }
 
 export type HyperGraph = {
-  edges: GraphEdge[]
-  points: GraphPoint[]
-  regions: GraphRegion[]
+  ports: RegionPort[]
+  regions: Region[]
 }
 
-export type SerializedGraphEdge = GraphEdge
-export type SerializedGraphPoint = Omit<GraphPoint, "edges"> & {
-  edgeIds: GraphEdgeId[]
+export type SerializedGraphPort = Omit<RegionPort, "edges"> & {
+  portId: PortId
+  region1Id: RegionId
+  region2Id: RegionId
 }
-export type SerializedGraphRegion = Omit<GraphRegion, "points"> & {
-  pointIds: GraphPointId[]
+export type SerializedGraphRegion = Omit<Region, "points"> & {
+  pointIds: PortId[]
 }
 export type SerializedHyperGraph = {
-  edges: SerializedGraphEdge[]
-  points: SerializedGraphPoint[]
+  ports: SerializedGraphPort[]
   regions: SerializedGraphRegion[]
 }
 
 export type Connection = {
   connectionId: ConnectionId
-  startPoint: GraphPoint
-  endPoint: GraphPoint
+  startRegion: Region
+  endRegion: Region
 }
 
 export type SerializedConnection = {
   connectionId: ConnectionId
-  startPointId: GraphPointId
-  endPointId: GraphPointId
+  startRegionId: RegionId
+  endRegionId: RegionId
 }

@@ -1,10 +1,10 @@
 import type {
   GraphEdge,
   GraphEdgeId,
-  GraphPoint,
-  GraphPointId,
-  GraphRegion,
-  GraphRegionId,
+  RegionPort,
+  PortId,
+  Region,
+  RegionId,
   HyperGraph,
   SerializedHyperGraph,
 } from "./types"
@@ -13,21 +13,21 @@ export const convertSerializedHyperGraphToHyperGraph = (
   serializedHyperGraph: SerializedHyperGraph | HyperGraph,
 ): HyperGraph => {
   const edgeMap = new Map<GraphEdgeId, GraphEdge>()
-  const pointMap = new Map<GraphPointId, GraphPoint>()
-  const regionMap = new Map<GraphRegionId, GraphRegion>()
+  const pointMap = new Map<PortId, RegionPort>()
+  const regionMap = new Map<RegionId, Region>()
 
   for (const edge of serializedHyperGraph.edges) {
     edgeMap.set(edge.edgeId, { ...edge })
   }
 
-  for (const point of serializedHyperGraph.points) {
+  for (const point of serializedHyperGraph.ports) {
     if ("edges" in point) {
-      pointMap.set(point.pointId, {
+      pointMap.set(point.portId, {
         ...point,
         edges: point.edges,
       })
     } else {
-      pointMap.set(point.pointId, {
+      pointMap.set(point.portId, {
         ...point,
         edges: point.edgeIds.map((edgeId) => edgeMap.get(edgeId)!),
       })
@@ -38,19 +38,19 @@ export const convertSerializedHyperGraphToHyperGraph = (
     if ("points" in region) {
       regionMap.set(region.regionId, {
         ...region,
-        points: region.points,
+        ports: region.ports,
       })
     } else {
       regionMap.set(region.regionId, {
         ...region,
-        points: region.pointIds.map((pointId) => pointMap.get(pointId)!),
+        ports: region.pointIds.map((pointId) => pointMap.get(pointId)!),
       })
     }
   }
 
   return {
     edges: Array.from(edgeMap.values()),
-    points: Array.from(pointMap.values()),
+    ports: Array.from(pointMap.values()),
     regions: Array.from(regionMap.values()),
   }
 }
