@@ -33,7 +33,7 @@ export const visualizeJumperGraphSolver = (
   }) as Required<GraphicsObject>
 
   // Draw active connection line
-  if (solver.currentConnection) {
+  if (solver.currentConnection && !solver.solved) {
     const connectionColor = getConnectionColor(
       solver.currentConnection.connectionId,
     )
