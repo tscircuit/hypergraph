@@ -74,16 +74,32 @@ export const generateSingleJumperRegions = ({
     id: string,
     bounds: { minX: number; maxX: number; minY: number; maxY: number },
     isPad: boolean,
+    isThroughJumper?: boolean,
   ): JRegion => ({
     regionId: `${idPrefix}:${id}`,
     ports: [],
-    d: { bounds, isPad },
+    d: { bounds, isPad, isThroughJumper },
   })
 
   // Create main regions (pads and underjumper)
   const leftPad = createRegion("leftPad", leftPadBounds, true)
   const rightPad = createRegion("rightPad", rightPadBounds, true)
   const underjumper = createRegion("underjumper", underjumperBounds, false)
+
+  // Throughjumper region (conductive body of the jumper, overlaps pads)
+  const throughjumperHeight = 0.3
+  const throughjumperBounds = {
+    minX: leftPadCenterX,
+    maxX: rightPadCenterX,
+    minY: center.y - throughjumperHeight / 2,
+    maxY: center.y + throughjumperHeight / 2,
+  }
+  const throughjumper = createRegion(
+    "throughjumper",
+    throughjumperBounds,
+    false,
+    true,
+  )
 
   // Create surrounding regions as a frame around the main regions
   // Top strip (full width above main regions)
@@ -134,7 +150,16 @@ export const generateSingleJumperRegions = ({
     false,
   )
 
-  regions.push(leftPad, rightPad, underjumper, top, bottom, left, right)
+  regions.push(
+    leftPad,
+    rightPad,
+    underjumper,
+    throughjumper,
+    top,
+    bottom,
+    left,
+    right,
+  )
 
   // Helper to create a port at the boundary between two regions
   const createPort = (
@@ -196,6 +221,27 @@ export const generateSingleJumperRegions = ({
   // Underjumper connections (top and bottom only - NO ports to pads!)
   ports.push(createPort("T-UJ", top, underjumper))
   ports.push(createPort("B-UJ", bottom, underjumper))
+
+  // Throughjumper connections (ports at the center of each pad)
+  const leftThroughPort: JPort = {
+    portId: `${idPrefix}:TJ-LP`,
+    region1: throughjumper,
+    region2: leftPad,
+    d: { x: leftPadCenterX, y: center.y },
+  }
+  throughjumper.ports.push(leftThroughPort)
+  leftPad.ports.push(leftThroughPort)
+  ports.push(leftThroughPort)
+
+  const rightThroughPort: JPort = {
+    portId: `${idPrefix}:TJ-RP`,
+    region1: throughjumper,
+    region2: rightPad,
+    d: { x: rightPadCenterX, y: center.y },
+  }
+  throughjumper.ports.push(rightThroughPort)
+  rightPad.ports.push(rightThroughPort)
+  ports.push(rightThroughPort)
 
   return {
     regions,

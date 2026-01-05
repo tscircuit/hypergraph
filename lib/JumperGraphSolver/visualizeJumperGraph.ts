@@ -15,17 +15,26 @@ export const visualizeJumperGraph = (graph: JumperGraph): GraphicsObject => {
 
   // Draw regions as rectangles
   for (const region of graph.regions) {
-    const { bounds, isPad } = region.d
+    const { bounds, isPad, isThroughJumper } = region.d
     const centerX = (bounds.minX + bounds.maxX) / 2
     const centerY = (bounds.minY + bounds.maxY) / 2
     const width = bounds.maxX - bounds.minX
     const height = bounds.maxY - bounds.minY
 
+    let fill: string
+    if (isThroughJumper) {
+      fill = "rgba(100, 200, 100, 0.5)" // green for throughjumper
+    } else if (isPad) {
+      fill = "rgba(255, 200, 100, 0.5)" // orange for pads
+    } else {
+      fill = "rgba(200, 200, 255, 0.3)" // blue for other regions
+    }
+
     graphics.rects.push({
       center: { x: centerX, y: centerY },
       width: width - 0.1,
       height: height - 0.1,
-      fill: isPad ? "rgba(255, 200, 100, 0.5)" : "rgba(200, 200, 255, 0.3)",
+      fill,
     })
   }
 
