@@ -28,7 +28,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     return distance(port.d, this.currentEndRegion!.d.center)
   }
   override getPortUsagePenalty(port: JPort): number {
-    return 0
+    return (port.ripCount ?? 0) * 2
   }
   override computeIncreasedRegionCostIfPortsAreUsed(
     region: JRegion,
