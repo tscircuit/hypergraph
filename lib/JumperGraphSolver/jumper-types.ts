@@ -6,6 +6,7 @@ export interface JRegion extends Region {
     bounds: Bounds
     isPad: boolean
     isThroughJumper?: boolean
+    isConnectionRegion?: boolean
   }
 }
 export interface JPort extends RegionPort {
