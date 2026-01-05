@@ -38,13 +38,18 @@ export const visualizeJumperGraph = (graph: JumperGraph): GraphicsObject => {
     })
   }
 
-  // Draw ports as small circles
+  // Draw ports as small circles with labels
   for (const port of graph.ports) {
+    // Extract short region names (last part after colon)
+    const r1Name = port.region1.regionId.split(":").pop() ?? port.region1.regionId
+    const r2Name = port.region2.regionId.split(":").pop() ?? port.region2.regionId
+
     graphics.circles.push({
       center: { x: port.d.x, y: port.d.y },
       radius: 0.05,
       fill: "red",
       stroke: "darkred",
+      label: `${r1Name}-${r2Name}`,
     })
   }
 
