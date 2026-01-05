@@ -10,6 +10,7 @@ import type {
 } from "../types"
 import type { JPort, JRegion } from "./jumper-types"
 import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
+import { distance } from "@tscircuit/math-utils"
 
 export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   UNIT_OF_COST = "distance"
@@ -22,7 +23,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   }
 
   override estimateCostToEnd(port: JPort): number {
-    return 0
+    return distance(port.d, this.currentEndRegion!.d.center)
   }
   override getPortUsagePenalty(port: JPort): number {
     return 0

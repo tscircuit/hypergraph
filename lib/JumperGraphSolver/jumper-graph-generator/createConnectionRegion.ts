@@ -18,6 +18,7 @@ export const createConnectionRegion = (
         minY: y - halfSize,
         maxY: y + halfSize,
       },
+      center: { x, y },
       isPad: false,
       isConnectionRegion: true,
     },

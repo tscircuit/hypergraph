@@ -1,4 +1,5 @@
 import type { JPort, JRegion } from "../jumper-types"
+import { computeBoundsCenter } from "../geometry/getBoundsCenter"
 
 export const dims0603 = {
   padToPad: 1.65,
@@ -78,7 +79,7 @@ export const generateSingleJumperRegions = ({
   ): JRegion => ({
     regionId: `${idPrefix}:${id}`,
     ports: [],
-    d: { bounds, isPad, isThroughJumper },
+    d: { bounds, center: computeBoundsCenter(bounds), isPad, isThroughJumper },
   })
 
   // Create main regions (pads and underjumper)
