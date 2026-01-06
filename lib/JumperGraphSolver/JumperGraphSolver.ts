@@ -23,11 +23,11 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   }) {
     super({
       ...input,
-      greedyMultiplier: 1.2,
+      greedyMultiplier: 1.5, // Higher greediness to find solutions faster
       rippingEnabled: true,
-      ripCost: 100,
+      ripCost: 75, // Lower to encourage exploration through ripping
     })
-    this.MAX_ITERATIONS = 4000 + input.inputConnections.length * 500
+    this.MAX_ITERATIONS = 12000 + input.inputConnections.length * 1500
   }
 
   override estimateCostToEnd(port: JPort): number {
@@ -41,7 +41,8 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     port1: JPort,
     port2: JPort,
   ): number {
-    return computeDifferentNetCrossings(region, port1, port2) * 10
+    // Higher crossing cost to encourage crossing-free paths
+    return computeDifferentNetCrossings(region, port1, port2) * 65
   }
 
   override getRipsRequiredForPortUsage(
