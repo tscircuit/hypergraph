@@ -18,7 +18,9 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   UNIT_OF_COST = "distance"
 
   portUsagePenalty = 1
+  portUsagePenaltySq = 0
   crossingPenalty = 6
+  crossingPenaltySq = 0
   override ripCost = 40
   baseMaxIterations = 400
   additionalMaxIterationsPerConnection = 200
@@ -54,16 +56,16 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     return distance(port.d, this.currentEndRegion!.d.center)
   }
   override getPortUsagePenalty(port: JPort): number {
-    return (port.ripCount ?? 0) * this.portUsagePenalty
+    const ripCount = port.ripCount ?? 0
+    return ripCount * this.portUsagePenalty + ripCount * this.portUsagePenaltySq
   }
   override computeIncreasedRegionCostIfPortsAreUsed(
     region: JRegion,
     port1: JPort,
     port2: JPort,
   ): number {
-    return (
-      computeDifferentNetCrossings(region, port1, port2) * this.crossingPenalty
-    )
+    const crossings = computeDifferentNetCrossings(region, port1, port2)
+    return crossings * this.crossingPenalty + crossings * this.crossingPenaltySq
   }
 
   override getRipsRequiredForPortUsage(
