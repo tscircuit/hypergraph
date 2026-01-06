@@ -7,7 +7,7 @@ import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
 export default () => {
   const [cols, setCols] = useState(1)
   const [rows, setRows] = useState(1)
-  const [numConnections, setNumConnections] = useState(2)
+  const [numCrossings, setNumConnections] = useState(2)
   const [randomSeed, setRandomSeed] = useState(42)
 
   const baseGraph = generateJumperX4Grid({
@@ -22,7 +22,7 @@ export default () => {
 
   const graphWithConnections = createProblemFromBaseGraph({
     baseGraph,
-    numCrossings: numConnections,
+    numCrossings: numCrossings,
     randomSeed,
   })
 
@@ -50,12 +50,12 @@ export default () => {
           />
         </label>{" "}
         <label>
-          Connections:{" "}
+          Crossings:{" "}
           <input
             type="number"
             min={1}
             max={26}
-            value={numConnections}
+            value={numCrossings}
             onChange={(e) => setNumConnections(Number(e.target.value))}
             style={{ width: 60 }}
           />
@@ -71,7 +71,7 @@ export default () => {
         </label>
       </div>
       <GenericSolverDebugger
-        key={`${cols}-${rows}-${numConnections}-${randomSeed}`}
+        key={`${cols}-${rows}-${numCrossings}-${randomSeed}`}
         createSolver={() =>
           new JumperGraphSolver({
             inputGraph: {

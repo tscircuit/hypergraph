@@ -1,4 +1,5 @@
 import type { JumperGraph } from "../jumper-types"
+import { perimeterT, chordsCross } from "../perimeterChordUtils"
 import { calculateGraphBounds } from "./calculateGraphBounds"
 import {
   createGraphWithConnectionsFromBaseGraph,
@@ -15,6 +16,32 @@ const createSeededRandom = (seed: number) => {
     state = (state * 1664525 + 1013904223) >>> 0
     return state / 0xffffffff
   }
+}
+
+/**
+ * Counts the number of crossings between connections using perimeter chord method.
+ */
+const countCrossings = (
+  connections: XYConnection[],
+  bounds: { minX: number; maxX: number; minY: number; maxY: number },
+): number => {
+  const { minX, maxX, minY, maxY } = bounds
+
+  // Convert each connection to a chord (pair of perimeter T values)
+  const chords: [number, number][] = connections.map((conn) => [
+    perimeterT(conn.start, minX, maxX, minY, maxY),
+    perimeterT(conn.end, minX, maxX, minY, maxY),
+  ])
+
+  let crossings = 0
+  for (let i = 0; i < chords.length; i++) {
+    for (let j = i + 1; j < chords.length; j++) {
+      if (chordsCross(chords[i], chords[j])) {
+        crossings++
+      }
+    }
+  }
+  return crossings
 }
 
 /**
@@ -62,28 +89,55 @@ export type CreateProblemFromBaseGraphParams = {
 
 /**
  * Creates a problem graph from a base graph by generating random connection
- * positions on the perimeter/bounds of the graph.
+ * positions on the perimeter/bounds of the graph. Regenerates positions until
+ * the required number of crossings is achieved.
  */
 export const createProblemFromBaseGraph = ({
   baseGraph,
-  numCrossings, // previously numConnections
+  numCrossings,
   randomSeed,
 }: CreateProblemFromBaseGraphParams): JumperGraphWithConnections => {
   const random = createSeededRandom(randomSeed)
   const graphBounds = calculateGraphBounds(baseGraph.regions)
 
-  const xyConnections: XYConnection[] = []
+  // Start with minimum connections needed for the desired crossings
+  // For n connections, max crossings is n*(n-1)/2, so we need at least
+  // ceil((1 + sqrt(1 + 8*numCrossings)) / 2) connections
+  const minConnections = Math.ceil((1 + Math.sqrt(1 + 8 * numCrossings)) / 2)
+  let numConnections = Math.max(2, minConnections)
 
-  for (let i = 0; i < numCrossings; i++) {
-    const start = getRandomPerimeterPoint(graphBounds, random)
-    const end = getRandomPerimeterPoint(graphBounds, random)
+  const maxAttempts = 10000
+  let attempts = 0
 
-    xyConnections.push({
-      start,
-      end,
-      connectionId: getConnectionId(i),
-    })
+  while (attempts < maxAttempts) {
+    const xyConnections: XYConnection[] = []
+
+    for (let i = 0; i < numConnections; i++) {
+      const start = getRandomPerimeterPoint(graphBounds, random)
+      const end = getRandomPerimeterPoint(graphBounds, random)
+
+      xyConnections.push({
+        start,
+        end,
+        connectionId: getConnectionId(i),
+      })
+    }
+
+    const actualCrossings = countCrossings(xyConnections, graphBounds)
+
+    if (actualCrossings === numCrossings) {
+      return createGraphWithConnectionsFromBaseGraph(baseGraph, xyConnections)
+    }
+
+    attempts++
+
+    // If we consistently get too few crossings, try adding more connections
+    if (attempts % 100 === 0 && actualCrossings < numCrossings) {
+      numConnections++
+    }
   }
 
-  return createGraphWithConnectionsFromBaseGraph(baseGraph, xyConnections)
+  throw new Error(
+    `Failed to generate graph with exactly ${numCrossings} crossings after ${maxAttempts} attempts`,
+  )
 }
