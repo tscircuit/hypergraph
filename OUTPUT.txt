@@ -1,0 +1,22 @@
+Benchmark: Single 1206x4 Jumper Grid Solver
+==================================================
+Testing 2-12 connections with 100 samples each
+
+Crossings:  2 | Success: 100/100 | Rate: 100.0%   Med iters: 66   P90 iters: 118
+Crossings:  3 | Success: 100/100 | Rate: 100.0%   Med iters: 93   P90 iters: 222
+Crossings:  4 | Success: 100/100 | Rate: 100.0%   Med iters: 133   P90 iters: 378
+Crossings:  5 | Success: 100/100 | Rate: 100.0%   Med iters: 188   P90 iters: 522
+Crossings:  6 | Success: 100/100 | Rate: 100.0%   Med iters: 253   P90 iters: 531
+Crossings:  7 | Success: 100/100 | Rate: 100.0%   Med iters: 298   P90 iters: 598
+Crossings:  8 | Success: 100/100 | Rate: 100.0%   Med iters: 319   P90 iters: 707
+Crossings:  9 | Success: 100/100 | Rate: 100.0%   Med iters: 395   P90 iters: 713
+Crossings: 10 | Success:  99/100 | Rate:  99.0%   Med iters: 455   P90 iters: 956
+Crossings: 11 | Success:  99/100 | Rate:  99.0%   Med iters: 450   P90 iters: 931
+Crossings: 12 | Success:  96/100 | Rate:  96.0%   Med iters: 480   P90 iters: 1032
+
+==================================================
+Summary:
+==================================================
+Average success rate: 99.5%
+Crossing counts with 100% success: 8
+Crossing counts with 0% success: 0
