@@ -4,8 +4,21 @@ import { JumperGraphSolver } from "../lib/JumperGraphSolver/JumperGraphSolver"
 
 const SAMPLES_PER_CROSSING_COUNT = 100
 const MIN_CROSSINGS = 2
-const MAX_CROSSINGS = 10
-const MAX_ITERATIONS = 10_000
+const MAX_CROSSINGS = 12
+
+const median = (numbers: number[]): number | undefined => {
+  if (numbers.length === 0) return undefined
+  const sorted = numbers.slice().sort((a, b) => a - b)
+  const middle = Math.floor(sorted.length / 2)
+  return sorted[middle]
+}
+
+const percentile = (numbers: number[], p: number): number | undefined => {
+  if (numbers.length === 0) return undefined
+  const sorted = numbers.slice().sort((a, b) => a - b)
+  const index = Math.floor((p / 100) * (sorted.length - 1))
+  return sorted[index]
+}
 
 const createBaseGraph = () =>
   generateJumperX4Grid({
@@ -41,6 +54,7 @@ for (
 ) {
   let successes = 0
 
+  const iterationsTaken: number[] = []
   for (
     let sampleIndex = 0;
     sampleIndex < SAMPLES_PER_CROSSING_COUNT;
@@ -62,29 +76,24 @@ for (
       inputConnections: graphWithConnections.connections,
     })
 
-    // Run solver with iteration limit
-    let iterations = 0
-    try {
-      while (!solver.solved && !solver.failed && iterations < MAX_ITERATIONS) {
-        solver.step()
-        iterations++
-      }
-
-      if (solver.solved) {
-        successes++
-      }
-    } catch {
-      // Solver threw an error, count as failure
+    solver.solve()
+    if (solver.solved) {
+      iterationsTaken.push(solver.iterations)
+      successes++
     }
   }
 
   const successRate = (successes / SAMPLES_PER_CROSSING_COUNT) * 100
   results.push({ numConnections: numCrossings, successRate, successes })
 
+  const med = median(iterationsTaken)
+  const p90 = percentile(iterationsTaken, 90)
   console.log(
     `Crossings: ${numCrossings.toString().padStart(2)} | ` +
       `Success: ${successes.toString().padStart(3)}/${SAMPLES_PER_CROSSING_COUNT} | ` +
       `Rate: ${successRate.toFixed(1).padStart(5)}%`,
+    `  Med iters: ${med?.toFixed(0) ?? "N/A"}`,
+    `  P90 iters: ${p90?.toFixed(0) ?? "N/A"}`,
   )
 }
 

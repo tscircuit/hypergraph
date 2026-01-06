@@ -27,7 +27,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
       rippingEnabled: true,
       ripCost: 100,
     })
-    this.MAX_ITERATIONS = 100000
+    this.MAX_ITERATIONS = 4000 + input.inputConnections.length * 500
   }
 
   override estimateCostToEnd(port: JPort): number {
