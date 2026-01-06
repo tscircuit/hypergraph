@@ -21,7 +21,12 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     inputGraph: HyperGraph | SerializedHyperGraph
     inputConnections: (Connection | SerializedConnection)[]
   }) {
-    super({ ...input, greedyMultiplier: 1.2, rippingEnabled: true, ripCost: 1 })
+    super({
+      ...input,
+      greedyMultiplier: 1.2,
+      rippingEnabled: true,
+      ripCost: 100,
+    })
     this.MAX_ITERATIONS = 100000
   }
 
