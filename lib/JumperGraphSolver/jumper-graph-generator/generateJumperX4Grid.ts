@@ -69,8 +69,16 @@ export const generateJumperX4Grid = ({
     // Content dimensions (without outer padding)
     const contentWidth = cols * cellWidth + (cols - 1) * marginX
     const contentHeight = rows * cellHeight + (rows - 1) * marginY
-    const boundsWidth = bounds.maxX - bounds.minX
-    const boundsHeight = bounds.maxY - bounds.minY
+    // For horizontal orientation, swap bounds dimensions since the graph
+    // will be rotated 90° after generation
+    const boundsWidth =
+      orientation === "horizontal"
+        ? bounds.maxY - bounds.minY
+        : bounds.maxX - bounds.minX
+    const boundsHeight =
+      orientation === "horizontal"
+        ? bounds.maxX - bounds.minX
+        : bounds.maxY - bounds.minY
     outerPaddingX = (boundsWidth - contentWidth) / 2
     outerPaddingY = (boundsHeight - contentHeight) / 2
   }
@@ -947,17 +955,10 @@ export const generateJumperX4Grid = ({
     const currentCenter = computeBoundsCenter(currentBounds)
 
     // Build transformation matrix
+    // Note: compose() applies transformations right-to-left, so we push in reverse order
     const matrices = []
 
-    // First translate to origin (current center -> origin)
-    matrices.push(translate(-currentCenter.x, -currentCenter.y))
-
-    // Apply 90-degree clockwise rotation if horizontal
-    if (needsRotation) {
-      matrices.push(rotate(-Math.PI / 2))
-    }
-
-    // Translate to target center
+    // Last: translate to target center
     // Priority: explicit center > bounds center > current center
     let targetCenter: { x: number; y: number }
     if (center) {
@@ -968,6 +969,14 @@ export const generateJumperX4Grid = ({
       targetCenter = currentCenter
     }
     matrices.push(translate(targetCenter.x, targetCenter.y))
+
+    // Second: apply 90-degree clockwise rotation if horizontal
+    if (needsRotation) {
+      matrices.push(rotate(-Math.PI / 2))
+    }
+
+    // First: translate to origin (current center -> origin)
+    matrices.push(translate(-currentCenter.x, -currentCenter.y))
 
     const matrix = compose(...matrices)
     graph = applyTransformToGraph(graph, matrix)
