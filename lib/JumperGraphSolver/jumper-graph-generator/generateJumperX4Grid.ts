@@ -34,7 +34,7 @@ export const generateJumperX4Grid = ({
   outerChannelYPointCount?: number
   orientation?: "vertical" | "horizontal"
   center?: { x: number; y: number }
-  bounds?: { width: number; height: number }
+  bounds?: { minX: number; maxX: number; minY: number; maxY: number }
 }): JumperGraph => {
   const regions: JRegion[] = []
   const ports: JPort[] = []
@@ -69,8 +69,10 @@ export const generateJumperX4Grid = ({
     // Content dimensions (without outer padding)
     const contentWidth = cols * cellWidth + (cols - 1) * marginX
     const contentHeight = rows * cellHeight + (rows - 1) * marginY
-    outerPaddingX = (bounds.width - contentWidth) / 2
-    outerPaddingY = (bounds.height - contentHeight) / 2
+    const boundsWidth = bounds.maxX - bounds.minX
+    const boundsHeight = bounds.maxY - bounds.minY
+    outerPaddingX = (boundsWidth - contentWidth) / 2
+    outerPaddingY = (boundsHeight - contentHeight) / 2
   }
 
   // Calculate outer channel points: use provided value or derive from outer padding
@@ -926,11 +928,12 @@ export const generateJumperX4Grid = ({
 
   let graph: JumperGraph = { regions, ports }
 
-  // Apply transformations based on orientation and center
+  // Apply transformations based on orientation, center, and bounds
   const needsRotation = orientation === "horizontal"
   const needsCentering = center !== undefined
+  const needsBoundsTransform = bounds !== undefined
 
-  if (needsRotation || needsCentering) {
+  if (needsRotation || needsCentering || needsBoundsTransform) {
     // Calculate current graph bounds and center
     const currentBounds = calculateGraphBounds(graph.regions)
     const currentCenter = computeBoundsCenter(currentBounds)
@@ -946,8 +949,16 @@ export const generateJumperX4Grid = ({
       matrices.push(rotate(-Math.PI / 2))
     }
 
-    // Translate to target center (or back to current center if no center specified)
-    const targetCenter = center ?? currentCenter
+    // Translate to target center
+    // Priority: explicit center > bounds center > current center
+    let targetCenter: { x: number; y: number }
+    if (center) {
+      targetCenter = center
+    } else if (bounds) {
+      targetCenter = computeBoundsCenter(bounds)
+    } else {
+      targetCenter = currentCenter
+    }
     matrices.push(translate(targetCenter.x, targetCenter.y))
 
     const matrix = compose(...matrices)

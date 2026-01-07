@@ -13,7 +13,7 @@ test("jumper-graph-generation13: 2x2 X4 grid with 25x25mm bounds", () => {
     innerRowChannelPointCount: 2,
     marginX: 1,
     marginY: 1,
-    bounds: { width: 25, height: 25 },
+    bounds: { minX: 0, maxX: 25, minY: 0, maxY: 25 },
   })
 
   // Verify the graph fits within the specified bounds
