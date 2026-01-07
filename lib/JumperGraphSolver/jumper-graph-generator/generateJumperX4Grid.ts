@@ -582,7 +582,9 @@ export const generateJumperX4Grid = ({
             `${idPrefix}:T-R`,
             top,
             right,
-            isLastCol ? effectiveOuterChannelXPoints : innerColChannelPointCount,
+            isLastCol
+              ? effectiveOuterChannelXPoints
+              : innerColChannelPointCount,
           ),
         )
         // Top connects to pad1, pad8, and underjumper
@@ -629,7 +631,9 @@ export const generateJumperX4Grid = ({
             `${idPrefix}:B-R`,
             bottom,
             right,
-            isLastCol ? effectiveOuterChannelXPoints : innerColChannelPointCount,
+            isLastCol
+              ? effectiveOuterChannelXPoints
+              : innerColChannelPointCount,
           ),
         )
         // Bottom connects to pad4, pad5, and underjumper
@@ -852,7 +856,9 @@ export const generateJumperX4Grid = ({
               `cell_${row}_${col - 1}->cell_${row}_${col}:B-B`,
               prevCell.bottom,
               bottom,
-              isLastRow ? effectiveOuterChannelYPoints : innerRowChannelPointCount,
+              isLastRow
+                ? effectiveOuterChannelYPoints
+                : innerRowChannelPointCount,
             ),
           )
         }
@@ -919,7 +925,9 @@ export const generateJumperX4Grid = ({
             `cell_${row - 1}_${col}->cell_${row}_${col}:B-R`,
             aboveCell.bottom!,
             right,
-            isLastCol ? effectiveOuterChannelXPoints : innerColChannelPointCount,
+            isLastCol
+              ? effectiveOuterChannelXPoints
+              : innerColChannelPointCount,
           ),
         )
       }

@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
-import path from "path";
+import { defineConfig } from "vite"
+import path from "path"
 
 export default defineConfig({
   resolve: {
@@ -7,4 +7,4 @@ export default defineConfig({
       lib: path.resolve(__dirname, "lib"),
     },
   },
-});
+})

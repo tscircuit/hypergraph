@@ -83,7 +83,11 @@ export const generateJumperX2Grid = ({
   })
 
   // Helper to create a port at the boundary between two regions
-  const createPort = (id: string, region1: JRegion, region2: JRegion): JPort => {
+  const createPort = (
+    id: string,
+    region1: JRegion,
+    region2: JRegion,
+  ): JPort => {
     const b1 = region1.d.bounds
     const b2 = region2.d.bounds
 
@@ -273,7 +277,15 @@ export const generateJumperX2Grid = ({
         true,
       )
 
-      regions.push(pad1, pad2, pad3, pad4, underjumper, throughjumper1, throughjumper2)
+      regions.push(
+        pad1,
+        pad2,
+        pad3,
+        pad4,
+        underjumper,
+        throughjumper1,
+        throughjumper2,
+      )
 
       // Determine which frame regions to create based on grid position
       const isFirstRow = row === 0

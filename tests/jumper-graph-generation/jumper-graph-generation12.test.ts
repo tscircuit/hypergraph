@@ -78,7 +78,11 @@ test("jumper-graph-generation12: 2x2 X4 grid with custom center", () => {
   expect(Math.abs(actualCenterY - customCenter.y)).toBeLessThan(0.001)
 })
 
-function getBounds(regions: { d: { bounds: { minX: number; maxX: number; minY: number; maxY: number } } }[]) {
+function getBounds(
+  regions: {
+    d: { bounds: { minX: number; maxX: number; minY: number; maxY: number } }
+  }[],
+) {
   return {
     minX: Math.min(...regions.map((r) => r.d.bounds.minX)),
     maxX: Math.max(...regions.map((r) => r.d.bounds.maxX)),

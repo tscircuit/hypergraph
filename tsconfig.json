@@ -15,7 +15,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "lib/*": ["lib/*"],
+      "lib/*": ["lib/*"]
     },
 
     // Best practices

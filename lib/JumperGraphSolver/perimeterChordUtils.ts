@@ -68,7 +68,10 @@ function areCoincident(t1: number, t2: number, eps: number = 1e-6): boolean {
  *
  * Chords that share a coincident endpoint do NOT count as crossing.
  */
-export function chordsCross(chord1: [number, number], chord2: [number, number]): boolean {
+export function chordsCross(
+  chord1: [number, number],
+  chord2: [number, number],
+): boolean {
   // Normalize each chord so first endpoint is smaller
   const [a, b] = chord1[0] < chord1[1] ? chord1 : [chord1[1], chord1[0]]
   const [c, d] = chord2[0] < chord2[1] ? chord2 : [chord2[1], chord2[0]]
