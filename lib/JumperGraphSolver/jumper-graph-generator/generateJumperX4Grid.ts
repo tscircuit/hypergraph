@@ -13,12 +13,13 @@ export const generateJumperX4Grid = ({
   innerColChannelPointCount = 1,
   innerRowChannelPointCount = 1,
   regionsBetweenPads = false,
-  outerPaddingX = 0.5,
-  outerPaddingY = 0.5,
+  outerPaddingX: outerPaddingXParam = 0.5,
+  outerPaddingY: outerPaddingYParam = 0.5,
   outerChannelXPointCount,
   outerChannelYPointCount,
   orientation = "vertical",
   center,
+  bounds,
 }: {
   cols: number
   rows: number
@@ -33,12 +34,8 @@ export const generateJumperX4Grid = ({
   outerChannelYPointCount?: number
   orientation?: "vertical" | "horizontal"
   center?: { x: number; y: number }
+  bounds?: { width: number; height: number }
 }): JumperGraph => {
-  // Calculate outer channel points: use provided value or derive from outer padding
-  const effectiveOuterChannelXPoints =
-    outerChannelXPointCount ?? Math.max(1, Math.floor(outerPaddingX / 0.4))
-  const effectiveOuterChannelYPoints =
-    outerChannelYPointCount ?? Math.max(1, Math.floor(outerPaddingY / 0.4))
   const regions: JRegion[] = []
   const ports: JPort[] = []
 
@@ -64,6 +61,23 @@ export const generateJumperX4Grid = ({
   // Vertical spacing: from one cell center to next cell center
   const cellHeight = row1CenterY - row4CenterY + padHeight // total height of pads region
   const verticalSpacing = cellHeight + marginY
+
+  // Calculate outer padding from bounds if specified
+  let outerPaddingX = outerPaddingXParam
+  let outerPaddingY = outerPaddingYParam
+  if (bounds) {
+    // Content dimensions (without outer padding)
+    const contentWidth = cols * cellWidth + (cols - 1) * marginX
+    const contentHeight = rows * cellHeight + (rows - 1) * marginY
+    outerPaddingX = (bounds.width - contentWidth) / 2
+    outerPaddingY = (bounds.height - contentHeight) / 2
+  }
+
+  // Calculate outer channel points: use provided value or derive from outer padding
+  const effectiveOuterChannelXPoints =
+    outerChannelXPointCount ?? Math.max(1, Math.floor(outerPaddingX / 0.4))
+  const effectiveOuterChannelYPoints =
+    outerChannelYPointCount ?? Math.max(1, Math.floor(outerPaddingY / 0.4))
 
   // Store cells for later port connections
   const cells: {
