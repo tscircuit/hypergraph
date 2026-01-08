@@ -9,12 +9,13 @@ import {
 const TRAIN_SAMPLES = 500
 const VAL_SAMPLES = 200
 
-const NUM_EPOCHS = 100
-const INITIAL_LEARNING_RATE = 0.5
-const LR_DECAY = 0.95 // Multiply LR by this each epoch
-const MOMENTUM = 0.9 // Momentum coefficient for smoothing updates
-const MIN_CROSSINGS = 2
-const MAX_CROSSINGS = 21
+const NUM_EPOCHS = 30
+const INITIAL_LEARNING_RATE = 0.05 // Was 0.5 - reduced to prevent overshooting
+const LR_DECAY = 0.98 // Slower decay to allow more exploration
+const MOMENTUM = 0.5 // Was 0.9 - reduced to prevent oscillation
+const MAX_GRADIENT = 1.0 // Clip gradients to prevent huge updates
+const MIN_CROSSINGS = 5
+const MAX_CROSSINGS = 26
 
 // Track used seeds globally to never repeat
 const usedSeeds = new Set<number>()
@@ -370,7 +371,12 @@ async function main() {
       "greedyMultiplier",
     ]
     for (const key of paramKeys) {
-      velocity[key] = MOMENTUM * velocity[key] + gradient[key]
+      // Clip gradients to prevent huge updates
+      const clippedGrad = Math.max(
+        -MAX_GRADIENT,
+        Math.min(MAX_GRADIENT, gradient[key]),
+      )
+      velocity[key] = MOMENTUM * velocity[key] + clippedGrad
     }
 
     // Update parameters using velocity (momentum-based gradient)
