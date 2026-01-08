@@ -23,7 +23,7 @@ export default () => {
     innerColChannelPointCount: 3,
     innerRowChannelPointCount: 3,
     regionsBetweenPads: true,
-    orientation
+    orientation,
   })
 
   const graphWithConnections = createProblemFromBaseGraph({
