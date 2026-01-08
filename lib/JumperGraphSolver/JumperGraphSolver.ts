@@ -23,7 +23,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   crossingPenaltySq = 0.111
   override ripCost = 40
   baseMaxIterations = 4000
-  additionalMaxIterationsPerConnection = 2000
+  additionalMaxIterationsPerConnection = 4000
 
   constructor(input: {
     inputGraph: HyperGraph | SerializedHyperGraph
