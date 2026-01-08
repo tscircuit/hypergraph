@@ -14,14 +14,23 @@ import { distance } from "@tscircuit/math-utils"
 import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
 import { computeCrossingAssignments } from "./computeCrossingAssignments"
 
+export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
+  portUsagePenalty: 0.197,
+  portUsagePenaltySq: 0,
+  crossingPenalty: 6.007,
+  crossingPenaltySq: 0.111,
+  ripCost: 40,
+  greedyMultiplier: 0.45,
+}
+
 export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   UNIT_OF_COST = "distance"
 
-  portUsagePenalty = 0.197
-  portUsagePenaltySq = 0
-  crossingPenalty = 6.007
-  crossingPenaltySq = 0.111
-  override ripCost = 40
+  portUsagePenalty = JUMPER_GRAPH_SOLVER_DEFAULTS.portUsagePenalty
+  portUsagePenaltySq = JUMPER_GRAPH_SOLVER_DEFAULTS.portUsagePenaltySq
+  crossingPenalty = JUMPER_GRAPH_SOLVER_DEFAULTS.crossingPenalty
+  crossingPenaltySq = JUMPER_GRAPH_SOLVER_DEFAULTS.crossingPenaltySq
+  override ripCost = JUMPER_GRAPH_SOLVER_DEFAULTS.ripCost
   baseMaxIterations = 4000
   additionalMaxIterationsPerConnection = 4000
 
@@ -35,7 +44,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     additionalMaxIterationsPerConnection?: number
   }) {
     super({
-      greedyMultiplier: 0.45,
+      greedyMultiplier: JUMPER_GRAPH_SOLVER_DEFAULTS.greedyMultiplier,
       rippingEnabled: true,
       ...input,
     })

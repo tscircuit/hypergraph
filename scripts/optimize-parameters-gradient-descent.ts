@@ -1,6 +1,9 @@
 import { generateJumperX4Grid } from "../lib/JumperGraphSolver/jumper-graph-generator/generateJumperX4Grid"
 import { createProblemFromBaseGraph } from "../lib/JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
-import { JumperGraphSolver } from "../lib/JumperGraphSolver/JumperGraphSolver"
+import {
+  JumperGraphSolver,
+  JUMPER_GRAPH_SOLVER_DEFAULTS,
+} from "../lib/JumperGraphSolver/JumperGraphSolver"
 
 // Dataset sizes - frozen at start
 const TRAIN_SAMPLES = 500
@@ -280,15 +283,8 @@ async function main() {
   )
   console.log()
 
-  // Initial parameters (current defaults)
-  let params: Parameters = {
-    portUsagePenalty: 0.3,
-    portUsagePenaltySq: 0.1,
-    crossingPenalty: 6,
-    crossingPenaltySq: 0.1,
-    ripCost: 40,
-    greedyMultiplier: 0.45,
-  }
+  // Initial parameters (from JumperGraphSolver defaults)
+  let params: Parameters = { ...JUMPER_GRAPH_SOLVER_DEFAULTS }
 
   console.log("Initial parameters:")
   console.log(formatParams(params))
