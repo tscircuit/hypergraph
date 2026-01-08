@@ -241,34 +241,22 @@ function computeGradient(
   return gradient
 }
 
-// Apply gradient update with constraints
+// Apply gradient update
 function updateParameters(
   params: Parameters,
   gradient: Parameters,
   lr: number,
 ): Parameters {
   const newParams: Parameters = {
-    portUsagePenalty: Math.max(
-      0.01,
-      params.portUsagePenalty + lr * gradient.portUsagePenalty,
-    ),
-    portUsagePenaltySq: Math.max(
-      0,
+    portUsagePenalty: params.portUsagePenalty + lr * gradient.portUsagePenalty,
+    portUsagePenaltySq:
       params.portUsagePenaltySq + lr * gradient.portUsagePenaltySq,
-    ),
-    crossingPenalty: Math.max(
-      0.1,
-      params.crossingPenalty + lr * gradient.crossingPenalty,
-    ),
-    crossingPenaltySq: Math.max(
-      0,
+    crossingPenalty: params.crossingPenalty + lr * gradient.crossingPenalty,
+    crossingPenaltySq:
       params.crossingPenaltySq + lr * gradient.crossingPenaltySq,
-    ),
-    ripCost: Math.max(1, params.ripCost + lr * gradient.ripCost),
-    greedyMultiplier: Math.max(
-      0.1,
-      Math.min(2.0, params.greedyMultiplier + lr * gradient.greedyMultiplier),
-    ),
+    ripCost: params.ripCost + lr * gradient.ripCost,
+    greedyMultiplier:
+      params.greedyMultiplier + lr * gradient.greedyMultiplier,
   }
   return newParams
 }
@@ -357,6 +345,8 @@ async function main() {
 
   let learningRate = INITIAL_LEARNING_RATE
 
+  const optimizationStartTime = performance.now()
+
   for (let epoch = 0; epoch < NUM_EPOCHS; epoch++) {
     const startTime = performance.now()
 
@@ -399,6 +389,20 @@ async function main() {
     }
 
     const duration = ((performance.now() - startTime) / 1000).toFixed(1)
+    const totalElapsedMs = performance.now() - optimizationStartTime
+    const totalElapsedSec = totalElapsedMs / 1000
+    const avgSecondsPerEpoch = totalElapsedSec / (epoch + 1)
+    const remainingEpochs = NUM_EPOCHS - (epoch + 1)
+    const etaSeconds = avgSecondsPerEpoch * remainingEpochs
+
+    const formatTime = (seconds: number): string => {
+      const h = Math.floor(seconds / 3600)
+      const m = Math.floor((seconds % 3600) / 60)
+      const s = Math.floor(seconds % 60)
+      if (h > 0) return `${h}h ${m}m ${s}s`
+      if (m > 0) return `${m}m ${s}s`
+      return `${s}s`
+    }
 
     console.log(
       `Epoch ${(epoch + 1).toString().padStart(3)}/${NUM_EPOCHS} | ` +
@@ -406,6 +410,9 @@ async function main() {
         `Val: ${(valResult.continuousScore * 100).toFixed(2)}% routed (${(valResult.successRate * 100).toFixed(1)}% solved) | ` +
         `LR: ${learningRate.toFixed(4)} | ` +
         `Time: ${duration}s`,
+    )
+    console.log(
+      `  Total: ${formatTime(totalElapsedSec)} | ETA: ${formatTime(etaSeconds)}`,
     )
     console.log(`  Gradient: ${formatGradient(gradient)}`)
 
