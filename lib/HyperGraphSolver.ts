@@ -1,5 +1,7 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
+import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
+import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
 import type {
   Candidate,
   Connection,
@@ -73,7 +75,15 @@ export class HyperGraphSolver<
   }
 
   override getConstructorParams() {
-    return this.input
+    return {
+      inputGraph: convertHyperGraphToSerializedHyperGraph(this.graph),
+      inputConnections: convertConnectionsToSerializedConnections(
+        this.connections,
+      ),
+      greedyMultiplier: this.greedyMultiplier,
+      rippingEnabled: this.rippingEnabled,
+      ripCost: this.ripCost,
+    }
   }
 
   computeH(candidate: CandidateType): number {

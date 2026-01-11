@@ -72,13 +72,16 @@ export type HyperGraph = {
   regions: Region[]
 }
 
-export type SerializedGraphPort = Omit<RegionPort, "edges"> & {
+export type SerializedGraphPort = {
   portId: PortId
   region1Id: RegionId
   region2Id: RegionId
+  d: any
 }
-export type SerializedGraphRegion = Omit<Region, "points" | "assignments"> & {
+export type SerializedGraphRegion = {
+  regionId: RegionId
   pointIds: PortId[]
+  d: any
   assignments?: SerializedRegionPortAssignment[]
 }
 export type SerializedRegionPortAssignment = {
