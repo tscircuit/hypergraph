@@ -5,7 +5,7 @@ import { calculateGraphBounds } from "../lib/JumperGraphSolver/jumper-graph-gene
 
 const SAMPLES_PER_CROSSING_COUNT = 100
 const MIN_CROSSINGS = 2
-const MAX_CROSSINGS = 20
+const MAX_CROSSINGS = 30
 
 const median = (numbers: number[]): number | undefined => {
   if (numbers.length === 0) return undefined

@@ -13,6 +13,7 @@ import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
 import { distance } from "@tscircuit/math-utils"
 import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
 import { computeCrossingAssignments } from "./computeCrossingAssignments"
+import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
 /**
 Last training run with 1x1 to 3x3
@@ -72,11 +73,15 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
       input.additionalMaxIterationsPerConnection ??
       this.additionalMaxIterationsPerConnection
 
-    // const crossings = ...
+    const crossings = countInputConnectionCrossings(
+      this.graph,
+      input.inputConnections,
+    )
 
     this.MAX_ITERATIONS =
       this.baseMaxIterations +
-      input.inputConnections.length * this.additionalMaxIterationsPerConnection
+      input.inputConnections.length * this.additionalMaxIterationsPerConnection +
+      crossings * this.additionalMaxIterationsPerCrossing
 
     this.populateDistanceToEndMaps()
   }
