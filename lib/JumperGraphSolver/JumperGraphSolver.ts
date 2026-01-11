@@ -16,9 +16,11 @@ import { computeCrossingAssignments } from "./computeCrossingAssignments"
 
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
   portUsagePenalty: 0.06393718451067248,
-  portUsagePenaltySq: 0.06194817180037216,
+  // portUsagePenaltySq: 0.06194817180037216,
+  portUsagePenaltySq: 0,
   crossingPenalty: 6.0761550028071145,
-  crossingPenaltySq: 0.1315528159128946,
+  crossingPenaltySq: 0,
+  // crossingPenaltySq: 0.1315528159128946,
   ripCost: 40.00702225250195,
   greedyMultiplier: 0.4316469416682083,
 }

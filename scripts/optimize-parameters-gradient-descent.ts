@@ -272,9 +272,9 @@ function updateParameters(
 function formatParams(params: Parameters): string {
   return [
     `portUsagePenalty=${params.portUsagePenalty.toFixed(3)}`,
-    `portUsagePenaltySq=${params.portUsagePenaltySq.toFixed(3)}`,
+    // `portUsagePenaltySq=${params.portUsagePenaltySq.toFixed(3)}`,
     `crossingPenalty=${params.crossingPenalty.toFixed(3)}`,
-    `crossingPenaltySq=${params.crossingPenaltySq.toFixed(3)}`,
+    // `crossingPenaltySq=${params.crossingPenaltySq.toFixed(3)}`,
     `ripCost=${params.ripCost.toFixed(3)}`,
     `greedyMultiplier=${params.greedyMultiplier.toFixed(3)}`,
   ].join(", ")
@@ -283,9 +283,9 @@ function formatParams(params: Parameters): string {
 function formatGradient(gradient: Parameters): string {
   return [
     `d_portUsagePenalty=${gradient.portUsagePenalty.toFixed(4)}`,
-    `d_portUsagePenaltySq=${gradient.portUsagePenaltySq.toFixed(4)}`,
+    // `d_portUsagePenaltySq=${gradient.portUsagePenaltySq.toFixed(4)}`,
     `d_crossingPenalty=${gradient.crossingPenalty.toFixed(4)}`,
-    `d_crossingPenaltySq=${gradient.crossingPenaltySq.toFixed(4)}`,
+    // `d_crossingPenaltySq=${gradient.crossingPenaltySq.toFixed(4)}`,
     `d_ripCost=${gradient.ripCost.toFixed(6)}`,
     `d_greedyMultiplier=${gradient.greedyMultiplier.toFixed(4)}`,
   ].join(", ")

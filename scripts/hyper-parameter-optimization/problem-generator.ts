@@ -21,8 +21,8 @@ export function getUsedSeedsCount(): number {
 
 export function createBaseGraph(
   orientation: "vertical" | "horizontal" = "vertical",
-  rows: 1 | 2 = 1,
-  cols: 1 | 2 = 1,
+  rows: 1 | 2 | 3 = 1,
+  cols: 1 | 2 | 3 = 1,
 ) {
   return generateJumperX4Grid({
     cols,
@@ -46,17 +46,27 @@ export function generateSampleConfigs(
   maxCrossings: number,
 ): SampleConfig[] {
   const configs: SampleConfig[] = []
-  const allGridSizes: [1 | 2, 1 | 2][] = [
+  const allGridSizes: [1 | 2 | 3, 1 | 2 | 3][] = [
     [1, 1],
     [1, 2],
     [2, 1],
     [2, 2],
+    [1, 3],
+    [2, 3],
+    [3, 1],
+    [3, 2],
+    [3, 3],
   ]
   // Grid sizes for >8 crossings (must have at least 2 rows or 2 cols)
-  const largeGridSizes: [1 | 2, 1 | 2][] = [
+  const largeGridSizes: [1 | 2 | 3, 1 | 2 | 3][] = [
     [1, 2],
     [2, 1],
     [2, 2],
+    [1, 3],
+    [2, 3],
+    [3, 1],
+    [3, 2],
+    [3, 3],
   ]
   for (let i = 0; i < count; i++) {
     const numCrossings = minCrossings + (i % (maxCrossings - minCrossings + 1))

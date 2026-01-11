@@ -47,8 +47,6 @@ export function evaluateParametersOnProblems(
       })
 
       // Apply additional parameters that aren't in constructor
-      ;(solver as any).portUsagePenaltySq = params.portUsagePenaltySq
-      ;(solver as any).crossingPenaltySq = params.crossingPenaltySq
       ;(solver as any).greedyMultiplier = params.greedyMultiplier
 
       solver.solve()

@@ -34,9 +34,9 @@ import {
 import { evaluateParametersOnProblems } from "./evaluator"
 
 // Dataset sizes
-const TRAIN_SAMPLES = 500
+const TRAIN_SAMPLES = 1000
 const VAL_SAMPLES = 200
-const BATCH_SIZE = 50 // Number of training samples to use per iteration
+const BATCH_SIZE = 200 // Number of training samples to use per iteration
 const EPOCHS_PER_VALIDATION = 5
 
 // SPSA hyperparameters
@@ -46,21 +46,21 @@ const NUM_ITERATIONS = 200
 // a_k = a / (k + A)^alpha - step size
 // c_k = c / k^gamma - perturbation size
 const SPSA_a = 0.1 // Initial step size multiplier
-const SPSA_c = 0.1 // Initial perturbation size
+const SPSA_c = 0.25 // Initial perturbation size
 const SPSA_A = 20 // Stability constant (typically ~10% of max iterations)
 const SPSA_alpha = 0.602 // Standard value for asymptotic convergence
 const SPSA_gamma = 0.101 // Standard value for asymptotic convergence
 
 const MIN_CROSSINGS = 5
-const MAX_CROSSINGS = 26
+const MAX_CROSSINGS = 40
 
 // Parameter scaling factors to handle different parameter magnitudes
 // SPSA works best when all parameters are roughly the same scale
 const PARAM_SCALES: Parameters = {
   portUsagePenalty: 1,
-  portUsagePenaltySq: 1,
+  // portUsagePenaltySq: 1,
   crossingPenalty: 10,
-  crossingPenaltySq: 1,
+  // crossingPenaltySq: 1,
   ripCost: 50,
   greedyMultiplier: 1,
 }
@@ -164,9 +164,7 @@ function updateParameters(
 function formatGradient(gradient: Parameters): string {
   return [
     `d_port=${gradient.portUsagePenalty.toFixed(4)}`,
-    `d_portSq=${gradient.portUsagePenaltySq.toFixed(4)}`,
     `d_cross=${gradient.crossingPenalty.toFixed(4)}`,
-    `d_crossSq=${gradient.crossingPenaltySq.toFixed(4)}`,
     `d_rip=${gradient.ripCost.toFixed(6)}`,
     `d_greedy=${gradient.greedyMultiplier.toFixed(4)}`,
   ].join(", ")
