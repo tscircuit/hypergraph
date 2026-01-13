@@ -293,14 +293,46 @@ export const generateJumperX4Grid = ({
       })
 
       // Outer rows (1, 4) use outerPadHalfHeight, inner rows (2, 3) use innerPadHalfHeight
-      const pad1Bounds = createPadBounds(p1CenterX, p1CenterY, outerPadHalfHeight)
-      const pad2Bounds = createPadBounds(p2CenterX, p2CenterY, innerPadHalfHeight)
-      const pad3Bounds = createPadBounds(p3CenterX, p3CenterY, innerPadHalfHeight)
-      const pad4Bounds = createPadBounds(p4CenterX, p4CenterY, outerPadHalfHeight)
-      const pad5Bounds = createPadBounds(p5CenterX, p5CenterY, outerPadHalfHeight)
-      const pad6Bounds = createPadBounds(p6CenterX, p6CenterY, innerPadHalfHeight)
-      const pad7Bounds = createPadBounds(p7CenterX, p7CenterY, innerPadHalfHeight)
-      const pad8Bounds = createPadBounds(p8CenterX, p8CenterY, outerPadHalfHeight)
+      const pad1Bounds = createPadBounds(
+        p1CenterX,
+        p1CenterY,
+        outerPadHalfHeight,
+      )
+      const pad2Bounds = createPadBounds(
+        p2CenterX,
+        p2CenterY,
+        innerPadHalfHeight,
+      )
+      const pad3Bounds = createPadBounds(
+        p3CenterX,
+        p3CenterY,
+        innerPadHalfHeight,
+      )
+      const pad4Bounds = createPadBounds(
+        p4CenterX,
+        p4CenterY,
+        outerPadHalfHeight,
+      )
+      const pad5Bounds = createPadBounds(
+        p5CenterX,
+        p5CenterY,
+        outerPadHalfHeight,
+      )
+      const pad6Bounds = createPadBounds(
+        p6CenterX,
+        p6CenterY,
+        innerPadHalfHeight,
+      )
+      const pad7Bounds = createPadBounds(
+        p7CenterX,
+        p7CenterY,
+        innerPadHalfHeight,
+      )
+      const pad8Bounds = createPadBounds(
+        p8CenterX,
+        p8CenterY,
+        outerPadHalfHeight,
+      )
 
       // Underjumper region - single vertical region in the center between left and right pads
       const underjumperBounds = {
