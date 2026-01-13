@@ -15,28 +15,15 @@ import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
 import { computeCrossingAssignments } from "./computeCrossingAssignments"
 import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
-/**
-Last training run with 1x1 to 3x3
-
-Final parameters (last iteration):                
-portUsagePenalty=0.074, crossingPenalty=3.362, ripCost=40.127, greedyMultiplier=0.504
-  Val: 53.00% solved
-
-Best parameters (by validation score):
-portUsagePenalty=0.077, crossingPenalty=3.659, ripCost=41.817, greedyMultiplier=0.554
-  Val: 56.50% solved
- */
-
-// portUsagePenalty=0.077, crossingPenalty=3.659, ripCost=41.817, greedyMultiplier=0.554
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
-  portUsagePenalty: 0.077,
+  portUsagePenalty: 0.034685181009478865,
   // portUsagePenaltySq: 0.06194817180037216,
   portUsagePenaltySq: 0,
-  crossingPenalty: 3.659,
+  crossingPenalty: 4.072520483177124,
   crossingPenaltySq: 0,
   // crossingPenaltySq: 0.1315528159128946,
-  ripCost: 41.817,
-  greedyMultiplier: 0.554,
+  ripCost: 35.38577539020022,
+  greedyMultiplier: 0.5518001238069296,
 }
 
 export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
