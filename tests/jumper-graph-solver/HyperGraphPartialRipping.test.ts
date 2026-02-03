@@ -1,6 +1,15 @@
 import { describe, it, expect } from "bun:test"
-import { HyperGraphPartialRipping, createPartialRippingSolver } from "../../lib/HyperGraphPartialRipping"
-import type { HyperGraph, Connection, SolvedRoute, Region, RegionPort } from "../../lib/types"
+import {
+  HyperGraphPartialRipping,
+  createPartialRippingSolver,
+} from "../../lib/HyperGraphPartialRipping"
+import type {
+  HyperGraph,
+  Connection,
+  SolvedRoute,
+  Region,
+  RegionPort,
+} from "../../lib/types"
 
 /**
  * Helper to create a simple test graph

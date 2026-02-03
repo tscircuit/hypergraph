@@ -51,7 +51,9 @@ export class HyperGraphPartialRipping<
   totalRipsPerformed: number = 0
   ripsSkippedDueToThreshold: number = 0
 
-  constructor(input: HyperGraphPartialRippingInput<RegionType, RegionPortType>) {
+  constructor(
+    input: HyperGraphPartialRippingInput<RegionType, RegionPortType>,
+  ) {
     super({
       inputGraph: input.inputGraph,
       inputConnections: input.inputConnections,
