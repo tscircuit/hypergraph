@@ -29,6 +29,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@tscircuit/hypergraph": "^0.0.19",
     "@tscircuit/solver-utils": "^0.0.14"
   }
 }
