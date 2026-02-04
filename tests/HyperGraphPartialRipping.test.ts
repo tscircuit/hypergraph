@@ -1,7 +1,14 @@
 import { expect, test, describe } from "bun:test"
 import { HyperGraphSolver } from "../lib/HyperGraphSolver"
 import { HyperGraphPartialRipping } from "../lib/HyperGraphPartialRipping"
-import type { HyperGraph, Connection, Region, RegionPort } from "../lib/types"
+import type {
+  HyperGraph,
+  Connection,
+  Region,
+  RegionPort,
+  SolvedRoute,
+  Candidate,
+} from "../lib/types"
 
 // Helper: Create a minimal test graph
 function createTestGraph(numRegions = 4): HyperGraph {
@@ -44,7 +51,18 @@ function createTestConnection(
     startRegion,
     endRegion,
     mutuallyConnectedNetworkId: `net-${id}`,
-    d: {},
+  }
+}
+
+// Helper: Create mock candidate for testing
+function createMockCandidate(port: RegionPort): Candidate {
+  return {
+    port,
+    g: 0,
+    h: 0,
+    f: 0,
+    hops: 0,
+    ripRequired: false,
   }
 }
 
@@ -61,10 +79,12 @@ describe("HyperGraphPartialRipping - evaluateRipViability", () => {
       ripCost: 10,
     })
 
-    const expensiveRoute = {
+    const expensiveRoute: SolvedRoute = {
       path: Array(100)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -89,10 +109,12 @@ describe("HyperGraphPartialRipping - evaluateRipViability", () => {
     // Create a route with 5 ports: estimatedCost = 5 * 10 = 50
     // threshold = 10 * 0.5 = 5
     // 50 > 5, so should be rejected
-    const expensiveRoute = {
+    const expensiveRoute: SolvedRoute = {
       path: Array(5)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -118,10 +140,12 @@ describe("HyperGraphPartialRipping - evaluateRipViability", () => {
     // Create a cheap route with 1 port: estimatedCost = 1 * 10 = 10
     // threshold = 10 * 10.0 = 100
     // 10 < 100, so should be approved
-    const cheapRoute = {
+    const cheapRoute: SolvedRoute = {
       path: Array(1)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -145,10 +169,12 @@ describe("HyperGraphPartialRipping - evaluateRipViability", () => {
     })
 
     // Route costs 40 (4 ports * 10)
-    const route = {
+    const route: SolvedRoute = {
       path: Array(4)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -177,10 +203,12 @@ describe("HyperGraphPartialRipping - evaluateRipViability", () => {
     })
 
     // Route with 6 ports: estimatedCost = 6 * 7 = 42
-    const route = {
+    const route: SolvedRoute = {
       path: Array(6)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -202,10 +230,12 @@ describe("HyperGraphPartialRipping - estimateRipCost", () => {
       ripCost: 5,
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: Array(8)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -224,7 +254,7 @@ describe("HyperGraphPartialRipping - estimateRipCost", () => {
       ripCost: 10,
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: [],
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
@@ -303,10 +333,12 @@ describe("HyperGraphPartialRipping - backward compatibility", () => {
       maxCumulativeRipCost: 0.01, // Would normally reject
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: Array(100)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -330,10 +362,12 @@ describe("HyperGraphPartialRipping - edge cases", () => {
       ripThresholdMultiplier: 1.0,
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: Array(100)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -355,10 +389,12 @@ describe("HyperGraphPartialRipping - edge cases", () => {
       maxCumulativeRipCost: 1000000,
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: Array(10)
         .fill(null)
-        .map(() => ({})),
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ),
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
@@ -381,10 +417,12 @@ describe("HyperGraphPartialRipping - edge cases", () => {
       ripCost: 10,
     })
 
-    const route = {
+    const route: SolvedRoute = {
       path: Array(5)
         .fill(null)
-        .map(() => ({})), // Cost: 50
+        .map((_, i) =>
+          createMockCandidate(graph.ports[i % graph.ports.length]),
+        ), // Cost: 50
       connection: createTestConnection("r0", "r3", graph),
       requiredRip: false,
     }
