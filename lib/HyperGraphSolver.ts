@@ -15,6 +15,7 @@ import type {
   SolvedRoute,
   RegionPortAssignment,
   GScore,
+  RipViabilityResult,
 } from "./types"
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { PriorityQueue } from "./PriorityQueue"
@@ -46,9 +47,15 @@ export class HyperGraphSolver<
   rippingEnabled = false
   ripCost = 0
 
+  partialRippingEnabled = false
+  ripThresholdMultiplier = 1.0
+  maxCumulativeRipCost = Infinity
+
   lastCandidate: Candidate | null = null
 
   visitedPointsForCurrentConnection: Map<PortId, GScore> = new Map()
+  totalRipCostThisRoute = 0
+  ripsPerformedThisRoute = 0
 
   constructor(
     public input: {
@@ -57,6 +64,9 @@ export class HyperGraphSolver<
       greedyMultiplier?: number
       rippingEnabled?: boolean
       ripCost?: number
+      partialRippingEnabled?: boolean
+      ripThresholdMultiplier?: number
+      maxCumulativeRipCost?: number
     },
   ) {
     super()
@@ -73,6 +83,12 @@ export class HyperGraphSolver<
     if (input.rippingEnabled !== undefined)
       this.rippingEnabled = input.rippingEnabled
     if (input.ripCost !== undefined) this.ripCost = input.ripCost
+    if (input.partialRippingEnabled !== undefined)
+      this.partialRippingEnabled = input.partialRippingEnabled
+    if (input.ripThresholdMultiplier !== undefined)
+      this.ripThresholdMultiplier = input.ripThresholdMultiplier
+    if (input.maxCumulativeRipCost !== undefined)
+      this.maxCumulativeRipCost = input.maxCumulativeRipCost
     this.unprocessedConnections = [...this.connections]
     this.candidateQueue = new PriorityQueue<Candidate>()
     this.beginNewConnection()
@@ -87,6 +103,9 @@ export class HyperGraphSolver<
       greedyMultiplier: this.greedyMultiplier,
       rippingEnabled: this.rippingEnabled,
       ripCost: this.ripCost,
+      partialRippingEnabled: this.partialRippingEnabled,
+      ripThresholdMultiplier: this.ripThresholdMultiplier,
+      maxCumulativeRipCost: this.maxCumulativeRipCost,
     }
   }
 
@@ -103,6 +122,59 @@ export class HyperGraphSolver<
    */
   estimateCostToEnd(port: RegionPortType): number {
     return 0
+  }
+
+  /**
+   * OPTIONALLY OVERRIDE THIS
+   *
+   * Estimate the cost of ripping a particular solved route. This is used
+   * in partial ripping mode to decide whether a rip is worth performing.
+   * Default implementation uses the route length as a proxy for cost.
+   */
+  estimateRipCost(solvedRoute: SolvedRoute): number {
+    return solvedRoute.path.length * this.ripCost
+  }
+
+  /**
+   * OPTIONALLY OVERRIDE THIS
+   *
+   * Evaluate whether a particular rip should be performed given the cost.
+   * Used in partial ripping mode to make threshold-based decisions.
+   * Returns an object indicating whether to rip and the estimated cost.
+   */
+  evaluateRipViability(
+    targetRoute: SolvedRoute,
+    currentTotalRipCost: number,
+  ): RipViabilityResult {
+    if (!this.partialRippingEnabled) {
+      return { shouldRip: true, estimatedCost: 0 }
+    }
+
+    const estimatedCost = this.estimateRipCost(targetRoute)
+    const threshold = this.ripCost * this.ripThresholdMultiplier
+    const wouldExceedMax =
+      currentTotalRipCost + estimatedCost > this.maxCumulativeRipCost
+
+    if (estimatedCost > threshold) {
+      return {
+        shouldRip: false,
+        estimatedCost,
+        reason: `Rip cost (${estimatedCost.toFixed(2)}) exceeds threshold (${threshold.toFixed(2)})`,
+      }
+    }
+
+    if (wouldExceedMax) {
+      return {
+        shouldRip: false,
+        estimatedCost,
+        reason: `Would exceed max cumulative rip cost (${(currentTotalRipCost + estimatedCost).toFixed(2)} > ${this.maxCumulativeRipCost.toFixed(2)})`,
+      }
+    }
+
+    return {
+      shouldRip: true,
+      estimatedCost,
+    }
   }
 
   /**
@@ -262,11 +334,48 @@ export class HyperGraphSolver<
       }
     }
 
-    // Perform the ripping
+    // Handle ripping with partial ripping logic if enabled
     if (routesToRip.size > 0) {
       solvedRoute.requiredRip = true
-      for (const route of routesToRip) {
-        this.ripSolvedRoute(route)
+
+      if (this.partialRippingEnabled) {
+        // In partial ripping mode, evaluate each rip before performing it
+        let totalRipCostThisRoute = 0
+        const routesToRipArray = Array.from(routesToRip)
+        const routesToActuallyRip: SolvedRoute[] = []
+
+        for (const route of routesToRipArray) {
+          const viability = this.evaluateRipViability(
+            route,
+            totalRipCostThisRoute,
+          )
+          if (viability.shouldRip) {
+            routesToActuallyRip.push(route)
+            totalRipCostThisRoute += viability.estimatedCost
+          }
+        }
+
+        // If we couldn't rip all required routes due to cost thresholds,
+        // reject this solution and requeue the connection
+        if (routesToActuallyRip.length < routesToRipArray.length) {
+          this.unprocessedConnections.push(this.currentConnection!)
+          if (this.unprocessedConnections.length === 0) {
+            this.solved = true
+            return
+          }
+          this.beginNewConnection()
+          return
+        }
+
+        // Perform the rips that passed viability checks
+        for (const route of routesToActuallyRip) {
+          this.ripSolvedRoute(route)
+        }
+      } else {
+        // Original behavior: unconditional ripping
+        for (const route of routesToRip) {
+          this.ripSolvedRoute(route)
+        }
       }
     }
 
@@ -331,6 +440,8 @@ export class HyperGraphSolver<
     this.currentEndRegion = this.currentConnection.endRegion
     this.candidateQueue = new PriorityQueue<Candidate>()
     this.visitedPointsForCurrentConnection.clear()
+    this.totalRipCostThisRoute = 0
+    this.ripsPerformedThisRoute = 0
     this.routeStartedHook(this.currentConnection)
     for (const port of this.currentConnection.startRegion.ports) {
       this.candidateQueue.enqueue({

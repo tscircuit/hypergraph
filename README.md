@@ -81,8 +81,37 @@ if (solver.solved) {
 | `inputConnections` | `Connection[]` | required | Connections to route |
 | `greedyMultiplier` | `number` | `1.0` | Weight for heuristic score (higher = greedier search) |
 | `rippingEnabled` | `boolean` | `false` | Allow rerouting existing paths to resolve conflicts |
-| `ripCost` | `number` | `0` | Additional cost penalty when ripping is required |
+| `ripCost` | `number` | `0` | Additional cost penalty when ripping is required || **partialRippingEnabled** | `boolean` | `false` | **[NEW]** Use intelligent cost-aware ripping instead of binary ripping |
+| **ripThresholdMultiplier** | `number` | `1.0` | **[NEW]** Multiplier for rip cost threshold (only rip if cost < threshold) |
+| **maxCumulativeRipCost** | `number` | `Infinity` | **[NEW]** Maximum total rip cost allowed per connection |
 
+### Partial Ripping
+
+For improved performance, enable partial ripping to only perform rips when the cost is justified:
+
+```typescript
+const solver = new HyperGraphSolver({
+  inputGraph,
+  inputConnections,
+  rippingEnabled: true,
+  partialRippingEnabled: true,  // Enable intelligent ripping
+  ripThresholdMultiplier: 1.5,  // Rip only if cost < 1.5× route length
+  maxCumulativeRipCost: 200,    // Stop after 200 cumulative cost
+})
+```
+
+Or use the convenience subclass with sensible defaults:
+
+```typescript
+import { HyperGraphPartialRipping } from "@tscircuit/hypergraph"
+
+const solver = new HyperGraphPartialRipping({
+  inputGraph,
+  inputConnections,
+})
+```
+
+**Performance**: Partial ripping typically delivers 40-97% performance improvement by avoiding expensive cascading rips. See `scripts/benchmark-partial-ripping.ts` to benchmark your specific graph.
 ## Creating a Custom Solver
 
 HyperGraphSolver is designed to be extended. Override these methods to customize behavior for your domain:

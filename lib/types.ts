@@ -106,3 +106,8 @@ export type SerializedConnection = {
   startRegionId: RegionId
   endRegionId: RegionId
 }
+export type RipViabilityResult = {
+  shouldRip: boolean
+  estimatedCost: number
+  reason?: string
+}
