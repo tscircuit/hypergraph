@@ -184,7 +184,6 @@ export class HyperGraphSolver<
   selectRoutesToRip(
     alreadySolvedRoutes: Set<SolvedRoute>,
     newlySolvedRoute: SolvedRoute,
-    _currentConnection: Connection,
   ): Set<SolvedRoute> {
     const portReuseRoutesToRip =
       this.getSolvedRoutesWithOverlappingPorts(newlySolvedRoute)
@@ -299,7 +298,6 @@ export class HyperGraphSolver<
     const allRoutesToRip = this.selectRoutesToRip(
       crossingRoutesToRip,
       solvedRoute,
-      this.currentConnection!,
     )
 
     // Perform the ripping
