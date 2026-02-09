@@ -280,12 +280,6 @@ export class HyperGraphSolver<
       }
     }
 
-    const filteredPortReuseRoutes = this.selectRoutesToRip(
-      portReuseRoutesToRip,
-      solvedRoute,
-      this.currentConnection!,
-    )
-
     const filteredCrossingRoutes = this.selectRoutesToRip(
       crossingRoutesToRip,
       solvedRoute,
@@ -293,7 +287,7 @@ export class HyperGraphSolver<
     )
 
     const allRoutesToRip = new Set<SolvedRoute>([
-      ...filteredPortReuseRoutes,
+      ...portReuseRoutesToRip,
       ...filteredCrossingRoutes,
     ])
 
