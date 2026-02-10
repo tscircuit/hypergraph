@@ -173,33 +173,27 @@ export class HyperGraphSolver<
   /**
    * OPTIONALLY OVERRIDE THIS
    *
-   * Select which routes should be ripped from the set of candidates. By default,
-   * all candidate routes are ripped (always rip behavior). This method should
-   * return the full set of routes to rip, including any due to overlapping
-   * ports on the newly solved route.
+   * Compute the full set of solved routes that must be ripped to accept
+   * `newlySolvedRoute`. By default this returns all conflicting routes
+   * (always-rip behavior)
    *
-   * Override this method to implement partial ripping, where only a subset of
-   * conflicting routes are ripped.
+   * Override this to implement partial ripping, where only a subset of
+   * conflicting routes are removed.
    */
-  selectRoutesToRip(
-    alreadySolvedRoutes: Set<SolvedRoute>,
-    newlySolvedRoute: SolvedRoute,
-  ): Set<SolvedRoute> {
-    const portReuseRoutesToRip =
-      this.getSolvedRoutesWithOverlappingPorts(newlySolvedRoute)
+  computeRoutesToRip(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
+    const crossingRoutesToRip = this.computeCrossingRoutes(newlySolvedRoute)
+    const portReuseRoutesToRip = this.computePortOverlapRoutes(newlySolvedRoute)
     return new Set<SolvedRoute>([
-      ...alreadySolvedRoutes,
+      ...crossingRoutesToRip,
       ...portReuseRoutesToRip,
     ])
   }
 
   /**
    * Returns solved routes that overlap ports with the newly solved route.
-   * Use this in selectRoutesToRip overrides to include port reuse rips.
+   * Use this in computeRoutesToRip overrides to include port reuse rips.
    */
-  getSolvedRoutesWithOverlappingPorts(
-    newlySolvedRoute: SolvedRoute,
-  ): Set<SolvedRoute> {
+  computePortOverlapRoutes(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
     const portReuseRoutesToRip: Set<SolvedRoute> = new Set()
     for (const candidate of newlySolvedRoute.path) {
       if (
@@ -211,6 +205,22 @@ export class HyperGraphSolver<
       }
     }
     return portReuseRoutesToRip
+  }
+
+  computeCrossingRoutes(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
+    const crossingRoutesToRip: Set<SolvedRoute> = new Set()
+    for (const candidate of newlySolvedRoute.path) {
+      if (!candidate.lastPort || !candidate.lastRegion) continue
+      const ripsRequired = this.getRipsRequiredForPortUsage(
+        candidate.lastRegion as RegionType,
+        candidate.lastPort as RegionPortType,
+        candidate.port as RegionPortType,
+      )
+      for (const assignment of ripsRequired) {
+        crossingRoutesToRip.add(assignment.solvedRoute)
+      }
+    }
+    return crossingRoutesToRip
   }
 
   getNextCandidates(currentCandidate: CandidateType): CandidateType[] {
@@ -281,26 +291,9 @@ export class HyperGraphSolver<
       solvedRoute.requiredRip = true
     }
 
-    // Collect routes that are candidates for ripping due to port usage crossings
-    const crossingRoutesToRip: Set<SolvedRoute> = new Set()
-    for (const candidate of solvedRoute.path) {
-      if (!candidate.lastPort || !candidate.lastRegion) continue
-      const ripsRequired = this.getRipsRequiredForPortUsage(
-        candidate.lastRegion as RegionType,
-        candidate.lastPort as RegionPortType,
-        candidate.port as RegionPortType,
-      )
-      for (const assignment of ripsRequired) {
-        crossingRoutesToRip.add(assignment.solvedRoute)
-      }
-    }
+    const allRoutesToRip = this.computeRoutesToRip(solvedRoute)
 
-    const allRoutesToRip = this.selectRoutesToRip(
-      crossingRoutesToRip,
-      solvedRoute,
-    )
-
-    // Perform the ripping
+    // Rip conflicting routes before committing assignments.
     if (allRoutesToRip.size > 0) {
       solvedRoute.requiredRip = true
       for (const route of allRoutesToRip) {
