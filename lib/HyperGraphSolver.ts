@@ -99,7 +99,7 @@ export class HyperGraphSolver<
    *
    * Return the estimated remaining cost to the end of the route. You must
    * first understand the UNIT of your costs. If it's distance, then this could
-   * be something like distance(port, endRegion.d.center)
+   * be something like distance(port, this.currentEndRegion.d.center)
    */
   estimateCostToEnd(port: RegionPortType): number {
     return 0
