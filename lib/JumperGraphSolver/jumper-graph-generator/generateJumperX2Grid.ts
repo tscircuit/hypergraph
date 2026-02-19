@@ -1,5 +1,5 @@
-import type { JPort, JRegion } from "../jumper-types"
 import { computeBoundsCenter } from "../geometry/getBoundsCenter"
+import type { JPort, JRegion } from "../jumper-types"
 import { dims0606x2 } from "./generateSingleJumperX2Regions"
 
 export const generateJumperX2Grid = ({
@@ -79,6 +79,7 @@ export const generateJumperX2Grid = ({
   ): JRegion => ({
     regionId: id,
     ports: [],
+    capacity: isPad || isThroughJumper ? 1 : undefined,
     d: { bounds, center: computeBoundsCenter(bounds), isPad, isThroughJumper },
   })
 

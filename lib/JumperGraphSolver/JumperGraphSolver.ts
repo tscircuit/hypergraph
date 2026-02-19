@@ -1,3 +1,4 @@
+import { distance } from "@tscircuit/math-utils"
 import type { GraphicsObject } from "graphics-debug"
 import { HyperGraphSolver } from "../HyperGraphSolver"
 import type {
@@ -8,12 +9,11 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "../types"
+import { computeCrossingAssignments } from "./computeCrossingAssignments"
+import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
+import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 import type { JPort, JRegion } from "./jumper-types"
 import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
-import { distance } from "@tscircuit/math-utils"
-import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
-import { computeCrossingAssignments } from "./computeCrossingAssignments"
-import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
   portUsagePenalty: 0.034685181009478865,
@@ -130,8 +130,16 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     port1: JPort,
     port2: JPort,
   ): number {
+    const capacityOverflow = this.getRegionCapacityOverflowIfUsed(region)
+    const capacityPenalty =
+      capacityOverflow * this.crossingPenalty +
+      capacityOverflow * this.crossingPenaltySq
     const crossings = computeDifferentNetCrossings(region, port1, port2)
-    return crossings * this.crossingPenalty + crossings * this.crossingPenaltySq
+    return (
+      capacityPenalty +
+      crossings * this.crossingPenalty +
+      crossings * this.crossingPenaltySq
+    )
   }
 
   override getRipsRequiredForPortUsage(

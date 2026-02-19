@@ -1,23 +1,24 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
-import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
-import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
+import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
+import { PriorityQueue } from "./PriorityQueue"
 import type {
   Candidate,
   Connection,
-  RegionPort,
-  PortId,
+  GScore,
   HyperGraph,
-  SerializedConnection,
-  SerializedHyperGraph,
+  NetworkId,
+  PortId,
   Region,
   RegionId,
-  SolvedRoute,
+  RegionPort,
   RegionPortAssignment,
-  GScore,
+  SerializedConnection,
+  SerializedHyperGraph,
+  SolvedRoute,
 } from "./types"
-import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
-import { PriorityQueue } from "./PriorityQueue"
 
 export class HyperGraphSolver<
   RegionType extends Region = Region,
@@ -61,6 +62,7 @@ export class HyperGraphSolver<
   ) {
     super()
     this.graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
+    this.validateRegionCapacities()
     for (const region of this.graph.regions) {
       region.assignments = []
     }
@@ -183,10 +185,79 @@ export class HyperGraphSolver<
   computeRoutesToRip(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
     const crossingRoutesToRip = this.computeCrossingRoutes(newlySolvedRoute)
     const portReuseRoutesToRip = this.computePortOverlapRoutes(newlySolvedRoute)
+    const regionCapacityRoutesToRip =
+      this.computeRegionCapacityOverlapRoutes(newlySolvedRoute)
     return new Set<SolvedRoute>([
       ...crossingRoutesToRip,
       ...portReuseRoutesToRip,
+      ...regionCapacityRoutesToRip,
     ])
+  }
+
+  private validateRegionCapacities() {
+    for (const region of this.graph.regions) {
+      if (region.capacity === undefined) continue
+      const { capacity } = region
+      if (
+        capacity !== Infinity &&
+        (!Number.isFinite(capacity) ||
+          capacity < 1 ||
+          !Number.isInteger(capacity))
+      ) {
+        throw new Error(
+          `Region ${region.regionId} has invalid capacity ${capacity}. Capacity must be a positive integer or Infinity.`,
+        )
+      }
+    }
+  }
+
+  protected getRegionCapacity(region: RegionType): number {
+    return region.capacity ?? Infinity
+  }
+
+  protected getRegionAssignmentsByNetwork(
+    region: RegionType,
+  ): Map<NetworkId, RegionPortAssignment[]> {
+    const assignmentsByNetwork = new Map<NetworkId, RegionPortAssignment[]>()
+    const assignments = region.assignments ?? []
+    for (const assignment of assignments) {
+      const networkId = assignment.connection.mutuallyConnectedNetworkId
+      assignmentsByNetwork.set(networkId, [
+        ...(assignmentsByNetwork.get(networkId) ?? []),
+        assignment,
+      ])
+    }
+    return assignmentsByNetwork
+  }
+
+  protected getRegionCapacityOverflowIfUsed(region: RegionType): number {
+    const capacity = this.getRegionCapacity(region)
+    if (!Number.isFinite(capacity)) return 0
+
+    const assignmentsByNetwork = this.getRegionAssignmentsByNetwork(region)
+    const currentNetworkId = this.currentConnection!.mutuallyConnectedNetworkId
+    const nextDistinctNetworkCount =
+      assignmentsByNetwork.size +
+      (assignmentsByNetwork.has(currentNetworkId) ? 0 : 1)
+
+    return Math.max(0, nextDistinctNetworkCount - capacity)
+  }
+
+  getRipsRequiredForRegionUsage(region: RegionType): RegionPortAssignment[] {
+    const overflow = this.getRegionCapacityOverflowIfUsed(region)
+    if (overflow <= 0) return []
+
+    const assignmentsByNetwork = this.getRegionAssignmentsByNetwork(region)
+    const currentNetworkId = this.currentConnection!.mutuallyConnectedNetworkId
+    const candidateNetworksToRip = [...assignmentsByNetwork.entries()]
+      .filter(([networkId]) => networkId !== currentNetworkId)
+      .sort((a, b) => a[1].length - b[1].length)
+
+    if (candidateNetworksToRip.length === 0) return []
+
+    return candidateNetworksToRip
+      .slice(0, overflow)
+      .flatMap(([, assignments]) => assignments)
   }
 
   /**
@@ -223,16 +294,36 @@ export class HyperGraphSolver<
     return crossingRoutesToRip
   }
 
+  computeRegionCapacityOverlapRoutes(
+    newlySolvedRoute: SolvedRoute,
+  ): Set<SolvedRoute> {
+    const regionCapacityRoutesToRip: Set<SolvedRoute> = new Set()
+    for (const candidate of newlySolvedRoute.path) {
+      if (!candidate.lastRegion) continue
+      const ripsRequired = this.getRipsRequiredForRegionUsage(
+        candidate.lastRegion as RegionType,
+      )
+      for (const assignment of ripsRequired) {
+        regionCapacityRoutesToRip.add(assignment.solvedRoute)
+      }
+    }
+    return regionCapacityRoutesToRip
+  }
+
   getNextCandidates(currentCandidate: CandidateType): CandidateType[] {
     const currentRegion = currentCandidate.nextRegion!
     const currentPort = currentCandidate.port
+    const regionUsageRipRequired =
+      this.getRipsRequiredForRegionUsage(currentRegion as RegionType).length > 0
     const nextCandidatesByRegion: Record<RegionId, Candidate[]> = {}
     for (const port of currentRegion.ports) {
       if (port === currentCandidate.port) continue
       const ripRequired =
-        port.assignment &&
-        port.assignment.connection.mutuallyConnectedNetworkId !==
-          this.currentConnection!.mutuallyConnectedNetworkId
+        !!(
+          port.assignment &&
+          port.assignment.connection.mutuallyConnectedNetworkId !==
+            this.currentConnection!.mutuallyConnectedNetworkId
+        ) || regionUsageRipRequired
       const newCandidate: Partial<Candidate> = {
         port,
         hops: currentCandidate.hops + 1,

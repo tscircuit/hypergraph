@@ -1,5 +1,5 @@
-import type { JPort, JRegion } from "../jumper-types"
 import { computeBoundsCenter } from "../geometry/getBoundsCenter"
+import type { JPort, JRegion } from "../jumper-types"
 
 // EXB-38VR000V (Panasonic) 4x 0Ω isolated jumpers dimensions
 // This is a 4-element array with 8 pads total (4 per side)
@@ -156,6 +156,7 @@ export const generateSingleJumperX4Regions = ({
   ): JRegion => ({
     regionId: `${idPrefix}:${id}`,
     ports: [],
+    capacity: isPad || isThroughJumper ? 1 : undefined,
     d: { bounds, center: computeBoundsCenter(bounds), isPad, isThroughJumper },
   })
 
