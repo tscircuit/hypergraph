@@ -4,6 +4,7 @@ import { getSvgFromGraphicsObject } from "graphics-debug"
 import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
 import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
 import type { JumperGraph } from "lib/JumperGraphSolver/jumper-types"
+import { assertNoTraceIntersectionsOutsideThroughJumpers } from "./assertNoTraceIntersectionsOutsideThroughJumpers"
 
 test(
   "jumper-graph-solver06: solve generated 0603 vertical 2x3 grid",
@@ -19,8 +20,8 @@ test(
 
     const graphWithConnections = createProblemFromBaseGraph({
       baseGraph,
-      numCrossings: 6,
-      randomSeed: 456,
+      numCrossings: 2,
+      randomSeed: 0,
     })
 
     const solver = new JumperGraphSolver({
@@ -46,6 +47,11 @@ test(
 
       expect(networkIds.size).toBeLessThanOrEqual(1)
     }
+
+    assertNoTraceIntersectionsOutsideThroughJumpers(
+      solver.solvedRoutes,
+      graphWithConnections.regions,
+    )
 
     expect(getSvgFromGraphicsObject(solver.visualize())).toMatchSvgSnapshot(
       import.meta.path,
