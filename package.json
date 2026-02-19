@@ -29,6 +29,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@tscircuit/jumper-topology-generator": "^0.0.1",
     "@tscircuit/solver-utils": "^0.0.14"
   }
 }
