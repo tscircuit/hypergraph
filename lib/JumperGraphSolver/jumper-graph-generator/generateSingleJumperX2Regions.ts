@@ -1,5 +1,5 @@
-import type { JPort, JRegion } from "../jumper-types"
 import { computeBoundsCenter } from "../geometry/getBoundsCenter"
+import type { JPort, JRegion } from "../jumper-types"
 
 // 0606x2 resistor chip array dimensions
 // This is a 2-element array with 4 pads total (2 per resistor)
@@ -107,6 +107,7 @@ export const generateSingleJumperX2Regions = ({
   ): JRegion => ({
     regionId: `${idPrefix}:${id}`,
     ports: [],
+    capacity: isPad || isThroughJumper ? 1 : undefined,
     d: { bounds, center: computeBoundsCenter(bounds), isPad, isThroughJumper },
   })
 

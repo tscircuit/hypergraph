@@ -1,9 +1,9 @@
-import type { JPort, JRegion, JumperGraph } from "../jumper-types"
-import { computeBoundsCenter } from "../geometry/getBoundsCenter"
-import { dims0603 } from "./generateSingleJumperRegions"
-import { calculateGraphBounds } from "./calculateGraphBounds"
+import { compose, rotate, translate } from "transformation-matrix"
 import { applyTransformToGraph } from "../geometry/applyTransformToGraph"
-import { compose, translate, rotate } from "transformation-matrix"
+import { computeBoundsCenter } from "../geometry/getBoundsCenter"
+import type { JPort, JRegion, JumperGraph } from "../jumper-types"
+import { calculateGraphBounds } from "./calculateGraphBounds"
+import { dims0603 } from "./generateSingleJumperRegions"
 
 export const generateJumperGrid = ({
   cols,
@@ -68,6 +68,7 @@ export const generateJumperGrid = ({
   ): JRegion => ({
     regionId: id,
     ports: [],
+    capacity: isPad || isThroughJumper ? 1 : undefined,
     d: { bounds, center: computeBoundsCenter(bounds), isPad, isThroughJumper },
   })
 

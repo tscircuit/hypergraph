@@ -28,6 +28,11 @@ export type Region = {
   regionId: RegionId
   ports: RegionPort[]
   d: any
+  /**
+   * Maximum number of distinct networks allowed to occupy this region.
+   * If undefined, the region has no capacity limit.
+   */
+  capacity?: number
   assignments?: RegionPortAssignment[]
 }
 
@@ -82,6 +87,7 @@ export type SerializedGraphRegion = {
   regionId: RegionId
   pointIds: PortId[]
   d: any
+  capacity?: number
   assignments?: SerializedRegionPortAssignment[]
 }
 export type SerializedRegionPortAssignment = {
