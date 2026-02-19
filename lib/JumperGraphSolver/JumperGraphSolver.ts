@@ -1,3 +1,4 @@
+import { distance } from "@tscircuit/math-utils"
 import type { GraphicsObject } from "graphics-debug"
 import { HyperGraphSolver } from "../HyperGraphSolver"
 import type {
@@ -8,12 +9,11 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "../types"
+import { computeCrossingAssignments } from "./computeCrossingAssignments"
+import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
+import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 import type { JPort, JRegion } from "./jumper-types"
 import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
-import { distance } from "@tscircuit/math-utils"
-import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
-import { computeCrossingAssignments } from "./computeCrossingAssignments"
-import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
   portUsagePenalty: 0.034685181009478865,
@@ -146,6 +146,51 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
         a.connection.mutuallyConnectedNetworkId !==
         this.currentConnection!.mutuallyConnectedNetworkId,
     )
+  }
+
+  override computeRoutesToRip(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
+    const routesToRip = super.computeRoutesToRip(newlySolvedRoute)
+    for (const route of this.computeSingleNetRegionOverlapRoutes(
+      newlySolvedRoute,
+    )) {
+      routesToRip.add(route)
+    }
+    return routesToRip
+  }
+
+  private isSingleNetRegion(region: JRegion): boolean {
+    const regionData = region.d as Record<string, unknown>
+    const maxDistinctNets = regionData.maxDistinctNets
+    if (typeof maxDistinctNets === "number") return maxDistinctNets <= 1
+
+    return Boolean(
+      regionData.singleNetOnly ||
+        regionData.singleNet ||
+        regionData.exclusiveToSingleNet ||
+        regionData.isThroughJumper,
+    )
+  }
+
+  private computeSingleNetRegionOverlapRoutes(
+    newlySolvedRoute: SolvedRoute,
+  ): Set<SolvedRoute> {
+    const singleNetRegionRoutesToRip: Set<SolvedRoute> = new Set()
+    const networkId = newlySolvedRoute.connection.mutuallyConnectedNetworkId
+
+    for (const candidate of newlySolvedRoute.path) {
+      const region = candidate.lastRegion
+      if (!region) continue
+      if (!this.isSingleNetRegion(region)) continue
+
+      for (const assignment of region.assignments ?? []) {
+        if (assignment.connection.mutuallyConnectedNetworkId === networkId) {
+          continue
+        }
+        singleNetRegionRoutesToRip.add(assignment.solvedRoute)
+      }
+    }
+
+    return singleNetRegionRoutesToRip
   }
 
   override routeSolvedHook(solvedRoute: SolvedRoute) {}

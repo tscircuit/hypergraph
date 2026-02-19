@@ -1,23 +1,23 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
-import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
-import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
+import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
+import { PriorityQueue } from "./PriorityQueue"
 import type {
   Candidate,
   Connection,
-  RegionPort,
-  PortId,
+  GScore,
   HyperGraph,
-  SerializedConnection,
-  SerializedHyperGraph,
+  PortId,
   Region,
   RegionId,
-  SolvedRoute,
+  RegionPort,
   RegionPortAssignment,
-  GScore,
+  SerializedConnection,
+  SerializedHyperGraph,
+  SolvedRoute,
 } from "./types"
-import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
-import { PriorityQueue } from "./PriorityQueue"
 
 export class HyperGraphSolver<
   RegionType extends Region = Region,

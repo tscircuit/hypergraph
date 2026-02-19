@@ -1,8 +1,8 @@
-import { test, expect } from "bun:test"
+import { expect, test } from "bun:test"
 import { getSvgFromGraphicsObject } from "graphics-debug"
-import { generateJumperX4Grid } from "lib/JumperGraphSolver/jumper-graph-generator/generateJumperX4Grid"
-import { createGraphWithConnectionsFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createGraphWithConnectionsFromBaseGraph"
 import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
+import { createGraphWithConnectionsFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createGraphWithConnectionsFromBaseGraph"
+import { generateJumperX4Grid } from "lib/JumperGraphSolver/jumper-graph-generator/generateJumperX4Grid"
 
 test(
   "jumper-graph-solver01: solve 1x1 X4 grid with external connections",
@@ -49,6 +49,16 @@ test(
     })
 
     solver.solve()
+
+    for (const region of graphWithConnections.regions) {
+      if (!region.d.isThroughJumper) continue
+      const networkIds = new Set(
+        (region.assignments ?? []).map(
+          (a) => a.connection.mutuallyConnectedNetworkId,
+        ),
+      )
+      expect(networkIds.size).toBeLessThanOrEqual(1)
+    }
 
     expect(getSvgFromGraphicsObject(solver.visualize())).toMatchSvgSnapshot(
       import.meta.path,
