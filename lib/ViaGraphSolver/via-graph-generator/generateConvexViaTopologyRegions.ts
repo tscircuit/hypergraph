@@ -316,12 +316,14 @@ export function generateConvexViaTopologyRegions(opts: {
     points: r.d.polygon!,
   }))
 
-  const solver = new ConvexRegionsSolver({
+  const solverInput = {
     bounds,
     polygons: obstaclePolygons,
     clearance,
     concavityTolerance,
-  })
+  } as ConstructorParameters<typeof ConvexRegionsSolver>[0]
+
+  const solver = new ConvexRegionsSolver(solverInput)
 
   solver.solve()
   const solverOutput = solver.getOutput()
