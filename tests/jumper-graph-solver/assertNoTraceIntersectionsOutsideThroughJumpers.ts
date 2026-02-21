@@ -91,6 +91,7 @@ export const assertNoTraceIntersectionsOutsideThroughJumpers = (
       const segB = segments[j]
       if (!segB) continue
       if (segA.connectionId === segB.connectionId) continue
+      if (segA.regionId !== segB.regionId) continue
 
       const intersection = getProperSegmentIntersection(
         segA.start,

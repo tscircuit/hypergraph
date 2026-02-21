@@ -55,10 +55,101 @@ export function perimeterT(
   return 2 * W + H + Math.max(0, Math.min(H, p.y - ymin))
 }
 
+type PolygonPoint = { x: number; y: number }
+
+const getDistanceToSegmentAndProjectedLength = (
+  point: PolygonPoint,
+  a: PolygonPoint,
+  b: PolygonPoint,
+): { distance: number; projectedLength: number; segmentLength: number } => {
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+  const segmentLength = Math.hypot(dx, dy)
+  if (segmentLength < 1e-12) {
+    return {
+      distance: Math.hypot(point.x - a.x, point.y - a.y),
+      projectedLength: 0,
+      segmentLength,
+    }
+  }
+
+  const ux = dx / segmentLength
+  const uy = dy / segmentLength
+  const vx = point.x - a.x
+  const vy = point.y - a.y
+  const projected = Math.max(0, Math.min(segmentLength, vx * ux + vy * uy))
+  const closestX = a.x + projected * ux
+  const closestY = a.y + projected * uy
+
+  return {
+    distance: Math.hypot(point.x - closestX, point.y - closestY),
+    projectedLength: projected,
+    segmentLength,
+  }
+}
+
+export function perimeterTOnPolygon(
+  p: PolygonPoint,
+  polygon: PolygonPoint[],
+): number {
+  if (polygon.length < 3) return 0
+
+  let totalPerimeter = 0
+  const segmentData: Array<{
+    a: PolygonPoint
+    b: PolygonPoint
+    cumLength: number
+  }> = []
+
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i]
+    const b = polygon[(i + 1) % polygon.length]
+    if (!a || !b) continue
+    segmentData.push({ a, b, cumLength: totalPerimeter })
+    totalPerimeter += Math.hypot(b.x - a.x, b.y - a.y)
+  }
+
+  if (totalPerimeter < 1e-12) return 0
+
+  let bestT = 0
+  let bestDistance = Number.POSITIVE_INFINITY
+
+  for (const seg of segmentData) {
+    const { distance, projectedLength, segmentLength } =
+      getDistanceToSegmentAndProjectedLength(p, seg.a, seg.b)
+    if (segmentLength < 1e-12) continue
+
+    const candidateT = seg.cumLength + projectedLength
+    if (distance < bestDistance) {
+      bestDistance = distance
+      bestT = candidateT
+    }
+  }
+
+  return bestT
+}
+
+export function perimeterTForRegion(
+  p: { x: number; y: number },
+  region: {
+    d: {
+      bounds: { minX: number; maxX: number; minY: number; maxY: number }
+      polygon?: PolygonPoint[]
+    }
+  },
+): number {
+  if (Array.isArray(region.d.polygon) && region.d.polygon.length >= 3) {
+    return perimeterTOnPolygon(p, region.d.polygon)
+  }
+
+  const { minX, maxX, minY, maxY } = region.d.bounds
+  return perimeterT(p, minX, maxX, minY, maxY)
+}
+
 /**
  * Check if two perimeter coordinates are coincident (within epsilon)
  */
-function areCoincident(t1: number, t2: number, eps: number = 1e-6): boolean {
+function areCoincident(t1: number, t2: number, eps = 1e-6): boolean {
   return Math.abs(t1 - t2) < eps
 }
 
