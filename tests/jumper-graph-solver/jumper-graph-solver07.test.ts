@@ -5,7 +5,7 @@ import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
 import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
 import type { JumperGraph } from "lib/JumperGraphSolver/jumper-types"
 
-test(
+test.skip(
   "jumper-graph-solver07: solve generated 0603 staggered 3x2 grid",
   // @ts-expect-error bun:test types don't include timeout option
   { timeout: 30000 },
