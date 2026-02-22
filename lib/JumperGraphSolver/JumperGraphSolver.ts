@@ -125,6 +125,22 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     const ripCount = port.ripCount ?? 0
     return ripCount * this.portUsagePenalty + ripCount * this.portUsagePenaltySq
   }
+
+  override isTransitionAllowed(
+    region: JRegion,
+    port1: JPort,
+    port2: JPort,
+  ): boolean {
+    if (!region.d.isPad) return true
+
+    const usesThroughJumper = (port: JPort) => {
+      const otherRegion = port.region1 === region ? port.region2 : port.region1
+      return Boolean(otherRegion.d.isThroughJumper)
+    }
+
+    return usesThroughJumper(port1) || usesThroughJumper(port2)
+  }
+
   override computeIncreasedRegionCostIfPortsAreUsed(
     region: JRegion,
     port1: JPort,

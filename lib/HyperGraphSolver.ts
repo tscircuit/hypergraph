@@ -161,6 +161,20 @@ export class HyperGraphSolver<
     return false
   }
 
+  /**
+   * OPTIONALLY OVERRIDE THIS
+   *
+   * Return false to prevent transitioning through a region from `_port1` to
+   * `_port2`.
+   */
+  isTransitionAllowed(
+    _region: RegionType,
+    _port1: RegionPortType,
+    _port2: RegionPortType,
+  ): boolean {
+    return true
+  }
+
   computeG(candidate: CandidateType): number {
     return (
       candidate.parent!.g +
@@ -243,6 +257,15 @@ export class HyperGraphSolver<
     const nextCandidatesByRegion: Record<RegionId, Candidate[]> = {}
     for (const port of currentRegion.ports) {
       if (port === currentCandidate.port) continue
+      if (
+        !this.isTransitionAllowed(
+          currentRegion as RegionType,
+          currentPort as RegionPortType,
+          port as RegionPortType,
+        )
+      ) {
+        continue
+      }
       const ripRequired =
         (port.assignment &&
           port.assignment.connection.mutuallyConnectedNetworkId !==
