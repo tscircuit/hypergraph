@@ -1,3 +1,4 @@
+import { distance } from "@tscircuit/math-utils"
 import type { GraphicsObject } from "graphics-debug"
 import { HyperGraphSolver } from "../HyperGraphSolver"
 import type {
@@ -8,12 +9,11 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "../types"
+import { computeCrossingAssignments } from "./computeCrossingAssignments"
+import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
+import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 import type { JPort, JRegion } from "./jumper-types"
 import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
-import { distance } from "@tscircuit/math-utils"
-import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
-import { computeCrossingAssignments } from "./computeCrossingAssignments"
-import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
   portUsagePenalty: 0.034685181009478865,
@@ -140,12 +140,42 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     port2: JPort,
   ): RegionPortAssignment[] {
     const crossingAssignments = computeCrossingAssignments(region, port1, port2)
-    // Filter out same-network crossings since those don't require ripping
-    return crossingAssignments.filter(
+    const conflictingAssignments = crossingAssignments.filter(
       (a) =>
         a.connection.mutuallyConnectedNetworkId !==
         this.currentConnection!.mutuallyConnectedNetworkId,
     )
+
+    if (!region.d.isThroughJumper) return conflictingAssignments
+
+    for (const assignment of region.assignments ?? []) {
+      if (
+        assignment.connection.mutuallyConnectedNetworkId ===
+        this.currentConnection!.mutuallyConnectedNetworkId
+      ) {
+        continue
+      }
+      conflictingAssignments.push(assignment)
+    }
+
+    return conflictingAssignments
+  }
+
+  override isRipRequiredForPortUsage(
+    region: JRegion,
+    _port1: JPort,
+    _port2: JPort,
+  ): boolean {
+    if (!region.d.isThroughJumper) return false
+    for (const assignment of region.assignments ?? []) {
+      if (
+        assignment.connection.mutuallyConnectedNetworkId !==
+        this.currentConnection!.mutuallyConnectedNetworkId
+      ) {
+        return true
+      }
+    }
+    return false
   }
 
   override routeSolvedHook(solvedRoute: SolvedRoute) {}

@@ -1,23 +1,23 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
-import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
-import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
+import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
+import { PriorityQueue } from "./PriorityQueue"
 import type {
   Candidate,
   Connection,
-  RegionPort,
-  PortId,
+  GScore,
   HyperGraph,
-  SerializedConnection,
-  SerializedHyperGraph,
+  PortId,
   Region,
   RegionId,
-  SolvedRoute,
+  RegionPort,
   RegionPortAssignment,
-  GScore,
+  SerializedConnection,
+  SerializedHyperGraph,
+  SolvedRoute,
 } from "./types"
-import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
-import { PriorityQueue } from "./PriorityQueue"
 
 export class HyperGraphSolver<
   RegionType extends Region = Region,
@@ -147,6 +147,20 @@ export class HyperGraphSolver<
     return []
   }
 
+  /**
+   * OPTIONALLY OVERRIDE THIS
+   *
+   * Return true if using the candidate transition should incur ripCost even
+   * when there is no direct port-assignment conflict.
+   */
+  isRipRequiredForPortUsage(
+    _region: RegionType,
+    _port1: RegionPortType,
+    _port2: RegionPortType,
+  ): boolean {
+    return false
+  }
+
   computeG(candidate: CandidateType): number {
     return (
       candidate.parent!.g +
@@ -230,9 +244,14 @@ export class HyperGraphSolver<
     for (const port of currentRegion.ports) {
       if (port === currentCandidate.port) continue
       const ripRequired =
-        port.assignment &&
-        port.assignment.connection.mutuallyConnectedNetworkId !==
-          this.currentConnection!.mutuallyConnectedNetworkId
+        (port.assignment &&
+          port.assignment.connection.mutuallyConnectedNetworkId !==
+            this.currentConnection!.mutuallyConnectedNetworkId) ||
+        this.isRipRequiredForPortUsage(
+          currentRegion as RegionType,
+          currentPort as RegionPortType,
+          port as RegionPortType,
+        )
       const newCandidate: Partial<Candidate> = {
         port,
         hops: currentCandidate.hops + 1,
