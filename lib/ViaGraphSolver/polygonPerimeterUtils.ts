@@ -1,5 +1,10 @@
 import type { JPort, JRegion } from "../JumperGraphSolver/jumper-types"
-import { chordsCross } from "../JumperGraphSolver/perimeterChordUtils"
+import {
+  chordsCross,
+  getPortPerimeterTInRegion,
+  getRegionPerimeter,
+  perimeterTPolygon,
+} from "../JumperGraphSolver/perimeterChordUtils"
 import type { RegionPortAssignment } from "../types"
 
 /**
@@ -16,50 +21,7 @@ export function polygonPerimeterT(
   p: { x: number; y: number },
   polygon: { x: number; y: number }[],
 ): number {
-  const n = polygon.length
-  let bestDist = Infinity
-  let bestEdgeIndex = 0
-  let bestT = 0
-
-  // Find the closest edge and the projection parameter t on that edge
-  for (let i = 0; i < n; i++) {
-    const a = polygon[i]
-    const b = polygon[(i + 1) % n]
-    const dx = b.x - a.x
-    const dy = b.y - a.y
-    const lenSq = dx * dx + dy * dy
-    if (lenSq < 1e-10) continue
-
-    const t = Math.max(
-      0,
-      Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / lenSq),
-    )
-    const projX = a.x + t * dx
-    const projY = a.y + t * dy
-    const dist = Math.sqrt((p.x - projX) ** 2 + (p.y - projY) ** 2)
-
-    if (dist < bestDist) {
-      bestDist = dist
-      bestEdgeIndex = i
-      bestT = t
-    }
-  }
-
-  // Compute cumulative perimeter distance up to the projection point
-  let cumulative = 0
-  for (let i = 0; i < bestEdgeIndex; i++) {
-    const a = polygon[i]
-    const b = polygon[(i + 1) % n]
-    cumulative += Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
-  }
-
-  // Add the partial distance along the best edge
-  const a = polygon[bestEdgeIndex]
-  const b = polygon[(bestEdgeIndex + 1) % n]
-  const edgeLen = Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2)
-  cumulative += bestT * edgeLen
-
-  return cumulative
+  return perimeterTPolygon(p, polygon)
 }
 
 /**
@@ -79,25 +41,26 @@ export function computeDifferentNetCrossingsForPolygon(
     return 0
   }
 
-  const t1 = polygonPerimeterT(port1.d, polygon)
-  const t2 = polygonPerimeterT(port2.d, polygon)
+  const perimeter = getRegionPerimeter(region)
+  const t1 = getPortPerimeterTInRegion(port1, region)
+  const t2 = getPortPerimeterTInRegion(port2, region)
   const newChord: [number, number] = [t1, t2]
 
   let crossings = 0
   const assignments = region.assignments ?? []
 
   for (const assignment of assignments) {
-    const existingT1 = polygonPerimeterT(
-      (assignment.regionPort1 as JPort).d,
-      polygon,
+    const existingT1 = getPortPerimeterTInRegion(
+      assignment.regionPort1 as JPort,
+      region,
     )
-    const existingT2 = polygonPerimeterT(
-      (assignment.regionPort2 as JPort).d,
-      polygon,
+    const existingT2 = getPortPerimeterTInRegion(
+      assignment.regionPort2 as JPort,
+      region,
     )
     const existingChord: [number, number] = [existingT1, existingT2]
 
-    if (chordsCross(newChord, existingChord)) {
+    if (chordsCross(newChord, existingChord, perimeter)) {
       crossings++
     }
   }
@@ -121,25 +84,26 @@ export function computeCrossingAssignmentsForPolygon(
     return []
   }
 
-  const t1 = polygonPerimeterT(port1.d, polygon)
-  const t2 = polygonPerimeterT(port2.d, polygon)
+  const perimeter = getRegionPerimeter(region)
+  const t1 = getPortPerimeterTInRegion(port1, region)
+  const t2 = getPortPerimeterTInRegion(port2, region)
   const newChord: [number, number] = [t1, t2]
 
   const crossingAssignments: RegionPortAssignment[] = []
   const assignments = region.assignments ?? []
 
   for (const assignment of assignments) {
-    const existingT1 = polygonPerimeterT(
-      (assignment.regionPort1 as JPort).d,
-      polygon,
+    const existingT1 = getPortPerimeterTInRegion(
+      assignment.regionPort1 as JPort,
+      region,
     )
-    const existingT2 = polygonPerimeterT(
-      (assignment.regionPort2 as JPort).d,
-      polygon,
+    const existingT2 = getPortPerimeterTInRegion(
+      assignment.regionPort2 as JPort,
+      region,
     )
     const existingChord: [number, number] = [existingT1, existingT2]
 
-    if (chordsCross(newChord, existingChord)) {
+    if (chordsCross(newChord, existingChord, perimeter)) {
       crossingAssignments.push(assignment)
     }
   }
