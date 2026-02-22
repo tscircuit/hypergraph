@@ -8,7 +8,18 @@ type Segment = {
   end: Point
   connectionId: string
   regionId: string
+  isPadRegion: boolean
   isThroughJumperRegion: boolean
+}
+
+export type TraceIntersectionViolation = {
+  connectionAId: string
+  connectionBId: string
+  regionId: string
+  regionLabel: string
+  isPadRegion: boolean
+  isThroughJumperRegion: boolean
+  point: Point
 }
 
 const EPS = 1e-6
@@ -68,6 +79,7 @@ const getRouteSegments = (solvedRoutes: SolvedRoute[]): Segment[] => {
         end,
         connectionId,
         regionId: region.regionId,
+        isPadRegion: Boolean(region.d?.isPad),
         isThroughJumperRegion: Boolean(region.d?.isThroughJumper),
       })
     }
@@ -76,12 +88,18 @@ const getRouteSegments = (solvedRoutes: SolvedRoute[]): Segment[] => {
   return segments
 }
 
-export const assertNoTraceIntersectionsOutsideThroughJumpers = (
+export const getTraceIntersectionsOutsideThroughJumpers = (
   solvedRoutes: SolvedRoute[],
-  _regions: JRegion[],
-) => {
+  regions: JRegion[],
+): TraceIntersectionViolation[] => {
   const segments = getRouteSegments(solvedRoutes)
-  const violations: string[] = []
+  const regionById = new Map(regions.map((r) => [r.regionId, r]))
+  const nonPadNonThroughJumperLabelByRegionId = new Map(
+    regions
+      .filter((r) => !r.d.isPad && !r.d.isThroughJumper)
+      .map((region, index) => [region.regionId, `R${index + 1}`]),
+  )
+  const violations: TraceIntersectionViolation[] = []
 
   for (let i = 0; i < segments.length; i++) {
     const segA = segments[i]
@@ -101,20 +119,48 @@ export const assertNoTraceIntersectionsOutsideThroughJumpers = (
       )
 
       if (!intersection) continue
-
       if (segA.isThroughJumperRegion || segB.isThroughJumperRegion) continue
+      if (segA.isPadRegion || segB.isPadRegion) continue
 
-      violations.push(
-        `${segA.connectionId}[${segA.regionId}] x ${segB.connectionId}[${segB.regionId}] @ (${intersection.x.toFixed(3)}, ${intersection.y.toFixed(3)})`,
-      )
+      const region = regionById.get(segA.regionId)
+      if (!region) continue
+
+      violations.push({
+        connectionAId: segA.connectionId,
+        connectionBId: segB.connectionId,
+        regionId: segA.regionId,
+        regionLabel:
+          nonPadNonThroughJumperLabelByRegionId.get(segA.regionId) ??
+          segA.regionId,
+        isPadRegion: Boolean(region.d.isPad),
+        isThroughJumperRegion: Boolean(region.d.isThroughJumper),
+        point: intersection,
+      })
     }
   }
+
+  return violations
+}
+
+export const assertNoTraceIntersectionsOutsideThroughJumpers = (
+  solvedRoutes: SolvedRoute[],
+  regions: JRegion[],
+) => {
+  const violations = getTraceIntersectionsOutsideThroughJumpers(
+    solvedRoutes,
+    regions,
+  )
 
   if (violations.length > 0) {
     throw new Error(
       [
         `Found ${violations.length} trace intersection(s) outside through-jumper regions`,
-        ...violations.slice(0, 10),
+        ...violations
+          .slice(0, 10)
+          .map(
+            (v) =>
+              `${v.connectionAId}[${v.regionLabel}] x ${v.connectionBId}[${v.regionLabel}] @ (${v.point.x.toFixed(3)}, ${v.point.y.toFixed(3)})`,
+          ),
       ].join("\n"),
     )
   }
