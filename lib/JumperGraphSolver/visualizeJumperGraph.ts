@@ -50,8 +50,6 @@ export const visualizeJumperGraph = (
       graphics.polygons.push({
         points,
         fill,
-        stroke: "rgba(128, 128, 128, 0.5)",
-        strokeWidth: 0.03,
       })
     } else {
       graphics.rects.push({

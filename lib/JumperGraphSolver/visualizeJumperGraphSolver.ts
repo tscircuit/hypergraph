@@ -1,8 +1,8 @@
 import type { GraphicsObject } from "graphics-debug"
 import type { Candidate } from "../types"
+import type { JumperGraphSolver } from "./JumperGraphSolver"
 import type { JPort, JRegion, JumperGraph } from "./jumper-types"
 import { visualizeJumperGraph } from "./visualizeJumperGraph"
-import type { JumperGraphSolver } from "./JumperGraphSolver"
 
 const getConnectionColor = (connectionId: string, alpha = 0.8): string => {
   let hash = 0
@@ -31,6 +31,13 @@ export const visualizeJumperGraphSolver = (
         }
       : {}),
   }) as Required<GraphicsObject>
+
+  if (solver.iterations === 0) {
+    for (const polygon of graphics.polygons) {
+      polygon.stroke = "rgba(128, 128, 128, 0.5)"
+      polygon.strokeWidth = 0.03
+    }
+  }
 
   // Draw active connection line
   if (solver.currentConnection && !solver.solved) {

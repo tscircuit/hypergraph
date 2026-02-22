@@ -47,6 +47,13 @@ export const visualizeViaGraphSolver = (
       : {}),
   }) as Required<GraphicsObject>
 
+  if (solver.iterations === 0) {
+    for (const polygon of graphics.polygons) {
+      polygon.stroke = "rgba(128, 128, 128, 0.5)"
+      polygon.strokeWidth = 0.03
+    }
+  }
+
   // Apply per-net colors to net region polygons.
   // The polygons array follows the same order as graph.regions (for regions
   // that have polygon data). We track a polygon index and match net regions
