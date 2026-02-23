@@ -310,7 +310,7 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
 
   const cachedCandidates = candidateCacheByBoundsKey.get(boundsCacheKey)
   if (cachedCandidates) {
-    return cachedCandidates
+    return structuredClone(cachedCandidates)
   }
 
   const descriptors: CandidateDescriptor[] = []
@@ -387,6 +387,6 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
     }
   })
 
-  candidateCacheByBoundsKey.set(boundsCacheKey, candidates)
-  return candidates
+  candidateCacheByBoundsKey.set(boundsCacheKey, structuredClone(candidates))
+  return structuredClone(candidates)
 }
