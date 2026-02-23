@@ -6,7 +6,6 @@ import type { JumperTopologyCandidate } from "./jumperSolverBenchmarkTypes"
 type RunSingleJumperTopologyCandidateSolveAttemptOptions = {
   candidate: JumperTopologyCandidate
   xyConnections: XYConnection[]
-  quickMode?: boolean
 }
 
 type SingleJumperTopologyCandidateSolveAttemptResult = {
@@ -19,7 +18,6 @@ type SingleJumperTopologyCandidateSolveAttemptResult = {
 export const runSingleJumperTopologyCandidateSolveAttempt = ({
   candidate,
   xyConnections,
-  quickMode,
 }: RunSingleJumperTopologyCandidateSolveAttemptOptions): SingleJumperTopologyCandidateSolveAttemptResult => {
   try {
     const graphWithConnections = createGraphWithConnectionsFromBaseGraph(
@@ -33,7 +31,6 @@ export const runSingleJumperTopologyCandidateSolveAttempt = ({
         ports: graphWithConnections.ports,
       },
       inputConnections: graphWithConnections.connections,
-      ...(quickMode ? { baseMaxIterations: 50_000 } : {}),
     })
 
     const start = performance.now()

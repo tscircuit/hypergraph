@@ -43,7 +43,6 @@ export type RunBenchmarkAgainstTopologiesOptions = {
   generateGraphsForBounds: (bounds: Bounds) => JumperTopologyCandidate[]
   datasetName: JumperSolverDatasetName
   limit?: number
-  quickMode?: boolean
   logProgress?: (message: string) => void
 }
 

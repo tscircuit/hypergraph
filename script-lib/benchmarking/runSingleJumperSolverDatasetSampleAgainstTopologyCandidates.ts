@@ -14,7 +14,6 @@ type RunSingleJumperSolverDatasetSampleAgainstTopologyCandidatesOptions = {
   sampleIndex: number
   totalSamples: number
   generateGraphsForBounds: (bounds: Bounds) => JumperTopologyCandidate[]
-  quickMode?: boolean
   logProgress?: (message: string) => void
 }
 
@@ -28,7 +27,6 @@ export const runSingleJumperSolverDatasetSampleAgainstTopologyCandidates = ({
   sampleIndex,
   totalSamples,
   generateGraphsForBounds,
-  quickMode,
   logProgress,
 }: RunSingleJumperSolverDatasetSampleAgainstTopologyCandidatesOptions): SingleSampleAgainstTopologiesResult => {
   const sampleLabel = `sample ${sampleIndex + 1}/${totalSamples}`
@@ -62,7 +60,6 @@ export const runSingleJumperSolverDatasetSampleAgainstTopologyCandidates = ({
     const attemptResult = runSingleJumperTopologyCandidateSolveAttempt({
       candidate,
       xyConnections,
-      quickMode,
     })
 
     if (attemptResult.error) {

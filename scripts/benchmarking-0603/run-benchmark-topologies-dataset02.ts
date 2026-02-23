@@ -8,7 +8,6 @@ const limitArg = args.find((arg) => arg.startsWith("--limit="))
 const sampleLimit = limitArg
   ? Number.parseInt(limitArg.split("=")[1], 10)
   : undefined
-const quickMode = args.includes("--quick")
 const showHelp = args.includes("--help") || args.includes("-h")
 
 if (showHelp) {
@@ -17,12 +16,11 @@ Usage: bun run scripts/benchmarking-0603/run-benchmark-topologies-dataset02.ts [
 
 Options:
   --limit=N    Only run first N samples
-  --quick      Reduce max iterations for faster runs
   --help, -h   Show this help message
 
 Examples:
   bun run scripts/benchmarking-0603/run-benchmark-topologies-dataset02.ts --limit=20
-  bun run scripts/benchmarking-0603/run-benchmark-topologies-dataset02.ts --limit=50 --quick
+  bun run scripts/benchmarking-0603/run-benchmark-topologies-dataset02.ts --limit=50
 `)
   process.exit(0)
 }
@@ -34,9 +32,6 @@ console.log("=".repeat(70))
 if (sampleLimit) {
   console.log(`Sample limit: ${sampleLimit}`)
 }
-if (quickMode) {
-  console.log("Quick mode: enabled")
-}
 console.log(
   "Topologies: filled rows/cols (grid) + staggered (x/y), both orientations",
 )
@@ -46,7 +41,6 @@ const summary = runBenchmarkAgainstTopologies({
   datasetName: "dataset02",
   generateGraphsForBounds: generate0603FilledAndStaggeredTopologyCandidates,
   limit: sampleLimit,
-  quickMode,
   logProgress: (message) => console.log(message),
 })
 
