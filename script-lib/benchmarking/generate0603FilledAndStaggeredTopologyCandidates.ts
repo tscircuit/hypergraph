@@ -29,9 +29,12 @@ type CandidateDescriptor = {
   orientation: CandidateOrientation
   pattern: CandidatePattern
   staggerAxis?: CandidateStaggerAxis
+  staggerOffset?: number
   estimatedArea: number
   name: string
 }
+
+const MIN_ADJACENT_JUMPER_PAD_SPACING = 0.3
 
 const candidateCacheByBoundsKey = new Map<string, JumperTopologyCandidate[]>()
 const graphCacheByTopologyKey = new Map<string, JumperGraph>()
@@ -57,7 +60,25 @@ const getTopologyKey = (descriptor: CandidateDescriptor) => {
     descriptor.orientation,
     descriptor.pattern,
     descriptor.staggerAxis ?? "-",
+    descriptor.staggerOffset?.toFixed(4) ?? "-",
   ].join("|")
+}
+
+const getHalfPitchStaggerOffset = (
+  rows: number,
+  cols: number,
+  orientation: CandidateOrientation,
+  staggerAxis: CandidateStaggerAxis,
+) => {
+  const gridResolved = resolve0603GridOptions({
+    rows,
+    cols,
+    orientation,
+    pattern: "grid",
+    clearance: MIN_ADJACENT_JUMPER_PAD_SPACING,
+  })
+
+  return staggerAxis === "x" ? gridResolved.pitchX / 2 : gridResolved.pitchY / 2
 }
 
 const centerGraphWithinProblemBounds = (
@@ -83,13 +104,16 @@ const estimateCandidateBounds = (
   orientation: CandidateOrientation,
   pattern: CandidatePattern,
   staggerAxis?: CandidateStaggerAxis,
+  staggerOffset?: number,
 ) => {
   const resolved = resolve0603GridOptions({
     rows,
     cols,
     orientation,
     pattern,
+    clearance: MIN_ADJACENT_JUMPER_PAD_SPACING,
     ...(staggerAxis ? { staggerAxis } : {}),
+    ...(staggerOffset !== undefined ? { staggerOffset } : {}),
   })
 
   const { bounds } = generate0603Pattern(resolved)
@@ -110,6 +134,7 @@ const getMaxRowsAndColsToTry = (
     cols: 1,
     orientation: "vertical",
     pattern: "grid",
+    clearance: MIN_ADJACENT_JUMPER_PAD_SPACING,
   })
 
   const minSingleCellWidth =
@@ -194,12 +219,19 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
         }
 
         for (const staggerAxis of ["x", "y"] as const) {
+          const staggerOffset = getHalfPitchStaggerOffset(
+            rows,
+            cols,
+            orientation,
+            staggerAxis,
+          )
           const staggeredEstimate = estimateCandidateBounds(
             rows,
             cols,
             orientation,
             "staggered",
             staggerAxis,
+            staggerOffset,
           )
 
           if (
@@ -212,6 +244,7 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
               orientation,
               pattern: "staggered",
               staggerAxis,
+              staggerOffset,
               estimatedArea: staggeredEstimate.width * staggeredEstimate.height,
               name: `0603-staggered-${staggerAxis}-${rows}x${cols}-${orientation}`,
             })
@@ -235,8 +268,12 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
         cols: descriptor.cols,
         orientation: descriptor.orientation,
         pattern: descriptor.pattern,
+        clearance: MIN_ADJACENT_JUMPER_PAD_SPACING,
         ...(descriptor.staggerAxis
           ? { staggerAxis: descriptor.staggerAxis }
+          : {}),
+        ...(descriptor.staggerOffset !== undefined
+          ? { staggerOffset: descriptor.staggerOffset }
           : {}),
       }) as unknown as JumperGraph
       graphCacheByTopologyKey.set(topologyKey, graph)
