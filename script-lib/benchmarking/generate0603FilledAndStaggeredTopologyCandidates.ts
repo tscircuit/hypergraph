@@ -371,6 +371,8 @@ export const generate0603FilledAndStaggeredTopologyCandidates = (
         orientation: descriptor.orientation,
         pattern: descriptor.pattern,
         clearance: MIN_ADJACENT_JUMPER_PAD_SPACING,
+        maxNeckRatio: 0.4,
+        minSplitBalanceRatio: 0.2,
         ...(descriptor.staggerAxis
           ? { staggerAxis: descriptor.staggerAxis }
           : {}),

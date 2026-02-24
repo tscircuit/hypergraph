@@ -16,6 +16,8 @@ test.skip(
       orientation: "horizontal",
       pattern: "staggered",
       staggerAxis: "x",
+      maxNeckRatio: 0.4,
+      minSplitBalanceRatio: 0.2,
     }) as unknown as JumperGraph
 
     const graphWithConnections = createProblemFromBaseGraph({
