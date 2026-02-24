@@ -1,0 +1,102 @@
+name: Benchmark
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/benchmark')
+
+    steps:
+      - name: Parse benchmark argument
+        id: parse
+        run: |
+          COMMENT_BODY="${{ github.event.comment.body }}"
+          ARG="${COMMENT_BODY#/benchmark}"
+          ARG="$(echo "$ARG" | xargs)"
+          echo "arg=$ARG" >> "$GITHUB_OUTPUT"
+
+      - name: Post initial comment
+        id: initial-comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMENT_ID=$(gh api \
+            repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f body="Running benchmark... [View workflow run](${WORKFLOW_URL})" \
+            --jq '.id')
+          echo "comment_id=$COMMENT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Get PR head ref
+        id: pr-ref
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_JSON=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')
+          HEAD_SHA=$(echo "$PR_JSON" | jq -r '.head.sha')
+          echo "ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-ref.outputs.sha }}
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run benchmark
+        run: chmod +x ./benchmark.sh && ./benchmark.sh ${{ steps.parse.outputs.arg }}
+
+      - name: Update comment with results
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          RESULTS=$(cat ./benchmark-result.txt)
+          BODY="## Benchmark Results
+
+          <details><summary>Results</summary>
+
+          \`\`\`
+          ${RESULTS}
+          \`\`\`
+
+          </details>
+
+          [View workflow run](${WORKFLOW_URL})"
+
+          gh api \
+            repos/${{ github.repository }}/issues/comments/${{ steps.initial-comment.outputs.comment_id }} \
+            -X PATCH \
+            -f body="$BODY"
+
+      - name: Update comment on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # Only update if we have a comment ID (initial comment step succeeded)
+          COMMENT_ID="${{ steps.initial-comment.outputs.comment_id }}"
+          if [ -n "$COMMENT_ID" ]; then
+            gh api \
+              repos/${{ github.repository }}/issues/comments/${COMMENT_ID} \
+              -X PATCH \
+              -f body="## Benchmark Failed
+
+          Benchmark run failed. [View workflow run](${WORKFLOW_URL})"
+          fi
