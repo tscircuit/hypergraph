@@ -1,4 +1,7 @@
+/// <reference types="bun-types" />
 import { describe, it, expect } from "bun:test"
+import "graphics-debug/matcher"
+import type { GraphicsObject } from "graphics-debug"
 import {
   HyperGraphPartialRipping,
   createPartialRippingSolver,
@@ -11,15 +14,114 @@ import type {
   RegionPort,
 } from "../../lib/types"
 
-/**
- * Helper to create a simple test graph
- *
- * Graph structure:
- *   R1 --p1-- R2 --p2-- R3
- *       --p3-- R4 --p4--
- *
- * This creates a graph where routes can potentially conflict
- */
+function visualizeSolver(solver: HyperGraphPartialRipping): GraphicsObject {
+  const regionPositions = new Map<string, { x: number; y: number }>()
+  const portPositions = new Map<string, { x: number; y: number }>()
+
+  const cols = 2
+  const spacing = 200
+  solver.graph.regions.forEach((region, i) => {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    regionPositions.set(region.regionId, {
+      x: col * spacing,
+      y: row * spacing,
+    })
+  })
+
+  for (const port of solver.graph.ports) {
+    const r1Pos = regionPositions.get(port.region1.regionId)!
+    const r2Pos = regionPositions.get(port.region2.regionId)!
+    portPositions.set(port.portId, {
+      x: (r1Pos.x + r2Pos.x) / 2,
+      y: (r1Pos.y + r2Pos.y) / 2,
+    })
+  }
+
+  const points: NonNullable<GraphicsObject["points"]> = []
+  const lines: NonNullable<GraphicsObject["lines"]> = []
+
+  // Region labels (blue dots)
+  for (const region of solver.graph.regions) {
+    const pos = regionPositions.get(region.regionId)!
+    const assignmentCount = region.assignments?.length ?? 0
+    points.push({
+      x: pos.x,
+      y: pos.y,
+      label: `${region.regionId} (${assignmentCount} asgn)`,
+      color: "blue",
+    })
+  }
+
+  // Port labels (green=assigned, gray=free)
+  for (const port of solver.graph.ports) {
+    const pos = portPositions.get(port.portId)!
+    points.push({
+      x: pos.x,
+      y: pos.y,
+      label: `${port.portId}${port.assignment ? " ✓" : ""}`,
+      color: port.assignment ? "green" : "gray",
+    })
+  }
+
+  // Graph topology edges (light gray)
+  for (const port of solver.graph.ports) {
+    const r1Pos = regionPositions.get(port.region1.regionId)!
+    const r2Pos = regionPositions.get(port.region2.regionId)!
+    lines.push({
+      points: [
+        { x: r1Pos.x, y: r1Pos.y },
+        { x: r2Pos.x, y: r2Pos.y },
+      ],
+      strokeColor: "lightgray",
+    })
+  }
+
+  // Solved routes as colored polylines
+  const routeColors = ["red", "blue", "green", "orange", "purple", "cyan"]
+  solver.solvedRoutes.forEach((route, routeIdx) => {
+    const color = routeColors[routeIdx % routeColors.length]
+    const routePoints: { x: number; y: number }[] = []
+
+    for (const candidate of route.path) {
+      const pos = portPositions.get(candidate.port.portId)
+      if (pos) routePoints.push({ x: pos.x, y: pos.y })
+    }
+
+    if (routePoints.length >= 2) {
+      const offset = (routeIdx - solver.solvedRoutes.length / 2) * 8
+      lines.push({
+        points: routePoints.map((p) => ({
+          x: p.x + offset,
+          y: p.y + offset,
+        })),
+        strokeColor: color,
+      })
+    }
+
+    if (routePoints.length > 0) {
+      const mid = routePoints[Math.floor(routePoints.length / 2)]
+      points.push({
+        x: mid.x + 15,
+        y: mid.y + 15,
+        label: `${route.connection.connectionId}${route.requiredRip ? " (ripped)" : ""}`,
+        color,
+      })
+    }
+  })
+
+  const diag = solver.getRipDiagnostics()
+  const title = [
+    solver.solved ? "SOLVED" : solver.failed ? "FAILED" : "IN PROGRESS",
+    `Routes: ${solver.solvedRoutes.length}/${solver.connections.length}`,
+    `Rips: ${diag.totalRipsPerformed}`,
+    `Skipped: ${diag.ripsSkippedDueToThreshold}`,
+    `Strategy: ${diag.ripStrategy}`,
+  ].join(" | ")
+
+  return { points, lines, title }
+}
+
 function createTestGraph(): { graph: HyperGraph; connections: Connection[] } {
   const r1: Region = { regionId: "r1", ports: [], d: {} }
   const r2: Region = { regionId: "r2", ports: [], d: {} }
@@ -30,7 +132,6 @@ function createTestGraph(): { graph: HyperGraph; connections: Connection[] } {
   const p2: RegionPort = { portId: "p2", region1: r2, region2: r3, d: {} }
   const p3: RegionPort = { portId: "p3", region1: r1, region2: r4, d: {} }
   const p4: RegionPort = { portId: "p4", region1: r4, region2: r3, d: {} }
-  // Add a crossing port that connects r2 to r4
   const p5: RegionPort = { portId: "p5", region1: r2, region2: r4, d: {} }
 
   r1.ports = [p1, p3]
@@ -43,14 +144,12 @@ function createTestGraph(): { graph: HyperGraph; connections: Connection[] } {
     regions: [r1, r2, r3, r4],
   }
 
-  // Create two connections that might need to share ports
   const conn1: Connection = {
     connectionId: "conn1",
     mutuallyConnectedNetworkId: "net1",
     startRegion: r1,
     endRegion: r3,
   }
-
   const conn2: Connection = {
     connectionId: "conn2",
     mutuallyConnectedNetworkId: "net2",
@@ -59,6 +158,62 @@ function createTestGraph(): { graph: HyperGraph; connections: Connection[] } {
   }
 
   return { graph, connections: [conn1, conn2] }
+}
+
+function createRipCandidateGraph(): {
+  graph: HyperGraph
+  connections: Connection[]
+} {
+  const r1: Region = { regionId: "r1", ports: [], d: {} }
+  const r2: Region = { regionId: "r2", ports: [], d: {} }
+  const r3: Region = { regionId: "r3", ports: [], d: {} }
+  const r4: Region = { regionId: "r4", ports: [], d: {} }
+  const r5: Region = { regionId: "r5", ports: [], d: {} }
+
+  const p1: RegionPort = { portId: "p1", region1: r1, region2: r2, d: {} }
+  const p2: RegionPort = { portId: "p2", region1: r2, region2: r3, d: {} }
+  const p3: RegionPort = { portId: "p3", region1: r1, region2: r4, d: {} }
+  const p4: RegionPort = { portId: "p4", region1: r4, region2: r3, d: {} }
+  const p5: RegionPort = { portId: "p5", region1: r5, region2: r2, d: {} }
+
+  r1.ports = [p1, p3]
+  r2.ports = [p1, p2, p5]
+  r3.ports = [p2, p4]
+  r4.ports = [p3, p4]
+  r5.ports = [p5]
+
+  const graph: HyperGraph = {
+    ports: [p1, p2, p3, p4, p5],
+    regions: [r1, r2, r3, r4, r5],
+  }
+
+  const conn1: Connection = {
+    connectionId: "conn1",
+    mutuallyConnectedNetworkId: "net1",
+    startRegion: r1,
+    endRegion: r3,
+  }
+  const conn2: Connection = {
+    connectionId: "conn2",
+    mutuallyConnectedNetworkId: "net2",
+    startRegion: r5,
+    endRegion: r3,
+  }
+
+  return { graph, connections: [conn1, conn2] }
+}
+
+/** Run solver to completion with a safety cap. */
+function runSolverToCompletion(
+  solver: HyperGraphPartialRipping,
+  maxSteps = 1000,
+): HyperGraphPartialRipping {
+  let steps = 0
+  while (!solver.solved && !solver.failed && steps < maxSteps) {
+    solver.step()
+    steps++
+  }
+  return solver
 }
 
 describe("HyperGraphPartialRipping", () => {
@@ -72,7 +227,6 @@ describe("HyperGraphPartialRipping", () => {
         ripCost: 10,
       })
 
-      // Create mock solved routes
       const mockRoute1: SolvedRoute = {
         path: [{ port: graph.ports[0] }] as any,
         connection: connections[0],
@@ -99,7 +253,7 @@ describe("HyperGraphPartialRipping", () => {
         inputConnections: connections,
         ripStrategy: "none",
         ripCost: 100,
-        ripCostThreshold: 50, // Low threshold to trigger
+        ripCostThreshold: 50,
       })
 
       const mockRoute1: SolvedRoute = {
@@ -122,7 +276,7 @@ describe("HyperGraphPartialRipping", () => {
         inputConnections: connections,
         ripStrategy: "none",
         ripCost: 10,
-        ripCostThreshold: 100, // High threshold
+        ripCostThreshold: 100,
       })
 
       const mockRoute1: SolvedRoute = {
@@ -144,17 +298,14 @@ describe("HyperGraphPartialRipping", () => {
         inputConnections: connections,
         ripStrategy: "cheapest",
         ripCost: 10,
-        ripCostThreshold: 25, // Allow only ~2 ports worth of ripping
+        ripCostThreshold: 25,
       })
 
-      // Route with 1 port (cost = 10)
       const cheapRoute: SolvedRoute = {
         path: [{ port: graph.ports[0] }] as any,
         connection: connections[0],
         requiredRip: false,
       }
-
-      // Route with 3 ports (cost = 30)
       const expensiveRoute: SolvedRoute = {
         path: [
           { port: graph.ports[1] },
@@ -168,7 +319,6 @@ describe("HyperGraphPartialRipping", () => {
       const candidateRoutes = new Set([cheapRoute, expensiveRoute])
       const result = solver.shouldRipRoutes(candidateRoutes)
 
-      // Should only include the cheap route
       expect(result.size).toBe(1)
       expect(result.has(cheapRoute)).toBe(true)
       expect(result.has(expensiveRoute)).toBe(false)
@@ -232,7 +382,33 @@ describe("HyperGraphPartialRipping", () => {
         requiredRip: false,
       }
 
-      expect(solver.calculateRipCost(route)).toBe(45) // 3 ports * 15 ripCost
+      expect(solver.calculateRipCost(route)).toBe(45)
+    })
+  })
+
+  describe("ripSolvedRoute", () => {
+    it("should increment totalRipsPerformed when a route is ripped", () => {
+      const { graph, connections } = createTestGraph()
+      const solver = new HyperGraphPartialRipping({
+        inputGraph: graph,
+        inputConnections: connections,
+        rippingEnabled: true,
+        ripCost: 10,
+      })
+
+      // Run solver to get at least one solved route
+      runSolverToCompletion(solver)
+      expect(solver.solvedRoutes.length).toBeGreaterThanOrEqual(1)
+
+      const routeToRip = solver.solvedRoutes[0]
+      const routeCountBefore = solver.solvedRoutes.length
+      const ripCountBefore = solver.totalRipsPerformed
+
+      // Manually rip the route
+      solver.ripSolvedRoute(routeToRip)
+
+      expect(solver.totalRipsPerformed).toBe(ripCountBefore + 1)
+      expect(solver.solvedRoutes.length).toBe(routeCountBefore - 1)
     })
   })
 
@@ -247,9 +423,7 @@ describe("HyperGraphPartialRipping", () => {
         ripStrategy: "cheapest",
       })
 
-      const diagnostics = solver.getRipDiagnostics()
-
-      expect(diagnostics).toEqual({
+      expect(solver.getRipDiagnostics()).toEqual({
         totalRipsPerformed: 0,
         ripsSkippedDueToThreshold: 0,
         ripCostThreshold: 100,
@@ -305,18 +479,17 @@ describe("HyperGraphPartialRipping", () => {
         inputGraph: graph,
         inputConnections: connections,
         preset: "conservative",
-        ripCostThreshold: 200, // Override preset value
+        ripCostThreshold: 200,
       })
 
       expect(solver.ripCostThreshold).toBe(200)
-      expect(solver.maxRoutesToRip).toBe(2) // From preset
+      expect(solver.maxRoutesToRip).toBe(2)
     })
   })
 })
 
 describe("Integration: HyperGraphPartialRipping solving", () => {
-  it("should solve simple graph without ripping", () => {
-    // Create a simple graph where no ripping is needed
+  it("should solve simple graph without ripping", async () => {
     const r1: Region = { regionId: "r1", ports: [], d: {} }
     const r2: Region = { regionId: "r2", ports: [], d: {} }
 
@@ -342,13 +515,166 @@ describe("Integration: HyperGraphPartialRipping solving", () => {
       inputConnections: [conn],
     })
 
-    // Run solver
-    while (!solver.solved && !solver.failed) {
-      solver.step()
-    }
+    runSolverToCompletion(solver)
 
     expect(solver.solved).toBe(true)
     expect(solver.solvedRoutes.length).toBe(1)
     expect(solver.totalRipsPerformed).toBe(0)
+
+    // Visual snapshot
+    await expect(visualizeSolver(solver)).toMatchGraphicsSvg(import.meta.path, {
+      svgName: "simple-graph-no-ripping",
+    })
+
+    // Data snapshots
+    expect(
+      solver.solvedRoutes.map((r) => ({
+        connectionId: r.connection.connectionId,
+        pathLength: r.path.length,
+        requiredRip: r.requiredRip,
+      })),
+    ).toMatchSnapshot()
+
+    expect(solver.getRipDiagnostics()).toMatchSnapshot()
+  })
+
+  it("should solve multi-connection graph without conflicts", async () => {
+    const { graph, connections } = createTestGraph()
+
+    const solver = new HyperGraphPartialRipping({
+      inputGraph: graph,
+      inputConnections: connections,
+      ripStrategy: "all",
+      ripCost: 10,
+    })
+
+    runSolverToCompletion(solver)
+
+    expect(solver.solved).toBe(true)
+    expect(solver.solvedRoutes.length).toBe(2)
+
+    // Visual snapshot
+    await expect(visualizeSolver(solver)).toMatchGraphicsSvg(import.meta.path, {
+      svgName: "multi-connection-no-conflict",
+    })
+
+    // Data snapshots
+    expect(
+      solver.solvedRoutes.map((r) => ({
+        connectionId: r.connection.connectionId,
+        networkId: r.connection.mutuallyConnectedNetworkId,
+        pathPortIds: r.path.map((c) => c.port.portId),
+        requiredRip: r.requiredRip,
+      })),
+    ).toMatchSnapshot()
+
+    expect(solver.getRipDiagnostics()).toMatchSnapshot()
+  })
+
+  it("should solve rip-candidate graph with aggressive strategy", async () => {
+    const { graph, connections } = createRipCandidateGraph()
+
+    const solver = new HyperGraphPartialRipping({
+      inputGraph: graph,
+      inputConnections: connections,
+      rippingEnabled: true,
+      ripStrategy: "all",
+      ripCost: 10,
+    })
+
+    runSolverToCompletion(solver)
+
+    expect(solver.solved).toBe(true)
+    expect(solver.solvedRoutes.length).toBe(2)
+
+    // Visual snapshot — shows whether ripping occurred via route labels
+    await expect(visualizeSolver(solver)).toMatchGraphicsSvg(import.meta.path, {
+      svgName: "rip-candidate-aggressive",
+    })
+
+    // Data snapshot captures exact paths, rip flags, and diagnostics
+    expect({
+      solvedRoutes: solver.solvedRoutes.map((r) => ({
+        connectionId: r.connection.connectionId,
+        pathPortIds: r.path.map((c) => c.port.portId),
+        requiredRip: r.requiredRip,
+      })),
+      diagnostics: solver.getRipDiagnostics(),
+    }).toMatchSnapshot()
+  })
+
+  it("should solve rip-candidate graph with conservative preset", async () => {
+    const { graph, connections } = createRipCandidateGraph()
+
+    const solver = createPartialRippingSolver({
+      inputGraph: graph,
+      inputConnections: connections,
+      preset: "conservative",
+    })
+
+    runSolverToCompletion(solver)
+
+    const finalState = solver.solved ? "solved" : "failed"
+
+    // Visual snapshot
+    await expect(visualizeSolver(solver)).toMatchGraphicsSvg(import.meta.path, {
+      svgName: "rip-candidate-conservative",
+    })
+
+    // Outcome + diagnostics snapshot
+    expect({
+      finalState,
+      routeCount: solver.solvedRoutes.length,
+      diagnostics: solver.getRipDiagnostics(),
+    }).toMatchSnapshot()
+  })
+
+  it("should compare aggressive vs conservative on same graph", async () => {
+    const { graph: g1, connections: c1 } = createRipCandidateGraph()
+    const { graph: g2, connections: c2 } = createRipCandidateGraph()
+
+    const aggressive = runSolverToCompletion(
+      new HyperGraphPartialRipping({
+        inputGraph: g1,
+        inputConnections: c1,
+        rippingEnabled: true,
+        ripStrategy: "all",
+        ripCost: 10,
+      }),
+    )
+
+    const conservative = runSolverToCompletion(
+      createPartialRippingSolver({
+        inputGraph: g2,
+        inputConnections: c2,
+        preset: "conservative",
+      }),
+    )
+
+    // Side-by-side visual snapshots for PR review
+    await expect(visualizeSolver(aggressive)).toMatchGraphicsSvg(
+      import.meta.path,
+      { svgName: "comparison-aggressive" },
+    )
+    await expect(visualizeSolver(conservative)).toMatchGraphicsSvg(
+      import.meta.path,
+      { svgName: "comparison-conservative" },
+    )
+
+    // Summary comparison snapshot
+    expect({
+      aggressive: {
+        solved: aggressive.solved,
+        routeCount: aggressive.solvedRoutes.length,
+        totalRips: aggressive.totalRipsPerformed,
+        diagnostics: aggressive.getRipDiagnostics(),
+      },
+      conservative: {
+        solved: conservative.solved,
+        routeCount: conservative.solvedRoutes.length,
+        totalRips: conservative.totalRipsPerformed,
+        diagnostics: conservative.getRipDiagnostics(),
+      },
+    }).toMatchSnapshot()
   })
 })
