@@ -8,6 +8,23 @@ export function computeBoundsFromRegionData(data: RegionData): Bounds {
     return data.bounds
   }
 
+  if (data.polygon && data.polygon.length > 0) {
+    let minX = data.polygon[0].x
+    let maxX = data.polygon[0].x
+    let minY = data.polygon[0].y
+    let maxY = data.polygon[0].y
+
+    for (let i = 1; i < data.polygon.length; i++) {
+      const point = data.polygon[i]
+      minX = Math.min(minX, point.x)
+      maxX = Math.max(maxX, point.x)
+      minY = Math.min(minY, point.y)
+      maxY = Math.max(maxY, point.y)
+    }
+
+    return { minX, maxX, minY, maxY }
+  }
+
   if (data.center && data.width !== null && data.height !== null) {
     const halfW = data.width / 2
     const halfH = data.height / 2

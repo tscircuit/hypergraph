@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1151" height="1223" viewBox="0 0 5.232438 5.560103">
+<rect x="0" y="0" width="5.232438" height="5.560103" fill="white"/>
+<polyline points="4.059864,2.228271 4.288751,1.999384 4.288751,1.26761 3.496141,0.475 2.610696,0.475001 1.872964,1.212733 1.872964,1.610567" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1.77603,4.703962 0.869425,4.703962 0.475,4.309537 0.475,1.808556 0.867736,1.41582 1.678217,1.41582 1.872964,1.610567" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="3.844747,4.509103 2.945588,3.609944 1.460276,3.609944" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1.460276,3.609944 2.973964,2.096256 2.973964,1.352" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="3.762751,1.485487 3.483864,1.764374 3.483864,3.072341 4.220288,3.808765 4.231438,3.808765" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="3.762751,1.485487 3.762751,1.326199 3.212552,0.776 2.735376,0.776 2.397964,1.113412 2.397964,1.829444 1.416841,2.810567 1.30103,2.810567" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="4.129059,2.975072 4.141622,2.975072 4.757438,3.590888 4.757438,4.411 4.083335,5.085103 3.206312,5.085103 2.798487,4.677278" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="2.798487,4.677278 2.713558,4.677278 2.246847,4.210567 2.214242,4.177962 1.558153,4.177962 1.338387,4.397728 0.988869,4.397728 0.77603,4.184889 0.77603,3.847562 0.776,3.847532 0.776,3.410567 0.776,2.322144 1.156324,1.94182" fill="none" stroke="#4d7fc4" stroke-width="0.15" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="4.059864" cy="2.228271" r="0.3" fill="rgba(46, 204, 113, 1)" stroke="#2ecc71" stroke-width="0.075"/>
+<circle cx="4.059864" cy="2.228271" r="0.12" fill="#ffffff"/>
+<circle cx="1.77603" cy="4.703962" r="0.3" fill="rgba(46, 204, 113, 1)" stroke="#2ecc71" stroke-width="0.075"/>
+<circle cx="1.77603" cy="4.703962" r="0.12" fill="#ffffff"/>
+<circle cx="1.872964" cy="1.610567" r="0.3" fill="rgba(46, 204, 113, 1)" stroke="#2ecc71" stroke-width="0.075"/>
+<circle cx="1.872964" cy="1.610567" r="0.12" fill="#ffffff"/>
+<circle cx="3.844747" cy="4.509103" r="0.3" fill="rgba(231, 76, 60, 1)" stroke="#e74c3c" stroke-width="0.075"/>
+<circle cx="3.844747" cy="4.509103" r="0.12" fill="#ffffff"/>
+<circle cx="1.460276" cy="3.609944" r="0.3" fill="rgba(231, 76, 60, 1)" stroke="#e74c3c" stroke-width="0.075"/>
+<circle cx="1.460276" cy="3.609944" r="0.12" fill="#ffffff"/>
+<circle cx="2.973964" cy="1.352" r="0.3" fill="rgba(231, 76, 60, 1)" stroke="#e74c3c" stroke-width="0.075"/>
+<circle cx="2.973964" cy="1.352" r="0.12" fill="#ffffff"/>
+<circle cx="3.762751" cy="1.485487" r="0.3" fill="rgba(241, 196, 15, 1)" stroke="#f1c40f" stroke-width="0.075"/>
+<circle cx="3.762751" cy="1.485487" r="0.12" fill="#ffffff"/>
+<circle cx="1.30103" cy="2.810567" r="0.3" fill="rgba(241, 196, 15, 1)" stroke="#f1c40f" stroke-width="0.075"/>
+<circle cx="1.30103" cy="2.810567" r="0.12" fill="#ffffff"/>
+<circle cx="4.231438" cy="3.808765" r="0.3" fill="rgba(241, 196, 15, 1)" stroke="#f1c40f" stroke-width="0.075"/>
+<circle cx="4.231438" cy="3.808765" r="0.12" fill="#ffffff"/>
+<circle cx="4.129059" cy="2.975072" r="0.3" fill="rgba(155, 89, 182, 1)" stroke="#9b59b6" stroke-width="0.075"/>
+<circle cx="4.129059" cy="2.975072" r="0.12" fill="#ffffff"/>
+<circle cx="2.798487" cy="4.677278" r="0.3" fill="rgba(155, 89, 182, 1)" stroke="#9b59b6" stroke-width="0.075"/>
+<circle cx="2.798487" cy="4.677278" r="0.12" fill="#ffffff"/>
+<circle cx="1.156324" cy="1.94182" r="0.3" fill="rgba(155, 89, 182, 1)" stroke="#9b59b6" stroke-width="0.075"/>
+<circle cx="1.156324" cy="1.94182" r="0.12" fill="#ffffff"/>
+</svg>

@@ -1,3 +1,4 @@
+import { distance } from "@tscircuit/math-utils"
 import type { GraphicsObject } from "graphics-debug"
 import { HyperGraphSolver } from "../HyperGraphSolver"
 import type {
@@ -8,12 +9,11 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "../types"
+import { computeCrossingAssignments } from "./computeCrossingAssignments"
+import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
+import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 import type { JPort, JRegion } from "./jumper-types"
 import { visualizeJumperGraphSolver } from "./visualizeJumperGraphSolver"
-import { distance } from "@tscircuit/math-utils"
-import { computeDifferentNetCrossings } from "./computeDifferentNetCrossings"
-import { computeCrossingAssignments } from "./computeCrossingAssignments"
-import { countInputConnectionCrossings } from "./countInputConnectionCrossings"
 
 export const JUMPER_GRAPH_SOLVER_DEFAULTS = {
   portUsagePenalty: 0.034685181009478865,
@@ -125,11 +125,43 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     const ripCount = port.ripCount ?? 0
     return ripCount * this.portUsagePenalty + ripCount * this.portUsagePenaltySq
   }
+
+  override isTransitionAllowed(
+    region: JRegion,
+    port1: JPort,
+    port2: JPort,
+  ): boolean {
+    if (!region.d.isPad) return true
+
+    const usesThroughJumper = (port: JPort) => {
+      const otherRegion = port.region1 === region ? port.region2 : port.region1
+      return Boolean(otherRegion.d.isThroughJumper)
+    }
+
+    return usesThroughJumper(port1) || usesThroughJumper(port2)
+  }
+
   override computeIncreasedRegionCostIfPortsAreUsed(
     region: JRegion,
     port1: JPort,
     port2: JPort,
   ): number {
+    if (region.d.isPad) {
+      const assignments = region.assignments ?? []
+      const differentNetCount = assignments.filter(
+        (a) =>
+          a.connection.mutuallyConnectedNetworkId !==
+          this.currentConnection!.mutuallyConnectedNetworkId,
+      ).length
+      if (differentNetCount > 0) {
+        return (
+          differentNetCount * this.crossingPenalty +
+          differentNetCount * this.crossingPenaltySq
+        )
+      }
+      return 0
+    }
+
     const crossings = computeDifferentNetCrossings(region, port1, port2)
     return crossings * this.crossingPenalty + crossings * this.crossingPenaltySq
   }
@@ -139,13 +171,52 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     port1: JPort,
     port2: JPort,
   ): RegionPortAssignment[] {
+    if (region.d.isPad) {
+      const assignments = region.assignments ?? []
+      return assignments.filter(
+        (a) =>
+          a.connection.mutuallyConnectedNetworkId !==
+          this.currentConnection!.mutuallyConnectedNetworkId,
+      )
+    }
+
     const crossingAssignments = computeCrossingAssignments(region, port1, port2)
-    // Filter out same-network crossings since those don't require ripping
-    return crossingAssignments.filter(
+    const conflictingAssignments = crossingAssignments.filter(
       (a) =>
         a.connection.mutuallyConnectedNetworkId !==
         this.currentConnection!.mutuallyConnectedNetworkId,
     )
+
+    if (!region.d.isThroughJumper) return conflictingAssignments
+
+    for (const assignment of region.assignments ?? []) {
+      if (
+        assignment.connection.mutuallyConnectedNetworkId ===
+        this.currentConnection!.mutuallyConnectedNetworkId
+      ) {
+        continue
+      }
+      conflictingAssignments.push(assignment)
+    }
+
+    return conflictingAssignments
+  }
+
+  override isRipRequiredForPortUsage(
+    region: JRegion,
+    _port1: JPort,
+    _port2: JPort,
+  ): boolean {
+    if (!region.d.isThroughJumper && !region.d.isPad) return false
+    for (const assignment of region.assignments ?? []) {
+      if (
+        assignment.connection.mutuallyConnectedNetworkId !==
+        this.currentConnection!.mutuallyConnectedNetworkId
+      ) {
+        return true
+      }
+    }
+    return false
   }
 
   override routeSolvedHook(solvedRoute: SolvedRoute) {}

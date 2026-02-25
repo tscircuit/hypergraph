@@ -21,12 +21,14 @@ export const visualizeJumperGraph = (
     points: [],
     rects: [],
     texts: [],
+    polygons: [],
     coordinateSystem: "cartesian",
   } as Required<GraphicsObject>
 
-  // Draw regions as rectangles
+  // Draw regions as rectangles or polygons
   for (const region of graph.regions) {
-    const { bounds, isPad, isThroughJumper, isConnectionRegion } = region.d
+    const { bounds, isPad, isThroughJumper, isConnectionRegion, polygon } =
+      region.d
     const centerX = (bounds.minX + bounds.maxX) / 2
     const centerY = (bounds.minY + bounds.maxY) / 2
     const width = bounds.maxX - bounds.minX
@@ -43,12 +45,20 @@ export const visualizeJumperGraph = (
       fill = "rgba(200, 200, 255, 0.1)" // blue for other regions
     }
 
-    graphics.rects.push({
-      center: { x: centerX, y: centerY },
-      width: width - 0.1,
-      height: height - 0.1,
-      fill,
-    })
+    if (polygon && polygon.length >= 3) {
+      const points = polygon
+      graphics.polygons.push({
+        points,
+        fill,
+      })
+    } else {
+      graphics.rects.push({
+        center: { x: centerX, y: centerY },
+        width: width - 0.1,
+        height: height - 0.1,
+        fill,
+      })
+    }
   }
 
   // Draw ports as small circles with labels

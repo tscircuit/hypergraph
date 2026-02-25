@@ -1,12 +1,13 @@
+import { distance } from "@tscircuit/math-utils"
 import type { JumperGraph } from "../jumper-types"
-import { perimeterT, chordsCross } from "../perimeterChordUtils"
+import { chordsCross, perimeterT } from "../perimeterChordUtils"
 import { calculateGraphBounds } from "./calculateGraphBounds"
 import {
   createGraphWithConnectionsFromBaseGraph,
   type JumperGraphWithConnections,
   type XYConnection,
 } from "./createGraphWithConnectionsFromBaseGraph"
-import { distance } from "@tscircuit/math-utils"
+import { findBoundaryRegion } from "./findBoundaryRegion"
 
 /**
  * Simple seeded random number generator (Linear Congruential Generator)
@@ -27,6 +28,7 @@ const countCrossings = (
   bounds: { minX: number; maxX: number; minY: number; maxY: number },
 ): number => {
   const { minX, maxX, minY, maxY } = bounds
+  const perimeter = 2 * (maxX - minX) + 2 * (maxY - minY)
 
   // Convert each connection to a chord (pair of perimeter T values)
   const chords: [number, number][] = connections.map((conn) => [
@@ -37,7 +39,7 @@ const countCrossings = (
   let crossings = 0
   for (let i = 0; i < chords.length; i++) {
     for (let j = i + 1; j < chords.length; j++) {
-      if (chordsCross(chords[i], chords[j])) {
+      if (chordsCross(chords[i], chords[j], perimeter)) {
         crossings++
       }
     }
@@ -46,6 +48,7 @@ const countCrossings = (
 }
 
 const MIN_POINT_DISTANCE = 0.4
+const MAX_BOUNDARY_SNAP_DISTANCE = 1e-3
 
 /**
  * Checks if a point is at least MIN_POINT_DISTANCE away from all existing points.
@@ -60,6 +63,28 @@ const isValidPoint = (
     }
   }
   return true
+}
+
+const getValidatedBoundaryPoint = (
+  point: { x: number; y: number },
+  baseGraph: JumperGraph,
+  graphBounds: { minX: number; maxX: number; minY: number; maxY: number },
+): { x: number; y: number } | null => {
+  const boundary = findBoundaryRegion(
+    point.x,
+    point.y,
+    baseGraph.regions,
+    graphBounds,
+  )
+
+  if (!boundary) return null
+
+  const snappedPoint = boundary.portPosition
+  if (distance(point, snappedPoint) > MAX_BOUNDARY_SNAP_DISTANCE) {
+    return null
+  }
+
+  return snappedPoint
 }
 
 type Side = "top" | "right" | "bottom" | "left"
@@ -224,8 +249,13 @@ export const createProblemFromBaseGraph = ({
           random,
           allowedSides,
         )
-        if (isValidPoint(candidate, allPoints)) {
-          start = candidate
+        const snappedCandidate = getValidatedBoundaryPoint(
+          candidate,
+          baseGraph,
+          graphBounds,
+        )
+        if (snappedCandidate && isValidPoint(snappedCandidate, allPoints)) {
+          start = snappedCandidate
           break
         }
       }
@@ -243,8 +273,13 @@ export const createProblemFromBaseGraph = ({
           random,
           allowedSides,
         )
-        if (isValidPoint(candidate, allPoints)) {
-          end = candidate
+        const snappedCandidate = getValidatedBoundaryPoint(
+          candidate,
+          baseGraph,
+          graphBounds,
+        )
+        if (snappedCandidate && isValidPoint(snappedCandidate, allPoints)) {
+          end = snappedCandidate
           break
         }
       }

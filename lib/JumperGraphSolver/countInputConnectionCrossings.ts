@@ -1,6 +1,6 @@
 import type { Connection, HyperGraph, SerializedConnection } from "../types"
 import type { JRegion } from "./jumper-types"
-import { perimeterT, chordsCross } from "./perimeterChordUtils"
+import { chordsCross, perimeterT } from "./perimeterChordUtils"
 
 /**
  * Counts the number of crossings between input connections using the perimeter
@@ -51,6 +51,7 @@ export function countInputConnectionCrossings(
 
   // Convert connections to chords
   const chords: [number, number][] = []
+  const perimeter = 2 * (maxX - minX) + 2 * (maxY - minY)
 
   for (const conn of connections) {
     let startCenter: { x: number; y: number } | undefined
@@ -81,7 +82,7 @@ export function countInputConnectionCrossings(
   let crossings = 0
   for (let i = 0; i < chords.length; i++) {
     for (let j = i + 1; j < chords.length; j++) {
-      if (chordsCross(chords[i], chords[j])) {
+      if (chordsCross(chords[i], chords[j], perimeter)) {
         crossings++
       }
     }

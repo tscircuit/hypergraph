@@ -8,6 +8,7 @@ export class RegionBuilder implements RegionRef {
     this.data = {
       id,
       bounds: null,
+      polygon: null,
       center: null,
       width: null,
       height: null,
@@ -27,7 +28,39 @@ export class RegionBuilder implements RegionRef {
 
   rect(b: Bounds): this {
     this.data.bounds = { ...b }
+    this.data.polygon = null
     // Clear center/size if rect is used
+    this.data.center = null
+    this.data.width = null
+    this.data.height = null
+    return this
+  }
+
+  polygon(points: { x: number; y: number }[]): this {
+    if (points.length < 3) {
+      throw new TopologyError(
+        `Region "${this.data.id}" has invalid polygon: at least 3 points required`,
+        {
+          regionIds: [this.data.id],
+          suggestion: "Provide at least three polygon vertices",
+        },
+      )
+    }
+
+    for (const point of points) {
+      if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+        throw new TopologyError(
+          `Region "${this.data.id}" has invalid polygon point`,
+          {
+            regionIds: [this.data.id],
+            suggestion: "Use finite numeric x/y values",
+          },
+        )
+      }
+    }
+
+    this.data.polygon = points.map((p) => ({ x: p.x, y: p.y }))
+    this.data.bounds = null
     this.data.center = null
     this.data.width = null
     this.data.height = null
@@ -38,6 +71,7 @@ export class RegionBuilder implements RegionRef {
     this.data.center = { x, y }
     // Clear bounds if center/size approach is used
     this.data.bounds = null
+    this.data.polygon = null
     return this
   }
 
@@ -56,6 +90,7 @@ export class RegionBuilder implements RegionRef {
     this.data.anchor = anchor
     // Clear bounds if center/size approach is used
     this.data.bounds = null
+    this.data.polygon = null
     return this
   }
 

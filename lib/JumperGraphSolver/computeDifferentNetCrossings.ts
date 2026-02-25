@@ -1,5 +1,9 @@
 import type { JPort, JRegion } from "./jumper-types"
-import { perimeterT, chordsCross } from "./perimeterChordUtils"
+import {
+  chordsCross,
+  getPortPerimeterTInRegion,
+  getRegionPerimeter,
+} from "./perimeterChordUtils"
 
 /**
  * Compute the number of crossings between a new port pair and existing
@@ -13,11 +17,11 @@ export function computeDifferentNetCrossings(
   port1: JPort,
   port2: JPort,
 ): number {
-  const { minX: xmin, maxX: xmax, minY: ymin, maxY: ymax } = region.d.bounds
+  const perimeter = getRegionPerimeter(region)
 
   // Map the new port pair to perimeter coordinates
-  const t1 = perimeterT(port1.d, xmin, xmax, ymin, ymax)
-  const t2 = perimeterT(port2.d, xmin, xmax, ymin, ymax)
+  const t1 = getPortPerimeterTInRegion(port1, region)
+  const t2 = getPortPerimeterTInRegion(port2, region)
   const newChord: [number, number] = [t1, t2]
 
   // Count crossings with existing assignments
@@ -25,23 +29,17 @@ export function computeDifferentNetCrossings(
   const assignments = region.assignments ?? []
 
   for (const assignment of assignments) {
-    const existingT1 = perimeterT(
-      (assignment.regionPort1 as JPort).d,
-      xmin,
-      xmax,
-      ymin,
-      ymax,
+    const existingT1 = getPortPerimeterTInRegion(
+      assignment.regionPort1 as JPort,
+      region,
     )
-    const existingT2 = perimeterT(
-      (assignment.regionPort2 as JPort).d,
-      xmin,
-      xmax,
-      ymin,
-      ymax,
+    const existingT2 = getPortPerimeterTInRegion(
+      assignment.regionPort2 as JPort,
+      region,
     )
     const existingChord: [number, number] = [existingT1, existingT2]
 
-    if (chordsCross(newChord, existingChord)) {
+    if (chordsCross(newChord, existingChord, perimeter)) {
       crossings++
     }
   }

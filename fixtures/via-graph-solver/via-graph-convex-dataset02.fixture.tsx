@@ -1,13 +1,10 @@
-import { useState, useMemo } from "react"
 import { GenericSolverDebugger } from "@tscircuit/solver-utils/react"
-import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
-import { generateJumperGrid } from "lib/JumperGraphSolver/jumper-graph-generator/generateJumperGrid"
-import {
-  createGraphWithConnectionsFromBaseGraph,
-  type XYConnection,
-} from "lib/JumperGraphSolver/jumper-graph-generator/createGraphWithConnectionsFromBaseGraph"
-import type { JPort, JRegion } from "lib/index"
-import dataset from "../datasets/jumper-graph-solver/dataset02.json"
+import viaTile from "assets/ViaGraphSolver/via-tile.json"
+import type { XYConnection } from "lib/JumperGraphSolver/jumper-graph-generator/createGraphWithConnectionsFromBaseGraph"
+import { ViaGraphSolver } from "lib/ViaGraphSolver/ViaGraphSolver"
+import { createConvexViaGraphFromXYConnections } from "lib/ViaGraphSolver/via-graph-generator/createConvexViaGraphFromXYConnections"
+import { useMemo, useState } from "react"
+import dataset from "../../datasets/jumper-graph-solver/dataset02.json"
 
 interface DatasetSample {
   config: {
@@ -35,25 +32,6 @@ interface DatasetSample {
 }
 
 const typedDataset = dataset as DatasetSample[]
-
-const createBaseGraph = (
-  rows: number,
-  cols: number,
-  orientation: "vertical" | "horizontal" = "vertical",
-) =>
-  generateJumperGrid({
-    cols,
-    rows,
-    marginX: 0.8,
-    marginY: 0.8,
-    outerPaddingX: 1.5,
-    outerPaddingY: 1.5,
-    innerColChannelPointCount: 2,
-    innerRowChannelPointCount: 2,
-    outerChannelXPoints: 4,
-    outerChannelYPoints: 4,
-    orientation,
-  })
 
 const extractXYConnections = (sample: DatasetSample): XYConnection[] => {
   const regionMap = new Map(
@@ -87,21 +65,14 @@ export default () => {
   const problem = useMemo(() => {
     if (!entry) return null
 
-    const { config } = entry
     const xyConnections = extractXYConnections(entry)
-    const baseGraph = createBaseGraph(
-      config.rows,
-      config.cols,
-      config.orientation,
-    )
-    const graphWithConnections = createGraphWithConnectionsFromBaseGraph(
-      baseGraph,
-      xyConnections,
-    )
+    const result = createConvexViaGraphFromXYConnections(xyConnections, viaTile)
 
     return {
-      graph: graphWithConnections,
-      connections: graphWithConnections.connections,
+      graph: result,
+      connections: result.connections,
+      tileCount: result.tileCount,
+      viaTile: result.viaTile,
     }
   }, [selectedIndex])
 
@@ -115,6 +86,13 @@ export default () => {
   }
 
   const { config } = entry
+  const { tileCount } = problem
+
+  // Count region types
+  const convexRegions = problem.graph.regions.filter((r) =>
+    r.regionId.startsWith("convex:"),
+  )
+  const viaRegions = problem.graph.regions.filter((r) => r.d.isViaRegion)
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -174,10 +152,21 @@ export default () => {
           >
             Random
           </button>
-          <span style={{ marginLeft: 20 }}>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <span>
             <strong>Config:</strong> {config.rows}x{config.cols}{" "}
             {config.orientation}, {config.numCrossings} crossings, seed=
             {config.seed}
+          </span>
+          <span style={{ marginLeft: 20 }}>
+            <strong>Tiles:</strong> {tileCount.cols}x{tileCount.rows}
+          </span>
+          <span style={{ marginLeft: 20 }}>
+            <strong>Convex regions:</strong> {convexRegions.length}
+          </span>
+          <span style={{ marginLeft: 20 }}>
+            <strong>Via regions:</strong> {viaRegions.length}
           </span>
         </div>
       </div>
@@ -185,12 +174,13 @@ export default () => {
         <GenericSolverDebugger
           key={key}
           createSolver={() =>
-            new JumperGraphSolver({
+            new ViaGraphSolver({
               inputGraph: {
-                regions: problem.graph.regions as JRegion[],
-                ports: problem.graph.ports as unknown as JPort[],
+                regions: problem.graph.regions,
+                ports: problem.graph.ports,
               },
               inputConnections: problem.connections,
+              viaTile: problem.viaTile,
             })
           }
         />

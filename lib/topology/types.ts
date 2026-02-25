@@ -1,9 +1,9 @@
+import type { Bounds } from "../JumperGraphSolver/Bounds"
 import type {
-  JRegion,
   JPort,
+  JRegion,
   JumperGraph,
 } from "../JumperGraphSolver/jumper-types"
-import type { Bounds } from "../JumperGraphSolver/Bounds"
 
 export type { Bounds, JRegion, JPort, JumperGraph }
 
@@ -39,6 +39,7 @@ export type SharedBoundary = {
 export type RegionData = {
   id: string
   bounds: Bounds | null
+  polygon: { x: number; y: number }[] | null
   center: { x: number; y: number } | null
   width: number | null
   height: number | null

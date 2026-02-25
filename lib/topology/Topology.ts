@@ -270,6 +270,7 @@ export class Topology {
           bounds,
           center,
           isPad: data.isPad,
+          ...(data.polygon && { polygon: data.polygon }),
           ...(data.isThroughJumper && { isThroughJumper: true }),
           ...(data.isConnectionRegion && { isConnectionRegion: true }),
           ...data.meta,

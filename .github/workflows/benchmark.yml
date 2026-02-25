@@ -1,0 +1,191 @@
+name: Benchmark
+
+on:
+  issue_comment:
+    types: [created]
+  push:
+    branches:
+      - main
+
+jobs:
+  benchmark-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run benchmark
+        run: chmod +x ./benchmark.sh && ./benchmark.sh
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-result-main
+          path: ./benchmark-result.txt
+          overwrite: true
+
+  benchmark-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/benchmark')
+
+    steps:
+      - name: Parse benchmark argument
+        id: parse
+        run: |
+          COMMENT_BODY="${{ github.event.comment.body }}"
+          ARG="${COMMENT_BODY#/benchmark}"
+          ARG="$(echo "$ARG" | xargs)"
+          echo "arg=$ARG" >> "$GITHUB_OUTPUT"
+
+      - name: Post initial comment
+        id: initial-comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMENT_ID=$(gh api \
+            repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f body="Running benchmark... [View workflow run](${WORKFLOW_URL})" \
+            --jq '.id')
+          echo "comment_id=$COMMENT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Get PR head ref
+        id: pr-ref
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_JSON=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          HEAD_REF=$(echo "$PR_JSON" | jq -r '.head.ref')
+          HEAD_SHA=$(echo "$PR_JSON" | jq -r '.head.sha')
+          echo "ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr-ref.outputs.sha }}
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run benchmark
+        run: chmod +x ./benchmark.sh && ./benchmark.sh ${{ steps.parse.outputs.arg }}
+
+      - name: Upload benchmark artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-result-pr-${{ github.event.issue.number }}
+          path: ./benchmark-result.txt
+          overwrite: true
+
+      - name: Download latest main benchmark result
+        id: main-result
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Find the most recent successful benchmark workflow run on main
+          RUN_ID=$(gh api \
+            "repos/${{ github.repository }}/actions/workflows/benchmark.yml/runs?branch=main&status=success&per_page=1" \
+            --jq '.workflow_runs[0].id // empty')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No successful main benchmark run found"
+            exit 0
+          fi
+
+          # Find the benchmark-result-main artifact from that run
+          ARTIFACT_ID=$(gh api \
+            "repos/${{ github.repository }}/actions/runs/${RUN_ID}/artifacts" \
+            --jq '.artifacts[] | select(.name == "benchmark-result-main") | .id // empty')
+
+          if [ -z "$ARTIFACT_ID" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No benchmark artifact found in run $RUN_ID"
+            exit 0
+          fi
+
+          # Download and extract the artifact
+          mkdir -p ./main-benchmark
+          gh api \
+            "repos/${{ github.repository }}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            > ./main-benchmark/artifact.zip
+          unzip -o ./main-benchmark/artifact.zip -d ./main-benchmark
+          echo "found=true" >> "$GITHUB_OUTPUT"
+
+      - name: Update comment with results
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          PR_RESULTS=$(cat ./benchmark-result.txt)
+
+          MAIN_SECTION=""
+          if [ "${{ steps.main-result.outputs.found }}" = "true" ] && [ -f ./main-benchmark/benchmark-result.txt ]; then
+            MAIN_RESULTS=$(cat ./main-benchmark/benchmark-result.txt)
+            MAIN_SECTION="
+          <details><summary>Main branch results (baseline)</summary>
+
+          \`\`\`
+          ${MAIN_RESULTS}
+          \`\`\`
+
+          </details>
+          "
+          fi
+
+          BODY="## Benchmark Results
+
+          <details><summary>PR results</summary>
+
+          \`\`\`
+          ${PR_RESULTS}
+          \`\`\`
+
+          </details>
+          ${MAIN_SECTION}
+          [View workflow run](${WORKFLOW_URL})"
+
+          gh api \
+            repos/${{ github.repository }}/issues/comments/${{ steps.initial-comment.outputs.comment_id }} \
+            -X PATCH \
+            -f body="$BODY"
+
+      - name: Update comment on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # Only update if we have a comment ID (initial comment step succeeded)
+          COMMENT_ID="${{ steps.initial-comment.outputs.comment_id }}"
+          if [ -n "$COMMENT_ID" ]; then
+            gh api \
+              repos/${{ github.repository }}/issues/comments/${COMMENT_ID} \
+              -X PATCH \
+              -f body="## Benchmark Failed
+
+          Benchmark run failed. [View workflow run](${WORKFLOW_URL})"
+          fi
