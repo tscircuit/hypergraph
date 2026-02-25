@@ -367,6 +367,7 @@ export function generateConvexViaTopologyRegions(opts: {
     polygons: obstaclePolygons,
     clearance,
     concavityTolerance,
+    useConstrainedDelaunay: true,
   } as ConstructorParameters<typeof ConvexRegionsSolver>[0]
 
   const solver = new ConvexRegionsSolver(solverInput)

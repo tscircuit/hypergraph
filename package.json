@@ -16,7 +16,7 @@
   "repository": "https://github.com/tscircuit/hypergraph",
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
-    "@tscircuit/find-convex-regions": "^0.0.7",
+    "@tscircuit/find-convex-regions": "^0.0.9",
     "@tscircuit/jumper-topology-generator": "^0.0.2",
     "@tscircuit/math-utils": "^0.0.29",
     "@types/bun": "latest",
