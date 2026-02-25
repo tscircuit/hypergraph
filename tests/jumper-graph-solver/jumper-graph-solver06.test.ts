@@ -16,6 +16,8 @@ test(
       cols: 3,
       orientation: "vertical",
       pattern: "grid",
+      maxNeckRatio: 0.4,
+      minSplitBalanceRatio: 0.2,
     }) as unknown as JumperGraph
 
     const graphWithConnections = createProblemFromBaseGraph({

@@ -32,6 +32,8 @@ export default () => {
         cols,
         orientation,
         pattern,
+        maxNeckRatio: 0.4,
+        minSplitBalanceRatio: 0.2,
         ...(pattern === "staggered" ? { staggerAxis } : {}),
       }) as unknown as JumperGraph
 
