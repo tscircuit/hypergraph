@@ -1,0 +1,127 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Integration: HyperGraphPartialRipping solving should solve simple graph without ripping 1`] = `
+[
+  {
+    "connectionId": "conn1",
+    "pathLength": 1,
+    "requiredRip": false,
+  },
+]
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should solve simple graph without ripping 2`] = `
+{
+  "maxRoutesToRip": Infinity,
+  "ripCostThreshold": Infinity,
+  "ripStrategy": "all",
+  "ripsSkippedDueToThreshold": 0,
+  "totalRipsPerformed": 0,
+}
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should solve multi-connection graph without conflicts 1`] = `
+[
+  {
+    "connectionId": "conn1",
+    "networkId": "net1",
+    "pathPortIds": [
+      "p1",
+      "p5",
+      "p4",
+    ],
+    "requiredRip": false,
+  },
+  {
+    "connectionId": "conn2",
+    "networkId": "net2",
+    "pathPortIds": [
+      "p5",
+    ],
+    "requiredRip": false,
+  },
+]
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should solve multi-connection graph without conflicts 2`] = `
+{
+  "maxRoutesToRip": Infinity,
+  "ripCostThreshold": Infinity,
+  "ripStrategy": "all",
+  "ripsSkippedDueToThreshold": 0,
+  "totalRipsPerformed": 0,
+}
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should solve rip-candidate graph with aggressive strategy 1`] = `
+{
+  "diagnostics": {
+    "maxRoutesToRip": Infinity,
+    "ripCostThreshold": Infinity,
+    "ripStrategy": "all",
+    "ripsSkippedDueToThreshold": 0,
+    "totalRipsPerformed": 0,
+  },
+  "solvedRoutes": [
+    {
+      "connectionId": "conn1",
+      "pathPortIds": [
+        "p3",
+        "p4",
+      ],
+      "requiredRip": false,
+    },
+    {
+      "connectionId": "conn2",
+      "pathPortIds": [
+        "p5",
+        "p2",
+      ],
+      "requiredRip": false,
+    },
+  ],
+}
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should solve rip-candidate graph with conservative preset 1`] = `
+{
+  "diagnostics": {
+    "maxRoutesToRip": 2,
+    "ripCostThreshold": 50,
+    "ripStrategy": "cheapest",
+    "ripsSkippedDueToThreshold": 0,
+    "totalRipsPerformed": 0,
+  },
+  "finalState": "solved",
+  "routeCount": 2,
+}
+`;
+
+exports[`Integration: HyperGraphPartialRipping solving should compare aggressive vs conservative on same graph 1`] = `
+{
+  "aggressive": {
+    "diagnostics": {
+      "maxRoutesToRip": Infinity,
+      "ripCostThreshold": Infinity,
+      "ripStrategy": "all",
+      "ripsSkippedDueToThreshold": 0,
+      "totalRipsPerformed": 0,
+    },
+    "routeCount": 2,
+    "solved": true,
+    "totalRips": 0,
+  },
+  "conservative": {
+    "diagnostics": {
+      "maxRoutesToRip": 2,
+      "ripCostThreshold": 50,
+      "ripStrategy": "cheapest",
+      "ripsSkippedDueToThreshold": 0,
+      "totalRipsPerformed": 0,
+    },
+    "routeCount": 2,
+    "solved": true,
+    "totalRips": 0,
+  },
+}
+`;
