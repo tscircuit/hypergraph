@@ -12,9 +12,9 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
-      "lib/*": ["lib/*"]
+      "lib/*": ["./lib/*"]
     },
     // Best practices
     "strict": true,

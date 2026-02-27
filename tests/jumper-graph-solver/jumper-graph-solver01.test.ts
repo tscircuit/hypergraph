@@ -6,8 +6,7 @@ import { generateJumperX4Grid } from "lib/JumperGraphSolver/jumper-graph-generat
 
 test(
   "jumper-graph-solver01: solve 1x1 X4 grid with external connections",
-  // @ts-expect-error bun:test types don't include timeout option
-  { timeout: 30000 },
+
   () => {
     const baseGraph = generateJumperX4Grid({
       cols: 1,
@@ -64,4 +63,5 @@ test(
       import.meta.path,
     )
   },
+  { timeout: 30000 },
 )

@@ -19,7 +19,7 @@
     "@tscircuit/find-convex-regions": "^0.0.9",
     "@tscircuit/jumper-topology-generator": "^0.0.4",
     "@tscircuit/math-utils": "^0.0.29",
-    "@types/bun": "latest",
+    "@types/bun": "^1.3.9",
     "bun-match-svg": "^0.0.15",
     "graphics-debug": "^0.0.83",
     "react-cosmos": "^7.1.0",
