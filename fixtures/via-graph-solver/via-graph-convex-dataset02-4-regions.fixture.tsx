@@ -89,8 +89,8 @@ export default () => {
   const { tileCount } = problem
 
   // Count region types
-  const convexRegions = problem.graph.regions.filter((r) =>
-    r.regionId.startsWith("convex:"),
+  const convexRegions = problem.graph.regions.filter(
+    (r) => r.regionId.includes(":convex:") || r.regionId.startsWith("filler:"),
   )
   const viaRegions = problem.graph.regions.filter((r) => r.d.isViaRegion)
 
