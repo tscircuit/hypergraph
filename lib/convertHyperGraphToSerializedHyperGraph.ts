@@ -1,8 +1,8 @@
 import type {
   HyperGraph,
-  SerializedHyperGraph,
   SerializedGraphPort,
   SerializedGraphRegion,
+  SerializedHyperGraph,
 } from "./types"
 
 export const convertHyperGraphToSerializedHyperGraph = (
@@ -20,6 +20,13 @@ export const convertHyperGraphToSerializedHyperGraph = (
       regionId: region.regionId,
       pointIds: region.ports.map((port) => port.portId),
       d: region.d,
+      assignments: (region.assignments ?? [])
+        .filter((assignment) => assignment.isFixed)
+        .map((assignment) => ({
+          regionPort1Id: assignment.regionPort1.portId,
+          regionPort2Id: assignment.regionPort2.portId,
+          connectionId: assignment.connection.connectionId,
+        })),
     }),
   )
 

@@ -61,8 +61,13 @@ export class HyperGraphSolver<
   ) {
     super()
     this.graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
+    this.initializeFixedAssignments()
+    this.removeFixedAssignmentsForActiveConnections(input.inputConnections)
     for (const region of this.graph.regions) {
-      region.assignments = []
+      region.assignments = (region.assignments ?? []).filter((a) => a.isFixed)
+    }
+    for (const port of this.graph.ports) {
+      port.assignment = undefined
     }
     this.connections = convertSerializedConnectionsToConnections(
       input.inputConnections,
@@ -140,6 +145,21 @@ export class HyperGraphSolver<
    * a route would require ripping other routes due to problematic crossings.
    */
   getRipsRequiredForPortUsage(
+    _region: RegionType,
+    _port1: RegionPortType,
+    _port2: RegionPortType,
+  ): RegionPortAssignment[] {
+    return []
+  }
+
+  /**
+   * OPTIONALLY OVERRIDE THIS
+   *
+   * Return fixed assignments that make this transition invalid. Unlike
+   * getRipsRequiredForPortUsage, these assignments cannot be removed by
+   * ripping and therefore hard-block the candidate.
+   */
+  getFixedAssignmentsBlockingPortUsage(
     _region: RegionType,
     _port1: RegionPortType,
     _port2: RegionPortType,
@@ -245,6 +265,7 @@ export class HyperGraphSolver<
         candidate.port as RegionPortType,
       )
       for (const assignment of ripsRequired) {
+        if (!assignment.solvedRoute || assignment.isFixed) continue
         crossingRoutesToRip.add(assignment.solvedRoute)
       }
     }
@@ -257,11 +278,27 @@ export class HyperGraphSolver<
     const nextCandidatesByRegion: Record<RegionId, Candidate[]> = {}
     for (const port of currentRegion.ports) {
       if (port === currentCandidate.port) continue
+      if (this.isPortBlockedByFixedAssignment(port)) continue
       if (
         !this.isTransitionAllowed(
           currentRegion as RegionType,
           currentPort as RegionPortType,
           port as RegionPortType,
+        )
+      ) {
+        continue
+      }
+      const fixedAssignmentsBlockingPortUsage =
+        this.getFixedAssignmentsBlockingPortUsage(
+          currentRegion as RegionType,
+          currentPort as RegionPortType,
+          port as RegionPortType,
+        )
+      if (
+        fixedAssignmentsBlockingPortUsage.some(
+          (assignment) =>
+            assignment.connection.connectionId !==
+            this.currentConnection!.connectionId,
         )
       ) {
         continue
@@ -388,10 +425,10 @@ export class HyperGraphSolver<
     for (const port of solvedRoute.path.map((candidate) => candidate.port)) {
       port.ripCount = (port.ripCount ?? 0) + 1
       port.region1.assignments = port.region1.assignments?.filter(
-        (a) => a.regionPort1 !== port && a.regionPort2 !== port,
+        (a) => a.isFixed || (a.regionPort1 !== port && a.regionPort2 !== port),
       )
       port.region2.assignments = port.region2.assignments?.filter(
-        (a) => a.regionPort1 !== port && a.regionPort2 !== port,
+        (a) => a.isFixed || (a.regionPort1 !== port && a.regionPort2 !== port),
       )
       port.assignment = undefined
     }
@@ -406,6 +443,7 @@ export class HyperGraphSolver<
     this.visitedPointsForCurrentConnection.clear()
     this.routeStartedHook(this.currentConnection)
     for (const port of this.currentConnection.startRegion.ports) {
+      if (this.isPortBlockedByFixedAssignment(port)) continue
       this.candidateQueue.enqueue({
         port,
         g: 0,
@@ -419,6 +457,99 @@ export class HyperGraphSolver<
             : port.region1,
       })
     }
+  }
+
+  private initializeFixedAssignments() {
+    const seenAssignments = new Set<string>()
+    for (const port of this.graph.ports) {
+      port.fixedAssignments = []
+    }
+
+    for (const region of this.graph.regions) {
+      const initialAssignments = region.assignments ?? []
+      const normalizedAssignments: RegionPortAssignment[] = []
+      for (const assignment of initialAssignments) {
+        const regionPort1 = assignment.regionPort1
+        const regionPort2 = assignment.regionPort2
+        if (!regionPort1 || !regionPort2) continue
+        if (regionPort1 === regionPort2) continue
+        if (
+          !region.ports.includes(regionPort1) ||
+          !region.ports.includes(regionPort2)
+        )
+          continue
+        const connectionId = assignment.connection?.connectionId
+        if (!connectionId) continue
+        const [portId1, portId2] = [
+          regionPort1.portId,
+          regionPort2.portId,
+        ].sort()
+        const assignmentKey = [
+          region.regionId,
+          portId1,
+          portId2,
+          connectionId,
+        ].join(":")
+        if (seenAssignments.has(assignmentKey)) {
+          continue
+        }
+        seenAssignments.add(assignmentKey)
+
+        const fixedAssignment: RegionPortAssignment = {
+          regionPort1,
+          regionPort2,
+          region,
+          connection: {
+            connectionId,
+            mutuallyConnectedNetworkId:
+              assignment.connection.mutuallyConnectedNetworkId ?? connectionId,
+            startRegion: assignment.connection.startRegion ?? region,
+            endRegion: assignment.connection.endRegion ?? region,
+          },
+          isFixed: true,
+        }
+
+        normalizedAssignments.push(fixedAssignment)
+        regionPort1.fixedAssignments ??= []
+        regionPort1.fixedAssignments.push(fixedAssignment)
+        regionPort2.fixedAssignments ??= []
+        regionPort2.fixedAssignments.push(fixedAssignment)
+      }
+      region.assignments = normalizedAssignments
+    }
+  }
+
+  private removeFixedAssignmentsForActiveConnections(
+    inputConnections: (Connection | SerializedConnection)[],
+  ) {
+    const activeConnectionIds = new Set(
+      inputConnections.map((connection) => connection.connectionId),
+    )
+
+    for (const region of this.graph.regions) {
+      const retainedAssignments: RegionPortAssignment[] = []
+      for (const assignment of region.assignments ?? []) {
+        if (!assignment.isFixed) {
+          retainedAssignments.push(assignment)
+          continue
+        }
+        if (!activeConnectionIds.has(assignment.connection.connectionId)) {
+          retainedAssignments.push(assignment)
+        }
+      }
+      region.assignments = retainedAssignments
+    }
+
+    for (const port of this.graph.ports) {
+      port.fixedAssignments = (port.fixedAssignments ?? []).filter(
+        (assignment) =>
+          !activeConnectionIds.has(assignment.connection.connectionId),
+      )
+    }
+  }
+
+  protected isPortBlockedByFixedAssignment(port: RegionPort): boolean {
+    return (port.fixedAssignments?.length ?? 0) > 0
   }
 
   override _step() {

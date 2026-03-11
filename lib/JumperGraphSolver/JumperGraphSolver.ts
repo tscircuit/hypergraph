@@ -1,4 +1,3 @@
-import { distance } from "@tscircuit/math-utils"
 import type { GraphicsObject } from "graphics-debug"
 import { HyperGraphSolver } from "../HyperGraphSolver"
 import type {
@@ -175,21 +174,26 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
       const assignments = region.assignments ?? []
       return assignments.filter(
         (a) =>
+          !a.isFixed &&
+          a.solvedRoute &&
           a.connection.mutuallyConnectedNetworkId !==
-          this.currentConnection!.mutuallyConnectedNetworkId,
+            this.currentConnection!.mutuallyConnectedNetworkId,
       )
     }
 
     const crossingAssignments = computeCrossingAssignments(region, port1, port2)
     const conflictingAssignments = crossingAssignments.filter(
       (a) =>
+        !a.isFixed &&
+        a.solvedRoute &&
         a.connection.mutuallyConnectedNetworkId !==
-        this.currentConnection!.mutuallyConnectedNetworkId,
+          this.currentConnection!.mutuallyConnectedNetworkId,
     )
 
     if (!region.d.isThroughJumper) return conflictingAssignments
 
     for (const assignment of region.assignments ?? []) {
+      if (assignment.isFixed || !assignment.solvedRoute) continue
       if (
         assignment.connection.mutuallyConnectedNetworkId ===
         this.currentConnection!.mutuallyConnectedNetworkId
@@ -200,6 +204,31 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     }
 
     return conflictingAssignments
+  }
+
+  override getFixedAssignmentsBlockingPortUsage(
+    region: JRegion,
+    port1: JPort,
+    port2: JPort,
+  ): RegionPortAssignment[] {
+    if (region.d.isPad) {
+      return (region.assignments ?? []).filter((a) => a.isFixed)
+    }
+
+    const fixedAssignments = computeCrossingAssignments(
+      region,
+      port1,
+      port2,
+    ).filter((a) => a.isFixed)
+
+    if (!region.d.isThroughJumper) return fixedAssignments
+
+    for (const assignment of region.assignments ?? []) {
+      if (!assignment.isFixed) continue
+      fixedAssignments.push(assignment)
+    }
+
+    return fixedAssignments
   }
 
   override isRipRequiredForPortUsage(

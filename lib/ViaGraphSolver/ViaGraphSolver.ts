@@ -214,8 +214,10 @@ export class ViaGraphSolver extends HyperGraphSolver<JRegion, JPort> {
       const assignments = region.assignments ?? []
       return assignments.filter(
         (a) =>
+          !a.isFixed &&
+          a.solvedRoute &&
           a.connection.mutuallyConnectedNetworkId !==
-          this.currentConnection!.mutuallyConnectedNetworkId,
+            this.currentConnection!.mutuallyConnectedNetworkId,
       )
     }
 
@@ -226,8 +228,24 @@ export class ViaGraphSolver extends HyperGraphSolver<JRegion, JPort> {
     )
     return crossingAssignments.filter(
       (a) =>
+        !a.isFixed &&
+        a.solvedRoute &&
         a.connection.mutuallyConnectedNetworkId !==
-        this.currentConnection!.mutuallyConnectedNetworkId,
+          this.currentConnection!.mutuallyConnectedNetworkId,
+    )
+  }
+
+  override getFixedAssignmentsBlockingPortUsage(
+    region: JRegion,
+    port1: JPort,
+    port2: JPort,
+  ): RegionPortAssignment[] {
+    if (region.d.isViaRegion) {
+      return (region.assignments ?? []).filter((a) => a.isFixed)
+    }
+
+    return computeCrossingAssignmentsForPolygon(region, port1, port2).filter(
+      (a) => a.isFixed,
     )
   }
 
