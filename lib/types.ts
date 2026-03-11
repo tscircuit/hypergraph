@@ -92,6 +92,12 @@ export type SerializedRegionPortAssignment = {
 export type SerializedHyperGraph = {
   ports: SerializedGraphPort[]
   regions: SerializedGraphRegion[]
+  solvedRoutes?: SerializedSolvedRoute[]
+}
+
+export type SerializedSolvedRoute = {
+  pathPortIds: PortId[],
+  connectionId: ConnectionId
 }
 
 export type Connection = {
