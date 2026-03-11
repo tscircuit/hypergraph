@@ -1,5 +1,9 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
 import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
+import {
+  hydrateSolvedRoutes,
+  serializeSolvedRoutes,
+} from "./convertSolvedRoutes"
 import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
@@ -16,6 +20,7 @@ import type {
   RegionPortAssignment,
   SerializedConnection,
   SerializedHyperGraph,
+  SerializedSolvedRoute,
   SolvedRoute,
 } from "./types"
 
@@ -54,6 +59,7 @@ export class HyperGraphSolver<
     public input: {
       inputGraph: HyperGraph | SerializedHyperGraph
       inputConnections: (Connection | SerializedConnection)[]
+      solvedRoutes?: SerializedSolvedRoute[]
       greedyMultiplier?: number
       rippingEnabled?: boolean
       ripCost?: number
@@ -63,6 +69,9 @@ export class HyperGraphSolver<
     this.graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
     for (const region of this.graph.regions) {
       region.assignments = []
+    }
+    for (const port of this.graph.ports) {
+      port.assignment = undefined
     }
     this.connections = convertSerializedConnectionsToConnections(
       input.inputConnections,
@@ -75,6 +84,16 @@ export class HyperGraphSolver<
     if (input.ripCost !== undefined) this.ripCost = input.ripCost
     this.unprocessedConnections = [...this.connections]
     this.candidateQueue = new PriorityQueue<Candidate>()
+
+    if (input.solvedRoutes?.length) {
+      this.restoreSolvedRoutes(input.solvedRoutes)
+    }
+
+    if (this.unprocessedConnections.length === 0) {
+      this.solved = true
+      return
+    }
+
     this.beginNewConnection()
   }
 
@@ -84,6 +103,7 @@ export class HyperGraphSolver<
       inputConnections: convertConnectionsToSerializedConnections(
         this.connections,
       ),
+      solvedRoutes: serializeSolvedRoutes(this.solvedRoutes),
       greedyMultiplier: this.greedyMultiplier,
       rippingEnabled: this.rippingEnabled,
       ripCost: this.ripCost,
@@ -211,10 +231,11 @@ export class HyperGraphSolver<
   computeRoutesToRip(newlySolvedRoute: SolvedRoute): Set<SolvedRoute> {
     const crossingRoutesToRip = this.computeCrossingRoutes(newlySolvedRoute)
     const portReuseRoutesToRip = this.computePortOverlapRoutes(newlySolvedRoute)
-    return new Set<SolvedRoute>([
-      ...crossingRoutesToRip,
-      ...portReuseRoutesToRip,
-    ])
+    return new Set<SolvedRoute>(
+      [...crossingRoutesToRip, ...portReuseRoutesToRip].filter(
+        (route) => !route.locked,
+      ),
+    )
   }
 
   /**
@@ -314,11 +335,74 @@ export class HyperGraphSolver<
     return nextCandidates as CandidateType[]
   }
 
-  processSolvedRoute(finalCandidate: CandidateType) {
+  private getLockedConflictingRoutes(
+    newlySolvedRoute: SolvedRoute,
+    routesToRip: Set<SolvedRoute>,
+  ): Set<SolvedRoute> {
+    const lockedRoutes = new Set<SolvedRoute>()
+    for (const route of this.computeCrossingRoutes(newlySolvedRoute)) {
+      if (route.locked) {
+        lockedRoutes.add(route)
+      }
+    }
+    for (const route of this.computePortOverlapRoutes(newlySolvedRoute)) {
+      if (route.locked && !routesToRip.has(route)) {
+        lockedRoutes.add(route)
+      }
+    }
+    return lockedRoutes
+  }
+
+  private commitSolvedRouteAssignments(solvedRoute: SolvedRoute) {
+    for (const candidate of solvedRoute.path) {
+      candidate.port.assignment = {
+        solvedRoute,
+        connection: solvedRoute.connection,
+      }
+      if (!candidate.lastPort) continue
+      const regionPortAssignment: RegionPortAssignment = {
+        regionPort1: candidate.lastPort,
+        regionPort2: candidate.port,
+        region: candidate.lastRegion!,
+        connection: solvedRoute.connection,
+        solvedRoute,
+      }
+      candidate.lastRegion!.assignments ??= []
+      candidate.lastRegion!.assignments!.push(regionPortAssignment)
+    }
+
+    this.solvedRoutes.push(solvedRoute)
+  }
+
+  private restoreSolvedRoutes(serializedSolvedRoutes: SerializedSolvedRoute[]) {
+    const restoredSolvedRoutes = hydrateSolvedRoutes(
+      serializedSolvedRoutes,
+      this.graph,
+      this.connections,
+    )
+    const restoredConnectionIds = new Set<string>()
+
+    for (const solvedRoute of restoredSolvedRoutes) {
+      if (restoredConnectionIds.has(solvedRoute.connection.connectionId)) {
+        throw new Error(
+          `Duplicate solvedRoute for connection ${solvedRoute.connection.connectionId}`,
+        )
+      }
+      restoredConnectionIds.add(solvedRoute.connection.connectionId)
+      this.commitSolvedRouteAssignments(solvedRoute)
+    }
+
+    this.unprocessedConnections = this.unprocessedConnections.filter(
+      (connection) => !restoredConnectionIds.has(connection.connectionId),
+    )
+  }
+
+  processSolvedRoute(finalCandidate: CandidateType): boolean {
     const solvedRoute: SolvedRoute = {
       path: [],
       connection: this.currentConnection!,
       requiredRip: false,
+      locked: false,
     }
 
     let cursorCandidate: CandidateType | undefined = finalCandidate
@@ -334,6 +418,14 @@ export class HyperGraphSolver<
     }
 
     const allRoutesToRip = this.computeRoutesToRip(solvedRoute)
+    const lockedConflictingRoutes = this.getLockedConflictingRoutes(
+      solvedRoute,
+      allRoutesToRip,
+    )
+
+    if (lockedConflictingRoutes.size > 0) {
+      return false
+    }
 
     // Rip conflicting routes before committing assignments.
     if (allRoutesToRip.size > 0) {
@@ -343,24 +435,9 @@ export class HyperGraphSolver<
       }
     }
 
-    for (const candidate of solvedRoute.path) {
-      candidate.port.assignment = {
-        solvedRoute,
-        connection: this.currentConnection!,
-      }
-      if (!candidate.lastPort) continue
-      const regionPortAssignment: RegionPortAssignment = {
-        regionPort1: candidate.lastPort,
-        regionPort2: candidate.port,
-        region: candidate.lastRegion!,
-        connection: this.currentConnection!,
-        solvedRoute,
-      }
-      candidate.lastRegion!.assignments?.push(regionPortAssignment)
-    }
-
-    this.solvedRoutes.push(solvedRoute)
+    this.commitSolvedRouteAssignments(solvedRoute)
     this.routeSolvedHook(solvedRoute)
+    return true
   }
 
   /**
@@ -385,6 +462,11 @@ export class HyperGraphSolver<
   routeStartedHook(connection: Connection) {}
 
   ripSolvedRoute(solvedRoute: SolvedRoute) {
+    if (solvedRoute.locked) {
+      throw new Error(
+        `Cannot rip locked solvedRoute for connection ${solvedRoute.connection.connectionId}`,
+      )
+    }
     for (const port of solvedRoute.path.map((candidate) => candidate.port)) {
       port.ripCount = (port.ripCount ?? 0) + 1
       port.region1.assignments = port.region1.assignments?.filter(
@@ -454,12 +536,13 @@ export class HyperGraphSolver<
     )
 
     if (currentCandidate.nextRegion === this.currentEndRegion) {
-      this.processSolvedRoute(currentCandidate)
-      if (this.unprocessedConnections.length === 0) {
-        this.solved = true
-        return
+      if (this.processSolvedRoute(currentCandidate)) {
+        if (this.unprocessedConnections.length === 0) {
+          this.solved = true
+          return
+        }
+        this.beginNewConnection()
       }
-      this.beginNewConnection()
       return
     }
 

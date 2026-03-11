@@ -49,6 +49,26 @@ export type SolvedRoute = {
   path: Candidate[]
   connection: Connection
   requiredRip: boolean
+  locked?: boolean
+}
+
+export type SerializedSolvedRouteCandidate = {
+  portId: PortId
+  g: number
+  h: number
+  f: number
+  hops: number
+  ripRequired: boolean
+  lastPortId?: PortId
+  lastRegionId?: RegionId
+  nextRegionId?: RegionId
+}
+
+export type SerializedSolvedRoute = {
+  path: SerializedSolvedRouteCandidate[]
+  connectionId: ConnectionId
+  requiredRip: boolean
+  locked?: boolean
 }
 
 export type Candidate<
