@@ -439,7 +439,7 @@ export class HyperGraphSolver<
         connection.mutuallyConnectedNetworkId
       ) {
         throw new Error(
-          `Solved route ${connectionId} reuses bootstrapped port ${candidate.port.portId}, but shared port assignments are not yet supported`,
+          `Solved route ${connectionId} reuses port ${candidate.port.portId}, but shared-port solved routes are not supported because RegionPort stores only one assignment`,
         )
       }
       throw new Error(

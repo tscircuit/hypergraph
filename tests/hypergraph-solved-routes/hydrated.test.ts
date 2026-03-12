@@ -71,6 +71,6 @@ test("rejects same-network hydrated solved routes that share a port", () => {
         inputConnections: [connections.connection1, connections.connection2],
       }),
   ).toThrow(
-    "Solved route c2 reuses bootstrapped port pAB, but shared port assignments are not yet supported",
+    "Solved route c2 reuses port pAB, but shared-port solved routes are not supported because RegionPort stores only one assignment",
   )
 })
