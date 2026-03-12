@@ -1,5 +1,6 @@
 import type {
   HyperGraph,
+  SerializedGraphSolvedRoute,
   SerializedHyperGraph,
   SerializedGraphPort,
   SerializedGraphRegion,
@@ -23,8 +24,15 @@ export const convertHyperGraphToSerializedHyperGraph = (
     }),
   )
 
+  const serializedSolvedRoutes: SerializedGraphSolvedRoute[] | undefined =
+    graph.solvedRoutes?.map((solvedRoute) => ({
+      pathPortIds: solvedRoute.portPoints.map((port) => port.portId),
+      connectionId: solvedRoute.connection.connectionId,
+    }))
+
   return {
     ports: serializedPorts,
     regions: serializedRegions,
+    solvedRoutes: serializedSolvedRoutes,
   }
 }

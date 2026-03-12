@@ -70,6 +70,12 @@ export type Candidate<
 export type HyperGraph = {
   ports: RegionPort[]
   regions: Region[]
+  solvedRoutes?: GraphSolvedRoute[]
+}
+
+export type GraphSolvedRoute = {
+  portPoints: RegionPort[]
+  connection: Connection
 }
 
 export type SerializedGraphPort = {
@@ -92,11 +98,11 @@ export type SerializedRegionPortAssignment = {
 export type SerializedHyperGraph = {
   ports: SerializedGraphPort[]
   regions: SerializedGraphRegion[]
-  solvedRoutes?: SerializedSolvedRoute[]
+  solvedRoutes?: SerializedGraphSolvedRoute[]
 }
 
-export type SerializedSolvedRoute = {
-  pathPortIds: PortId[],
+export type SerializedGraphSolvedRoute = {
+  pathPortIds: PortId[]
   connectionId: ConnectionId
 }
 

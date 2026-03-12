@@ -8,6 +8,7 @@ import type {
   Candidate,
   Connection,
   GScore,
+  GraphSolvedRoute,
   HyperGraph,
   PortId,
   Region,
@@ -15,6 +16,7 @@ import type {
   RegionPort,
   RegionPortAssignment,
   SerializedConnection,
+  SerializedGraphSolvedRoute,
   SerializedHyperGraph,
   SolvedRoute,
 } from "./types"
@@ -75,12 +77,23 @@ export class HyperGraphSolver<
     if (input.ripCost !== undefined) this.ripCost = input.ripCost
     this.unprocessedConnections = [...this.connections]
     this.candidateQueue = new PriorityQueue<Candidate>()
+    this.loadGraphSolvedRoutes({ inputGraph: input.inputGraph })
     this.beginNewConnection()
   }
 
   override getConstructorParams() {
+    const graphForSerialization: HyperGraph = {
+      ...this.graph,
+      solvedRoutes: this.solvedRoutes.map((solvedRoute) => ({
+        portPoints: solvedRoute.path.map((candidate) => candidate.port),
+        connection: solvedRoute.connection,
+      })),
+    }
+
     return {
-      inputGraph: convertHyperGraphToSerializedHyperGraph(this.graph),
+      inputGraph: convertHyperGraphToSerializedHyperGraph(
+        graphForSerialization,
+      ),
       inputConnections: convertConnectionsToSerializedConnections(
         this.connections,
       ),
@@ -251,6 +264,171 @@ export class HyperGraphSolver<
     return crossingRoutesToRip
   }
 
+  private applySolvedRoute(params: {
+    solvedRoute: SolvedRoute
+    runRouteSolvedHook?: boolean
+  }): void {
+    const runRouteSolvedHook = params.runRouteSolvedHook ?? true
+    const existingSolvedRoute = this.solvedRoutes.find(
+      (route) =>
+        route.connection.connectionId ===
+        params.solvedRoute.connection.connectionId,
+    )
+    if (existingSolvedRoute) {
+      this.failed = true
+      this.error = `Connection ${params.solvedRoute.connection.connectionId} already has a solved route`
+      return
+    }
+
+    for (const candidate of params.solvedRoute.path) {
+      if (
+        candidate.port.assignment &&
+        candidate.port.assignment.connection.mutuallyConnectedNetworkId !==
+          params.solvedRoute.connection.mutuallyConnectedNetworkId
+      ) {
+        this.failed = true
+        this.error = `Port ${candidate.port.portId} is already assigned to connection ${candidate.port.assignment.connection.connectionId}`
+        return
+      }
+      candidate.port.assignment = {
+        solvedRoute: params.solvedRoute,
+        connection: params.solvedRoute.connection,
+      }
+      if (!candidate.lastPort) continue
+      const regionPortAssignment: RegionPortAssignment = {
+        regionPort1: candidate.lastPort,
+        regionPort2: candidate.port,
+        region: candidate.lastRegion!,
+        connection: params.solvedRoute.connection,
+        solvedRoute: params.solvedRoute,
+      }
+      candidate.lastRegion!.assignments?.push(regionPortAssignment)
+    }
+
+    this.solvedRoutes.push(params.solvedRoute)
+    if (runRouteSolvedHook) this.routeSolvedHook(params.solvedRoute)
+  }
+
+  private isSerializedGraphSolvedRoute(
+    graphSolvedRoute: GraphSolvedRoute | SerializedGraphSolvedRoute,
+  ): graphSolvedRoute is SerializedGraphSolvedRoute {
+    return "connectionId" in graphSolvedRoute
+  }
+
+  private createSolvedRouteFromGraphSolvedRoute(params: {
+    graphSolvedRoute: GraphSolvedRoute | SerializedGraphSolvedRoute
+    portMap: Map<PortId, RegionPort>
+    connectionMap: Map<string, Connection>
+  }): SolvedRoute | undefined {
+    const connectionId = this.isSerializedGraphSolvedRoute(
+      params.graphSolvedRoute,
+    )
+      ? params.graphSolvedRoute.connectionId
+      : params.graphSolvedRoute.connection.connectionId
+    const connection = params.connectionMap.get(connectionId)
+    if (!connection) {
+      this.failed = true
+      this.error = `Unknown solved route connection: ${connectionId}`
+      return
+    }
+
+    const pathPortIds = this.isSerializedGraphSolvedRoute(
+      params.graphSolvedRoute,
+    )
+      ? params.graphSolvedRoute.pathPortIds
+      : params.graphSolvedRoute.portPoints.map((port) => port.portId)
+
+    if (pathPortIds.length === 0) {
+      this.failed = true
+      this.error = `Solved route ${connectionId} must include at least one port`
+      return
+    }
+
+    const pathPorts: RegionPort[] = []
+    for (const portId of pathPortIds) {
+      const port = params.portMap.get(portId)
+      if (!port) {
+        this.failed = true
+        this.error = `Solved route ${connectionId} references unknown port ${portId}`
+        return
+      }
+      pathPorts.push(port)
+    }
+
+    let currentRegion = connection.startRegion
+    let previousCandidate: Candidate | undefined
+    const path: Candidate[] = []
+
+    for (const [index, port] of pathPorts.entries()) {
+      const nextRegion =
+        port.region1 === currentRegion ? port.region2 : port.region1
+      const candidate: Candidate = {
+        port,
+        g: index,
+        h: 0,
+        f: index,
+        hops: index,
+        parent: previousCandidate,
+        lastPort: previousCandidate?.port,
+        lastRegion: index === 0 ? undefined : currentRegion,
+        nextRegion,
+        ripRequired: false,
+      }
+      path.push(candidate)
+      previousCandidate = candidate
+      currentRegion = nextRegion
+    }
+
+    return {
+      path,
+      connection,
+      requiredRip: false,
+    }
+  }
+
+  private loadGraphSolvedRoutes({
+    inputGraph,
+  }: {
+    inputGraph: HyperGraph | SerializedHyperGraph
+  }) {
+    const graphSolvedRoutes = inputGraph.solvedRoutes ?? []
+    if (graphSolvedRoutes.length === 0) return
+
+    const portMap = new Map(this.graph.ports.map((port) => [port.portId, port]))
+    const connectionMap = new Map(
+      this.connections.map((connection) => [
+        connection.connectionId,
+        connection,
+      ]),
+    )
+    const loadedConnectionIds = new Set<string>()
+
+    for (const graphSolvedRoute of graphSolvedRoutes) {
+      const connectionId = this.isSerializedGraphSolvedRoute(graphSolvedRoute)
+        ? graphSolvedRoute.connectionId
+        : graphSolvedRoute.connection.connectionId
+      if (loadedConnectionIds.has(connectionId)) {
+        this.failed = true
+        this.error = `Duplicate solved route for connection ${connectionId} in input graph`
+        return
+      }
+
+      const solvedRoute = this.createSolvedRouteFromGraphSolvedRoute({
+        graphSolvedRoute,
+        portMap,
+        connectionMap,
+      })
+      if (!solvedRoute || this.failed) return
+      this.applySolvedRoute({ solvedRoute, runRouteSolvedHook: false })
+      if (this.failed) return
+      loadedConnectionIds.add(connectionId)
+    }
+
+    this.unprocessedConnections = this.unprocessedConnections.filter(
+      (connection) => !loadedConnectionIds.has(connection.connectionId),
+    )
+  }
+
   getNextCandidates(currentCandidate: CandidateType): CandidateType[] {
     const currentRegion = currentCandidate.nextRegion!
     const currentPort = currentCandidate.port
@@ -342,25 +520,7 @@ export class HyperGraphSolver<
         this.ripSolvedRoute(route)
       }
     }
-
-    for (const candidate of solvedRoute.path) {
-      candidate.port.assignment = {
-        solvedRoute,
-        connection: this.currentConnection!,
-      }
-      if (!candidate.lastPort) continue
-      const regionPortAssignment: RegionPortAssignment = {
-        regionPort1: candidate.lastPort,
-        regionPort2: candidate.port,
-        region: candidate.lastRegion!,
-        connection: this.currentConnection!,
-        solvedRoute,
-      }
-      candidate.lastRegion!.assignments?.push(regionPortAssignment)
-    }
-
-    this.solvedRoutes.push(solvedRoute)
-    this.routeSolvedHook(solvedRoute)
+    this.applySolvedRoute({ solvedRoute })
   }
 
   /**
@@ -400,6 +560,11 @@ export class HyperGraphSolver<
   }
 
   beginNewConnection() {
+    if (this.unprocessedConnections.length === 0) {
+      this.currentConnection = null
+      this.currentEndRegion = null
+      return
+    }
     this.currentConnection = this.unprocessedConnections.shift()!
     this.currentEndRegion = this.currentConnection.endRegion
     this.candidateQueue = new PriorityQueue<Candidate>()
