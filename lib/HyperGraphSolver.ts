@@ -9,6 +9,7 @@ import type {
   Connection,
   GScore,
   HyperGraph,
+  InputSolvedRoute,
   PortId,
   Region,
   RegionId,
@@ -16,6 +17,7 @@ import type {
   RegionPortAssignment,
   SerializedConnection,
   SerializedHyperGraph,
+  SerializedInputSolvedRoute,
   SolvedRoute,
 } from "./types"
 
@@ -75,12 +77,25 @@ export class HyperGraphSolver<
     if (input.ripCost !== undefined) this.ripCost = input.ripCost
     this.unprocessedConnections = [...this.connections]
     this.candidateQueue = new PriorityQueue<Candidate>()
+    this.bootstrapSolvedRoutes({ inputGraph: input.inputGraph })
+    if (this.unprocessedConnections.length === 0) {
+      this.solved = true
+      return
+    }
     this.beginNewConnection()
   }
 
   override getConstructorParams() {
+    const graphForSerialization: HyperGraph = {
+      ...this.graph,
+      solvedRoutes: this.solvedRoutes.map((solvedRoute) => ({
+        portPoints: solvedRoute.path.map((candidate) => candidate.port),
+        connection: solvedRoute.connection,
+      })),
+    }
+
     return {
-      inputGraph: convertHyperGraphToSerializedHyperGraph(this.graph),
+      inputGraph: convertHyperGraphToSerializedHyperGraph(graphForSerialization),
       inputConnections: convertConnectionsToSerializedConnections(
         this.connections,
       ),
@@ -251,6 +266,264 @@ export class HyperGraphSolver<
     return crossingRoutesToRip
   }
 
+  private commitSolvedRoute(
+    solvedRoute: SolvedRoute,
+    { callHook = true }: { callHook?: boolean } = {},
+  ) {
+    const existingSolvedRoute = this.solvedRoutes.find(
+      (route) =>
+        route.connection.connectionId === solvedRoute.connection.connectionId,
+    )
+    if (existingSolvedRoute) {
+      throw new Error(
+        `Connection ${solvedRoute.connection.connectionId} already has a solved route`,
+      )
+    }
+
+    for (const candidate of solvedRoute.path) {
+      if (
+        candidate.port.assignment &&
+        candidate.port.assignment.connection.mutuallyConnectedNetworkId !==
+          solvedRoute.connection.mutuallyConnectedNetworkId
+      ) {
+        throw new Error(
+          `Port ${candidate.port.portId} is already assigned to connection ${candidate.port.assignment.connection.connectionId}`,
+        )
+      }
+      candidate.port.assignment = {
+        solvedRoute,
+        connection: solvedRoute.connection,
+      }
+      if (!candidate.lastPort) continue
+      const regionPortAssignment: RegionPortAssignment = {
+        regionPort1: candidate.lastPort,
+        regionPort2: candidate.port,
+        region: candidate.lastRegion!,
+        connection: solvedRoute.connection,
+        solvedRoute,
+      }
+      candidate.lastRegion!.assignments?.push(regionPortAssignment)
+    }
+
+    this.solvedRoutes.push(solvedRoute)
+    if (callHook) this.routeSolvedHook(solvedRoute)
+  }
+
+  private isSerializedInputSolvedRoute(
+    solvedRoute: InputSolvedRoute | SerializedInputSolvedRoute,
+  ): solvedRoute is SerializedInputSolvedRoute {
+    return "connectionId" in solvedRoute
+  }
+
+  private getBootstrapSolvedRoutes({
+    inputGraph,
+  }: {
+    inputGraph: HyperGraph | SerializedHyperGraph
+  }): Array<InputSolvedRoute | SerializedInputSolvedRoute> {
+    const rawSolvedRoutes: Array<InputSolvedRoute | SerializedInputSolvedRoute> =
+      []
+    for (const solvedRoute of inputGraph.solvedRoutes ?? []) {
+      rawSolvedRoutes.push(solvedRoute)
+    }
+    return rawSolvedRoutes
+  }
+
+  private createBootstrappedRoute({
+    rawSolvedRoute,
+    portMap,
+    connectionMap,
+  }: {
+    rawSolvedRoute: InputSolvedRoute | SerializedInputSolvedRoute
+    portMap: Map<PortId, RegionPort>
+    connectionMap: Map<string, Connection>
+  }): SolvedRoute {
+    const connectionId =
+      this.isSerializedInputSolvedRoute(rawSolvedRoute)
+        ? rawSolvedRoute.connectionId
+        : rawSolvedRoute.connection.connectionId
+    const connection = connectionMap.get(connectionId)
+    if (!connection) {
+      throw new Error(`Unknown solved route connection: ${connectionId}`)
+    }
+
+    const pathPortIds =
+      this.isSerializedInputSolvedRoute(rawSolvedRoute)
+        ? rawSolvedRoute.pathPortIds
+        : rawSolvedRoute.portPoints.map((port) => port.portId)
+
+    if (pathPortIds.length === 0) {
+      throw new Error(`Solved route ${connectionId} must include at least one port`)
+    }
+
+    const pathPorts = pathPortIds.map((portId) => {
+      const port = portMap.get(portId)
+      if (!port) {
+        throw new Error(
+          `Solved route ${connectionId} references unknown port ${portId}`,
+        )
+      }
+      return port
+    })
+
+    const previousConnection = this.currentConnection
+    const previousEndRegion = this.currentEndRegion
+    this.currentConnection = connection
+    this.currentEndRegion = connection.endRegion
+
+    let currentRegion = connection.startRegion
+    let previousCandidate: Candidate | undefined
+    const path: Candidate[] = []
+
+    try {
+      for (const [index, port] of pathPorts.entries()) {
+        const entersFromCurrentRegion =
+          port.region1 === currentRegion || port.region2 === currentRegion
+        if (!entersFromCurrentRegion) {
+          throw new Error(
+            `Solved route ${connectionId} has invalid transition at port ${port.portId}`,
+          )
+        }
+        const nextRegion =
+          port.region1 === currentRegion ? port.region2 : port.region1
+        const candidate: Candidate = {
+          port,
+          g: index,
+          h: 0,
+          f: index,
+          hops: index,
+          parent: previousCandidate,
+          lastPort: previousCandidate?.port,
+          lastRegion: index === 0 ? undefined : currentRegion,
+          nextRegion,
+          ripRequired: false,
+        }
+        this.assertBootstrappedCandidateIsValid({
+          connection,
+          candidate,
+          connectionId,
+        })
+        path.push(candidate)
+        previousCandidate = candidate
+        currentRegion = nextRegion
+      }
+    } finally {
+      this.currentConnection = previousConnection
+      this.currentEndRegion = previousEndRegion
+    }
+
+    if (currentRegion !== connection.endRegion) {
+      throw new Error(
+        `Solved route ${connectionId} does not terminate in end region ${connection.endRegion.regionId}`,
+      )
+    }
+
+    return {
+      path,
+      connection,
+      requiredRip: false,
+    }
+  }
+
+  private assertBootstrappedCandidateIsValid({
+    connection,
+    candidate,
+    connectionId,
+  }: {
+    connection: Connection
+    candidate: Candidate
+    connectionId: string
+  }) {
+    if (candidate.port.assignment) {
+      if (
+        candidate.port.assignment.connection.mutuallyConnectedNetworkId ===
+        connection.mutuallyConnectedNetworkId
+      ) {
+        throw new Error(
+          `Solved route ${connectionId} reuses bootstrapped port ${candidate.port.portId}, but shared port assignments are not yet supported`,
+        )
+      }
+      throw new Error(
+        `Solved route ${connectionId} requires ripping existing port usage at ${candidate.port.portId}`,
+      )
+    }
+
+    if (!candidate.lastPort || !candidate.lastRegion) return
+
+    if (
+      !this.isTransitionAllowed(
+        candidate.lastRegion as RegionType,
+        candidate.lastPort as RegionPortType,
+        candidate.port as RegionPortType,
+      )
+    ) {
+      throw new Error(
+        `Solved route ${connectionId} has disallowed transition in region ${candidate.lastRegion.regionId} from ${candidate.lastPort.portId} to ${candidate.port.portId}`,
+      )
+    }
+
+    if (
+      this.isRipRequiredForPortUsage(
+        candidate.lastRegion as RegionType,
+        candidate.lastPort as RegionPortType,
+        candidate.port as RegionPortType,
+      )
+    ) {
+      throw new Error(
+        `Solved route ${connectionId} requires ripping conflicting assignments in region ${candidate.lastRegion.regionId}`,
+      )
+    }
+
+    if (
+      this.getRipsRequiredForPortUsage(
+        candidate.lastRegion as RegionType,
+        candidate.lastPort as RegionPortType,
+        candidate.port as RegionPortType,
+      ).length > 0
+    ) {
+      throw new Error(
+        `Solved route ${connectionId} conflicts with existing assignments in region ${candidate.lastRegion.regionId}`,
+      )
+    }
+  }
+
+  private bootstrapSolvedRoutes({
+    inputGraph,
+  }: {
+    inputGraph: HyperGraph | SerializedHyperGraph
+  }) {
+    const rawSolvedRoutes = this.getBootstrapSolvedRoutes({ inputGraph })
+    if (rawSolvedRoutes.length === 0) return
+
+    const portMap = new Map(this.graph.ports.map((port) => [port.portId, port]))
+    const connectionMap = new Map(
+      this.connections.map((connection) => [connection.connectionId, connection]),
+    )
+    const bootstrappedConnectionIds = new Set<string>()
+
+    for (const rawSolvedRoute of rawSolvedRoutes) {
+      const connectionId = this.isSerializedInputSolvedRoute(rawSolvedRoute)
+        ? rawSolvedRoute.connectionId
+        : rawSolvedRoute.connection.connectionId
+      if (bootstrappedConnectionIds.has(connectionId)) {
+        throw new Error(
+          `Duplicate solved route for connection ${connectionId} in input graph`,
+        )
+      }
+
+      const solvedRoute = this.createBootstrappedRoute({
+        rawSolvedRoute,
+        portMap,
+        connectionMap,
+      })
+      this.commitSolvedRoute(solvedRoute, { callHook: false })
+      bootstrappedConnectionIds.add(connectionId)
+    }
+
+    this.unprocessedConnections = this.unprocessedConnections.filter(
+      (connection) => !bootstrappedConnectionIds.has(connection.connectionId),
+    )
+  }
+
   getNextCandidates(currentCandidate: CandidateType): CandidateType[] {
     const currentRegion = currentCandidate.nextRegion!
     const currentPort = currentCandidate.port
@@ -342,25 +615,7 @@ export class HyperGraphSolver<
         this.ripSolvedRoute(route)
       }
     }
-
-    for (const candidate of solvedRoute.path) {
-      candidate.port.assignment = {
-        solvedRoute,
-        connection: this.currentConnection!,
-      }
-      if (!candidate.lastPort) continue
-      const regionPortAssignment: RegionPortAssignment = {
-        regionPort1: candidate.lastPort,
-        regionPort2: candidate.port,
-        region: candidate.lastRegion!,
-        connection: this.currentConnection!,
-        solvedRoute,
-      }
-      candidate.lastRegion!.assignments?.push(regionPortAssignment)
-    }
-
-    this.solvedRoutes.push(solvedRoute)
-    this.routeSolvedHook(solvedRoute)
+    this.commitSolvedRoute(solvedRoute)
   }
 
   /**
@@ -400,6 +655,11 @@ export class HyperGraphSolver<
   }
 
   beginNewConnection() {
+    if (this.unprocessedConnections.length === 0) {
+      this.currentConnection = null
+      this.currentEndRegion = null
+      return
+    }
     this.currentConnection = this.unprocessedConnections.shift()!
     this.currentEndRegion = this.currentConnection.endRegion
     this.candidateQueue = new PriorityQueue<Candidate>()
