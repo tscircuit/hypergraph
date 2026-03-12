@@ -61,6 +61,7 @@ export class HyperGraphSolver<
   ) {
     super()
     this.graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
+    this.graph.solvedRoutes = this.solvedRoutes
     for (const region of this.graph.regions) {
       region.assignments = []
     }

@@ -3,6 +3,7 @@ import type {
   SerializedHyperGraph,
   SerializedGraphPort,
   SerializedGraphRegion,
+  SolvedRoute,
 } from "./types"
 
 export const convertHyperGraphToSerializedHyperGraph = (
