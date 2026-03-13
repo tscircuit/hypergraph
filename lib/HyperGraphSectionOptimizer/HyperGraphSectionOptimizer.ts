@@ -251,9 +251,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
           ) {
             continue
           }
-          connectionsToReroute.add(
-            this.random() < 0.5 ? firstId : secondId,
-          )
+          connectionsToReroute.add(this.random() < 0.5 ? firstId : secondId)
         }
       }
     }
@@ -333,9 +331,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     const baselineSolver = this.input.createHyperGraphSolver({
       inputGraph: this.activeSection.graph,
       inputConnections: this.activeSection.connections,
-      inputSolvedRoutes: fixedSectionRoutes.map(
-        (route) => route.sectionRoute,
-      ),
+      inputSolvedRoutes: fixedSectionRoutes.map((route) => route.sectionRoute),
     })
     const connectionsToReroute = this.determineConnectionsToRip(
       this.activeSection,

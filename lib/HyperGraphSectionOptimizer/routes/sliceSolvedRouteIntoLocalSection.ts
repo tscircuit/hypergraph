@@ -5,7 +5,10 @@ import type { Candidate, HyperGraph } from "../../types"
 export const sliceSolvedRouteIntoLocalSection = (input: {
   sectionRoute: Pick<
     SectionRoute,
-    "globalRoute" | "sectionConnection" | "sectionStartIndex" | "sectionEndIndex"
+    | "globalRoute"
+    | "sectionConnection"
+    | "sectionStartIndex"
+    | "sectionEndIndex"
   >
   graph: HyperGraph
 }): SectionRoute["sectionRoute"] => {

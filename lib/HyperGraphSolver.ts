@@ -4,10 +4,7 @@ import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSe
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
 import { PriorityQueue } from "./PriorityQueue"
-import {
-  clearAssignmentsFromGraph,
-  commitSolvedRoutes,
-} from "./solvedRoutes"
+import { clearAssignmentsFromGraph, commitSolvedRoutes } from "./solvedRoutes"
 import type {
   Candidate,
   Connection,

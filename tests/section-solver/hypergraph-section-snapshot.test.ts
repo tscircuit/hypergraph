@@ -83,9 +83,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   const middleGraphics = visualizeJumperGraphWithSolvedRoutes({
     graph: sectionGraph,
     connections: section!.connections,
-    solvedRoutes: section!.sectionRoutes.map(
-      (route) => route.sectionRoute,
-    ),
+    solvedRoutes: section!.sectionRoutes.map((route) => route.sectionRoute),
     title: "Section snapshot",
   })
 

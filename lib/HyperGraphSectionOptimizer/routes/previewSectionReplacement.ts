@@ -18,7 +18,8 @@ export const previewSectionReplacement = (input: {
   return solvedRoutes.map((solvedRoute) => {
     const sectionRoute = section.sectionRoutes.find(
       (route) =>
-        route.globalConnection.connectionId === solvedRoute.connection.connectionId,
+        route.globalConnection.connectionId ===
+        solvedRoute.connection.connectionId,
     )
     if (!sectionRoute) return solvedRoute
 

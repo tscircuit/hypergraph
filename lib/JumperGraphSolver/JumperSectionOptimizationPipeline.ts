@@ -8,9 +8,7 @@ import { convertConnectionsToSerializedConnections } from "lib/convertConnection
 import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
 import { convertSerializedConnectionsToConnections } from "lib/convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
-import {
-  computeJumperRegionCost,
-} from "../HyperGraphSectionOptimizer/computeJumperGlobalCost"
+import { computeJumperRegionCost } from "../HyperGraphSectionOptimizer/computeJumperGlobalCost"
 import { HyperGraphSectionOptimizer } from "../HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 import type {
   Connection,
