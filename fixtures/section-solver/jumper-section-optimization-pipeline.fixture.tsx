@@ -28,6 +28,8 @@ const createSolver = () => {
     expansionHopsFromCentralRegion: 1,
     maxAttemptsPerRegion: 1,
     sectionMaxIterations: 200_000,
+    maxSectionAttempts: 2,
+    ACCEPTABLE_PF: 0.5,
   })
 }
 

@@ -48,6 +48,7 @@ test("score should be lower", {
     expansionHopsFromCentralRegion: 1,
     maxAttemptsPerRegion: 1,
     sectionMaxIterations: 200_000,
+    ACCEPTABLE_PF: 0.5,
   })
 
   pipeline.solve()

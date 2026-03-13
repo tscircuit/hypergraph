@@ -61,7 +61,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
   sectionAttempts = 0
   maxAttemptsPerRegion: number
   maxSectionAttempts: number
-  effort: number
   fractionToReplace: number
   alwaysRipConflicts: boolean
 
@@ -69,25 +68,26 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
 
   constructor(
     public input: {
-      sourceSolver: HyperGraphSolver<Region, RegionPort>
+      hyperGraphSolver: HyperGraphSolver<Region, RegionPort>
       inputSolvedRoutes: SolvedRoute[]
       expansionHopsFromCentralRegion: number
       createHyperGraphSolver: CreateHyperGraphSolver
-      maxAttemptsPerRegion: number
       computeRegionCost: (region: Region) => number
-      regionScore: (region: Region) => number
-      effort?: number
-      maxSectionAttempts?: number
-      fractionToReplace?: number
+      regionCost: (region: Region) => number
+      effort: number
+      ACCEPTABLE_COST: number
+      MAX_ATTEMPTS_PER_REGION: number
+      MAX_ATTEMPTS_PER_SECTION?: number
+      FRACTION_TO_REPLACE?: number
       alwaysRipConflicts?: boolean
-      boardScore?: (solvedRoutes: SolvedRoute[]) => number
+      boardCost?: (solvedRoutes: SolvedRoute[]) => number
     },
   ) {
     super()
-    this.graph = input.sourceSolver.graph
+    this.graph = input.hyperGraphSolver.graph
 
     const initialSolvedRoutes = input.inputSolvedRoutes
-    const inputConnections = input.sourceSolver.connections
+    const inputConnections = input.hyperGraphSolver.connections
 
     this.connections = inputConnections
     this.solvedRoutes = rehydrateSolvedRoutes({
@@ -96,10 +96,10 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       solvedRoutes: initialSolvedRoutes,
     })
     rebuildAssignmentsFromSolvedRoutes(this.graph, this.solvedRoutes)
-    this.maxAttemptsPerRegion = input.maxAttemptsPerRegion
-    this.maxSectionAttempts = input.maxSectionAttempts ?? 500
-    this.effort = input.effort ?? 1
-    this.fractionToReplace = input.fractionToReplace ?? 0.2
+    this.maxAttemptsPerRegion = input.MAX_ATTEMPTS_PER_REGION
+    this.maxSectionAttempts = input.MAX_ATTEMPTS_PER_SECTION ?? 500
+    this.iterations += this.iterations * (input.effort ?? 1)
+    this.fractionToReplace = input.FRACTION_TO_REPLACE ?? 0.2
     this.alwaysRipConflicts = input.alwaysRipConflicts ?? true
   }
 
@@ -117,9 +117,10 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       expansionHopsFromCentralRegion: this.input.expansionHopsFromCentralRegion,
       maxAttemptsPerRegion: this.maxAttemptsPerRegion,
       maxSectionAttempts: this.maxSectionAttempts,
-      effort: this.effort,
+      effort: this.input.effort,
       fractionToReplace: this.fractionToReplace,
       alwaysRipConflicts: this.alwaysRipConflicts,
+      ACCEPTABLE_COST: this.input.ACCEPTABLE_COST,
     }
   }
 
@@ -150,7 +151,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
 
   getCostOfCentralRegion(region: Region): number {
     const attempts = this.regionAttemptCounts.get(region.regionId) ?? 0
-    return this.input.regionScore(region) + attempts * 10_000
+    return this.input.regionCost(region) + attempts * 10_000
   }
 
   computeCostOfSection({
@@ -160,8 +161,8 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     section: HyperGraphSection
     solvedRoutes: SolvedRoute[]
   }): number {
-    if (this.input.boardScore) {
-      return this.input.boardScore(solvedRoutes)
+    if (this.input.boardCost) {
+      return this.input.boardCost(solvedRoutes)
     }
     // Default: sum of all region scores in the section
     const solver = this.input.createHyperGraphSolver({
@@ -171,14 +172,14 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     })
     let totalCost = 0
     for (const region of solver.graph.regions) {
-      totalCost += this.input.regionScore(region)
+      totalCost += this.input.regionCost(region)
     }
     return totalCost
   }
 
   private computeBoardCost(solvedRoutes: SolvedRoute[]): number {
-    if (this.input.boardScore) {
-      return this.input.boardScore(solvedRoutes)
+    if (this.input.boardCost) {
+      return this.input.boardCost(solvedRoutes)
     }
     // Default: sum of all region scores
     const solver = this.input.createHyperGraphSolver({
@@ -188,7 +189,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     })
     let totalCost = 0
     for (const region of solver.graph.regions) {
-      totalCost += this.input.regionScore(region)
+      totalCost += this.input.regionCost(region)
     }
     return totalCost
   }
@@ -271,6 +272,11 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       ) {
         continue
       }
+
+      const regionCost = this.input.regionCost(region)
+
+      // Skip regions below acceptable threshold
+      if (regionCost < this.input.ACCEPTABLE_COST) continue
 
       const cost = this.getCostOfCentralRegion(region)
       if (cost >= bestCost) continue
@@ -430,7 +436,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     if (sectionNotWorse && boardImproved) {
       this.solvedRoutes = replacementAppliedSolvedRoutes
 
-      const sourceSolver = this.input.sourceSolver
+      const sourceSolver = this.input.hyperGraphSolver
       if (!sourceSolver) return
 
       sourceSolver.solvedRoutes = rehydrateSolvedRoutes({

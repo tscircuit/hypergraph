@@ -43,13 +43,15 @@ test("capture mid-section visualization for the section optimizer", async () => 
   console.log(`Initial board cost: ${initialCost}`)
 
   const optimizer = new HyperGraphSectionOptimizer({
-    sourceSolver: initialSolver,
+    hyperGraphSolver: initialSolver,
     inputSolvedRoutes: initialSolver.solvedRoutes,
     expansionHopsFromCentralRegion: 1,
-    maxAttemptsPerRegion: 1,
+    MAX_ATTEMPTS_PER_REGION: 1,
     createHyperGraphSolver: (input) => new JumperGraphSolver(input),
     computeRegionCost,
-    regionScore: computeRegionCost,
+    regionCost: computeRegionCost,
+    effort: 1,
+    ACCEPTABLE_COST: 0.5,
   })
 
   optimizer.step()

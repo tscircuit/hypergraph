@@ -4,6 +4,10 @@ import {
   type PipelineStep,
 } from "@tscircuit/solver-utils"
 import type { GraphicsObject } from "graphics-debug"
+import { convertConnectionsToSerializedConnections } from "lib/convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedConnectionsToConnections } from "lib/convertSerializedConnectionsToConnections"
+import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
 import {
   computeBoardCost,
   computeRegionCost,
@@ -19,10 +23,6 @@ import type {
 import { JumperGraphSolver } from "./JumperGraphSolver"
 import type { JumperGraph } from "./jumper-types"
 import { visualizeJumperGraphWithSolvedRoutes } from "./visualizeJumperGraphSolver"
-import { convertSerializedConnectionsToConnections } from "lib/convertSerializedConnectionsToConnections"
-import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
-import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
-import { convertConnectionsToSerializedConnections } from "lib/convertConnectionsToSerializedConnections"
 
 export type JumperSectionOptimizationPipelineInput = {
   inputGraph: HyperGraph | SerializedHyperGraph
@@ -30,6 +30,9 @@ export type JumperSectionOptimizationPipelineInput = {
   expansionHopsFromCentralRegion: number
   maxAttemptsPerRegion?: number
   sectionMaxIterations?: number
+  maxSectionAttempts?: number
+  effort?: number
+  ACCEPTABLE_PF: number
 }
 
 export class JumperSectionOptimizationPipeline extends BasePipelineSolver<JumperSectionOptimizationPipelineInput> {
@@ -54,34 +57,45 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
   }
 
   pipelineDef: PipelineStep<any>[] = [
-    definePipelineStep(
-      "jumperGraphSolver",
-      JumperGraphSolver,
-      (instance: JumperSectionOptimizationPipeline) => [
-        {
-          inputGraph: instance.normalizedGraph,
-          inputConnections: instance.normalizedConnections,
-        },
-      ],
-    ),
+    definePipelineStep("jumperGraphSolver", JumperGraphSolver, (instance) => [
+      {
+        inputGraph: (instance as JumperSectionOptimizationPipeline)
+          .normalizedGraph,
+        inputConnections: (instance as JumperSectionOptimizationPipeline)
+          .normalizedConnections,
+      },
+    ]),
     definePipelineStep(
       "hyperGraphSectionOptimizer",
       HyperGraphSectionOptimizer,
-      (instance: JumperSectionOptimizationPipeline) => [
+      (instance) => [
         {
-          inputGraph: instance.normalizedGraph,
-          inputConnections: instance.normalizedConnections,
-          inputSolvedRoutes:
-            instance.getSolver<JumperGraphSolver>("jumperGraphSolver")!
-              .solvedRoutes,
-          sourceSolver:
-            instance.getSolver<JumperGraphSolver>("jumperGraphSolver")!,
-          expansionHopsFromCentralRegion:
-            instance.inputProblem.expansionHopsFromCentralRegion,
-          maxAttemptsPerRegion: instance.inputProblem.maxAttemptsPerRegion ?? 1,
+          inputGraph: (instance as JumperSectionOptimizationPipeline)
+            .normalizedGraph,
+          inputConnections: (instance as JumperSectionOptimizationPipeline)
+            .normalizedConnections,
+          inputSolvedRoutes: (
+            instance as JumperSectionOptimizationPipeline
+          ).getSolver<JumperGraphSolver>("jumperGraphSolver")!.solvedRoutes,
+          hyperGraphSolver: (
+            instance as JumperSectionOptimizationPipeline
+          ).getSolver<JumperGraphSolver>("jumperGraphSolver")!,
+          expansionHopsFromCentralRegion: (
+            instance as JumperSectionOptimizationPipeline
+          ).inputProblem.expansionHopsFromCentralRegion,
+          MAX_ATTEMPTS_PER_REGION:
+            (instance as JumperSectionOptimizationPipeline).inputProblem
+              .maxAttemptsPerRegion ?? 1,
+          maxSectionAttempts: (instance as JumperSectionOptimizationPipeline)
+            .inputProblem.maxSectionAttempts,
           createHyperGraphSolver: (input) => new JumperGraphSolver(input),
           computeRegionCost,
-          regionScore: computeRegionCost,
+          regionCost: computeRegionCost,
+          effort:
+            (instance as JumperSectionOptimizationPipeline).inputProblem
+              .effort ?? 1,
+          ACCEPTABLE_PF: (instance as JumperSectionOptimizationPipeline)
+            .inputProblem.ACCEPTABLE_PF,
         },
       ],
     ),
