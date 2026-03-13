@@ -32,7 +32,7 @@ export type JumperSectionOptimizationPipelineInput = {
   sectionMaxIterations?: number
   maxSectionAttempts?: number
   effort?: number
-  ACCEPTABLE_PF: number
+  ACCEPTABLE_COST: number
 }
 
 export class JumperSectionOptimizationPipeline extends BasePipelineSolver<JumperSectionOptimizationPipelineInput> {
@@ -86,16 +86,17 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
           MAX_ATTEMPTS_PER_REGION:
             (instance as JumperSectionOptimizationPipeline).inputProblem
               .maxAttemptsPerRegion ?? 1,
-          maxSectionAttempts: (instance as JumperSectionOptimizationPipeline)
-            .inputProblem.maxSectionAttempts,
+          MAX_ATTEMPTS_PER_SECTION: (
+            instance as JumperSectionOptimizationPipeline
+          ).inputProblem.maxSectionAttempts,
           createHyperGraphSolver: (input) => new JumperGraphSolver(input),
           computeRegionCost,
           regionCost: computeRegionCost,
           effort:
             (instance as JumperSectionOptimizationPipeline).inputProblem
               .effort ?? 1,
-          ACCEPTABLE_PF: (instance as JumperSectionOptimizationPipeline)
-            .inputProblem.ACCEPTABLE_PF,
+          ACCEPTABLE_COST: (instance as JumperSectionOptimizationPipeline)
+            .inputProblem.ACCEPTABLE_COST,
         },
       ],
     ),

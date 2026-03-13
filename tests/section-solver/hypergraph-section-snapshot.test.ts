@@ -51,7 +51,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
     computeRegionCost,
     regionCost: computeRegionCost,
     effort: 1,
-    ACCEPTABLE_COST: 0.5,
+    ACCEPTABLE_COST: 0,
   })
 
   optimizer.step()
