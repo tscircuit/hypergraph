@@ -19,7 +19,7 @@ export const clearAssignmentsFromGraph = (graph: HyperGraph) => {
   }
 }
 
-export const rehydrateSolvedRoutes = ({
+export const commitSolvedRoutes = ({
   graph,
   connections,
   solvedRoutes,

@@ -1,22 +1,22 @@
-import type { HyperGraphSectionRouteDescriptor } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
+import type { SectionRoute } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 import type { Candidate, HyperGraph } from "../../types"
 
 /** Extracts the segment of the original route confined to the section graph. */
 export const sliceSolvedRouteIntoLocalSection = (input: {
-  descriptor: Pick<
-    HyperGraphSectionRouteDescriptor,
-    "originalRoute" | "localConnection" | "startIndex" | "endIndex"
+  sectionRoute: Pick<
+    SectionRoute,
+    "globalRoute" | "sectionConnection" | "sectionStartIndex" | "sectionEndIndex"
   >
   graph: HyperGraph
-}): HyperGraphSectionRouteDescriptor["localSolvedRoute"] => {
-  const { descriptor, graph } = input
+}): SectionRoute["sectionRoute"] => {
+  const { sectionRoute, graph } = input
   const localPortIds = new Set(graph.ports.map((port) => port.portId))
-  const originalLocalPath = descriptor.originalRoute.path
-    .slice(descriptor.startIndex, descriptor.endIndex + 1)
+  const originalLocalPath = sectionRoute.globalRoute.path
+    .slice(sectionRoute.sectionStartIndex, sectionRoute.sectionEndIndex + 1)
     .filter((candidate) => localPortIds.has(candidate.port.portId))
 
   const path: Candidate[] = []
-  let currentRegion = descriptor.localConnection.startRegion
+  let currentRegion = sectionRoute.sectionConnection.startRegion
 
   for (let index = 0; index < originalLocalPath.length; index++) {
     const originalCandidate = originalLocalPath[index]
@@ -43,8 +43,8 @@ export const sliceSolvedRouteIntoLocalSection = (input: {
   }
 
   return {
-    connection: descriptor.localConnection,
+    connection: sectionRoute.sectionConnection,
     path,
-    requiredRip: descriptor.originalRoute.requiredRip,
+    requiredRip: sectionRoute.globalRoute.requiredRip,
   }
 }

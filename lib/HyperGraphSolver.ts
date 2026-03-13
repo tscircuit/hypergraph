@@ -7,7 +7,7 @@ import { PriorityQueue } from "./PriorityQueue"
 import {
   clearAssignmentsFromGraph,
   rebuildAssignmentsFromSolvedRoutes,
-  rehydrateSolvedRoutes,
+  commitSolvedRoutes,
 } from "./solvedRoutes"
 import type {
   Candidate,
@@ -77,7 +77,7 @@ export class HyperGraphSolver<
       this.graph,
     )
     if (input.inputSolvedRoutes) {
-      this.solvedRoutes = rehydrateSolvedRoutes({
+      this.solvedRoutes = commitSolvedRoutes({
         graph: this.graph,
         connections: this.connections,
         solvedRoutes: input.inputSolvedRoutes,

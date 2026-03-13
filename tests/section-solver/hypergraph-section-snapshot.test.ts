@@ -40,7 +40,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   initialSolver.solve()
 
   const initialCost = computeBoardCost(initialSolver)
-  console.log(`Initial board cost: ${initialCost}`)
+  console.log(`Initial global cost: ${initialCost}`)
 
   const optimizer = new HyperGraphSectionOptimizer({
     hyperGraphSolver: initialSolver,
@@ -60,7 +60,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   optimizer.step()
 
   const midCost = computeBoardCost(initialSolver)
-  console.log(`After 4 steps board cost: ${midCost}`)
+  console.log(`After 4 steps global cost: ${midCost}`)
 
   const section = optimizer.activeSection
   expect(section).not.toBeNull()
@@ -83,8 +83,8 @@ test("capture mid-section visualization for the section optimizer", async () => 
   const middleGraphics = visualizeJumperGraphWithSolvedRoutes({
     graph: sectionGraph,
     connections: section!.connections,
-    solvedRoutes: section!.routeDescriptors.map(
-      (descriptor) => descriptor.localSolvedRoute,
+    solvedRoutes: section!.sectionRoutes.map(
+      (route) => route.sectionRoute,
     ),
     title: "Section snapshot",
   })
@@ -96,7 +96,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   )
 
   const finalCost = computeBoardCost(initialSolver)
-  console.log(`Final board cost after optimization: ${finalCost}`)
+  console.log(`Final global cost after optimization: ${finalCost}`)
   console.log(
     `Cost improvement: ${initialCost} -> ${finalCost} (saved ${initialCost - finalCost} jumpers)`,
   )

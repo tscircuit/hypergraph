@@ -6,7 +6,7 @@ import type { HyperGraphSolver } from "../HyperGraphSolver"
 import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
 import {
   rebuildAssignmentsFromSolvedRoutes,
-  rehydrateSolvedRoutes,
+  commitSolvedRoutes,
 } from "../solvedRoutes"
 import type {
   Connection,
@@ -32,14 +32,14 @@ export type CreateHyperGraphSolver = (
   input: CreateHyperGraphSolverInput,
 ) => HyperGraphSolver<Region, RegionPort>
 
-export type HyperGraphSectionRouteDescriptor = {
-  originalRoute: SolvedRoute
-  originalConnection: Connection
-  localConnection: Connection
-  localSolvedRoute: SolvedRoute
-  canSeedLocalSolvedRoute: boolean
-  startIndex: number
-  endIndex: number
+export type SectionRoute = {
+  globalRoute: SolvedRoute
+  globalConnection: Connection
+  sectionConnection: Connection
+  sectionRoute: SolvedRoute
+  canRemainFixedInSectionSolve: boolean
+  sectionStartIndex: number
+  sectionEndIndex: number
 }
 
 export type HyperGraphSection = {
@@ -47,7 +47,7 @@ export type HyperGraphSection = {
   sectionRegionIds: Set<RegionId>
   graph: HyperGraph
   connections: Connection[]
-  routeDescriptors: HyperGraphSectionRouteDescriptor[]
+  sectionRoutes: SectionRoute[]
 }
 
 export class HyperGraphSectionOptimizer extends BaseSolver {
@@ -56,7 +56,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
   solvedRoutes: SolvedRoute[]
   activeSection: HyperGraphSection | null = null
   baselineSectionCost = Infinity
-  baselineBoardCost = Infinity
+  baselineGlobalCost = Infinity
   regionAttemptCounts = new Map<RegionId, number>()
   sectionAttempts = 0
   maxAttemptsPerRegion: number
@@ -90,7 +90,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     const inputConnections = input.hyperGraphSolver.connections
 
     this.connections = inputConnections
-    this.solvedRoutes = rehydrateSolvedRoutes({
+    this.solvedRoutes = commitSolvedRoutes({
       graph: this.graph,
       connections: this.connections,
       solvedRoutes: initialSolvedRoutes,
@@ -201,8 +201,8 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     section: HyperGraphSection,
     evaluationSolver: HyperGraphSolver<Region, RegionPort>,
   ): Set<string> {
-    const allConnectionIds = section.routeDescriptors.map(
-      (descriptor) => descriptor.originalConnection.connectionId,
+    const allConnectionIds = section.sectionRoutes.map(
+      (route) => route.globalConnection.connectionId,
     )
     if (this.fractionToReplace >= 1) {
       return new Set(allConnectionIds)
@@ -217,23 +217,25 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       1,
       Math.ceil(shuffledConnectionIds.length * this.fractionToReplace),
     )
-    const connectionsToRip = new Set(shuffledConnectionIds.slice(0, ripCount))
+    const connectionsToReroute = new Set(
+      shuffledConnectionIds.slice(0, ripCount),
+    )
 
     if (!this.alwaysRipConflicts) {
-      return connectionsToRip
+      return connectionsToReroute
     }
 
     const localRegionMap = new Map(
       section.graph.regions.map((region) => [region.regionId, region]),
     )
 
-    for (const descriptor of section.routeDescriptors) {
-      for (const candidate of descriptor.localSolvedRoute.path) {
+    for (const route of section.sectionRoutes) {
+      for (const candidate of route.sectionRoute.path) {
         if (!candidate.lastPort || !candidate.lastRegion) continue
         const sectionRegion = localRegionMap.get(candidate.lastRegion.regionId)
         if (!sectionRegion) continue
 
-        evaluationSolver.currentConnection = descriptor.originalConnection
+        evaluationSolver.currentConnection = route.globalConnection
         const conflictingAssignments =
           evaluationSolver.getRipsRequiredForPortUsage(
             sectionRegion,
@@ -242,20 +244,23 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
           )
 
         for (const conflict of conflictingAssignments) {
-          const firstId = descriptor.originalConnection.connectionId
+          const firstId = route.globalConnection.connectionId
           const secondId = conflict.connection.connectionId
-          if (connectionsToRip.has(firstId) || connectionsToRip.has(secondId)) {
+          if (
+            connectionsToReroute.has(firstId) ||
+            connectionsToReroute.has(secondId)
+          ) {
             continue
           }
           const random = createSeededRandom(
             (attempts + 1) * 31337 + firstId.length + secondId.length,
           )
-          connectionsToRip.add(random() < 0.5 ? firstId : secondId)
+          connectionsToReroute.add(random() < 0.5 ? firstId : secondId)
         }
       }
     }
 
-    return connectionsToRip
+    return connectionsToReroute
   }
 
   private getNextCentralRegion(): Region | null {
@@ -324,52 +329,52 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       return
     }
 
-    const seedableRouteDescriptors = this.activeSection.routeDescriptors.filter(
-      (descriptor) => descriptor.canSeedLocalSolvedRoute,
+    const fixedSectionRoutes = this.activeSection.sectionRoutes.filter(
+      (route) => route.canRemainFixedInSectionSolve,
     )
     const baselineSolver = this.input.createHyperGraphSolver({
       inputGraph: this.activeSection.graph,
       inputConnections: this.activeSection.connections,
-      inputSolvedRoutes: seedableRouteDescriptors.map(
-        (descriptor) => descriptor.localSolvedRoute,
+      inputSolvedRoutes: fixedSectionRoutes.map(
+        (route) => route.sectionRoute,
       ),
     })
-    const connectionsToRip = this.determineConnectionsToRip(
+    const connectionsToReroute = this.determineConnectionsToRip(
       this.activeSection,
       baselineSolver,
     )
-    for (const descriptor of this.activeSection.routeDescriptors) {
-      if (!descriptor.canSeedLocalSolvedRoute) {
-        connectionsToRip.add(descriptor.originalConnection.connectionId)
+    for (const route of this.activeSection.sectionRoutes) {
+      if (!route.canRemainFixedInSectionSolve) {
+        connectionsToReroute.add(route.globalConnection.connectionId)
       }
     }
-    const connectionsToKeep = this.activeSection.routeDescriptors.filter(
-      (descriptor) =>
-        descriptor.canSeedLocalSolvedRoute &&
-        !connectionsToRip.has(descriptor.originalConnection.connectionId),
+    const remainingSectionRoutes = this.activeSection.sectionRoutes.filter(
+      (route) =>
+        route.canRemainFixedInSectionSolve &&
+        !connectionsToReroute.has(route.globalConnection.connectionId),
     )
-    const keptLocalSolvedRoutes = connectionsToKeep.map(
-      (descriptor) => descriptor.localSolvedRoute,
+    const fixedSectionSolvedRoutes = remainingSectionRoutes.map(
+      (route) => route.sectionRoute,
     )
 
     const baselineSectionSolvedRoutes = [
-      ...keptLocalSolvedRoutes,
-      ...this.activeSection.routeDescriptors
-        .filter((descriptor) =>
-          connectionsToRip.has(descriptor.originalConnection.connectionId),
+      ...fixedSectionSolvedRoutes,
+      ...this.activeSection.sectionRoutes
+        .filter((route) =>
+          connectionsToReroute.has(route.globalConnection.connectionId),
         )
-        .map((descriptor) => descriptor.localSolvedRoute),
+        .map((route) => route.sectionRoute),
     ]
     this.baselineSectionCost = this.computeCostOfSection({
       section: this.activeSection,
       solvedRoutes: baselineSectionSolvedRoutes,
     })
-    this.baselineBoardCost = this.computeSolvedGraphCost(this.solvedRoutes)
+    this.baselineGlobalCost = this.computeSolvedGraphCost(this.solvedRoutes)
 
     this.activeSubSolver = this.input.createHyperGraphSolver({
       inputGraph: this.activeSection.graph,
       inputConnections: this.activeSection.connections,
-      inputSolvedRoutes: keptLocalSolvedRoutes,
+      inputSolvedRoutes: fixedSectionSolvedRoutes,
     })
 
     // Validate the subsolver's connections have valid regions
@@ -407,37 +412,37 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       this.activeSubSolver = null
       this.activeSection = null
       this.baselineSectionCost = Infinity
-      this.baselineBoardCost = Infinity
+      this.baselineGlobalCost = Infinity
       return
     }
 
     if (!this.activeSubSolver.solved) return
 
-    const replacementSolvedRoutes = this.activeSubSolver.solvedRoutes
+    const candidateSectionSolvedRoutes = this.activeSubSolver.solvedRoutes
     const candidateCost = this.computeCostOfSection({
       section: this.activeSection,
-      solvedRoutes: replacementSolvedRoutes,
+      solvedRoutes: candidateSectionSolvedRoutes,
     })
     const replacementAppliedSolvedRoutes = previewSectionReplacement({
       solvedRoutes: this.solvedRoutes,
       section: this.activeSection,
-      replacementSolvedRoutes,
+      replacementSolvedRoutes: candidateSectionSolvedRoutes,
     })
 
-    const candidateBoardCost = this.computeSolvedGraphCost(
+    const candidateGlobalCost = this.computeSolvedGraphCost(
       replacementAppliedSolvedRoutes,
     )
 
     const sectionNotWorse = candidateCost <= this.baselineSectionCost
-    const boardImproved = candidateBoardCost < this.baselineBoardCost
+    const globalImproved = candidateGlobalCost < this.baselineGlobalCost
 
-    if (sectionNotWorse && boardImproved) {
+    if (sectionNotWorse && globalImproved) {
       this.solvedRoutes = replacementAppliedSolvedRoutes
 
       const sourceSolver = this.input.hyperGraphSolver
       if (!sourceSolver) return
 
-      sourceSolver.solvedRoutes = rehydrateSolvedRoutes({
+      sourceSolver.solvedRoutes = commitSolvedRoutes({
         graph: sourceSolver.graph,
         connections: sourceSolver.connections,
         solvedRoutes: this.solvedRoutes,
@@ -451,7 +456,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
         this.regionAttemptCounts.set(regionId, 0)
       }
       this.baselineSectionCost = candidateCost
-      this.baselineBoardCost = candidateBoardCost
+      this.baselineGlobalCost = candidateGlobalCost
     } else {
       const attempts =
         this.regionAttemptCounts.get(this.activeSection.centralRegionId) ?? 0
@@ -464,6 +469,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     this.activeSubSolver = null
     this.activeSection = null
     this.baselineSectionCost = Infinity
-    this.baselineBoardCost = Infinity
+    this.baselineGlobalCost = Infinity
   }
 }

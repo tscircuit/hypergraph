@@ -1,6 +1,6 @@
 import type {
   HyperGraphSection,
-  HyperGraphSectionRouteDescriptor,
+  SectionRoute,
 } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 import type {
   Connection,
@@ -83,7 +83,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
     ports: clonedPorts,
   }
 
-  const sectionConnectionDescriptors: HyperGraphSectionRouteDescriptor[] = []
+  const sectionRoutes: SectionRoute[] = []
   const sectionConnections: Connection[] = []
   const sectionRegionMap = new Map(
     sectionGraph.regions.map((region) => [region.regionId, region]),
@@ -171,7 +171,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       throw new Error(`endRegion ${endRegionId} not found in sectionRegionMap`)
     }
 
-    const localConnection: Connection = {
+    const sectionConnection: Connection = {
       connectionId: solvedRoute.connection.connectionId,
       mutuallyConnectedNetworkId:
         solvedRoute.connection.mutuallyConnectedNetworkId,
@@ -179,26 +179,26 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       endRegion,
     }
     const rawPath = solvedRoute.path.slice(span.startIndex, span.endIndex + 1)
-    const descriptorBase = {
-      originalRoute: solvedRoute,
-      originalConnection: solvedRoute.connection,
-      localConnection,
-      startIndex: span.startIndex,
-      endIndex: span.endIndex,
+    const sectionRouteBase = {
+      globalRoute: solvedRoute,
+      globalConnection: solvedRoute.connection,
+      sectionConnection,
+      sectionStartIndex: span.startIndex,
+      sectionEndIndex: span.endIndex,
     }
-    sectionConnectionDescriptors.push({
-      ...descriptorBase,
-      canSeedLocalSolvedRoute: rawPath.every((candidate) =>
+    sectionRoutes.push({
+      ...sectionRouteBase,
+      canRemainFixedInSectionSolve: rawPath.every((candidate) =>
         sectionGraph.ports.some(
           (port) => port.portId === candidate.port.portId,
         ),
       ),
-      localSolvedRoute: sliceSolvedRouteIntoLocalSection({
-        descriptor: descriptorBase,
+      sectionRoute: sliceSolvedRouteIntoLocalSection({
+        sectionRoute: sectionRouteBase,
         graph: sectionGraph,
       }),
     })
-    sectionConnections.push(localConnection)
+    sectionConnections.push(sectionConnection)
   }
 
   return {
@@ -206,6 +206,6 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
     sectionRegionIds,
     graph: sectionGraph,
     connections: sectionConnections,
-    routeDescriptors: sectionConnectionDescriptors,
+    sectionRoutes,
   }
 }

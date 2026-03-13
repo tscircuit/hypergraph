@@ -16,12 +16,11 @@ export const previewSectionReplacement = (input: {
   )
 
   return solvedRoutes.map((solvedRoute) => {
-    const routeDescriptor = section.routeDescriptors.find(
-      (descriptor) =>
-        descriptor.originalConnection.connectionId ===
-        solvedRoute.connection.connectionId,
+    const sectionRoute = section.sectionRoutes.find(
+      (route) =>
+        route.globalConnection.connectionId === solvedRoute.connection.connectionId,
     )
-    if (!routeDescriptor) return solvedRoute
+    if (!sectionRoute) return solvedRoute
 
     const replacementSolvedRoute = replacementByConnectionId.get(
       solvedRoute.connection.connectionId,
@@ -29,9 +28,9 @@ export const previewSectionReplacement = (input: {
     if (!replacementSolvedRoute) return solvedRoute
 
     const path = [
-      ...solvedRoute.path.slice(0, routeDescriptor.startIndex),
+      ...solvedRoute.path.slice(0, sectionRoute.sectionStartIndex),
       ...replacementSolvedRoute.path,
-      ...solvedRoute.path.slice(routeDescriptor.endIndex + 1),
+      ...solvedRoute.path.slice(sectionRoute.sectionEndIndex + 1),
     ]
 
     const copiedPath: Candidate[] = path.map((candidate) => ({
