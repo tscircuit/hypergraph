@@ -75,12 +75,12 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       computeRegionCost: (region: Region) => number
       regionCost: (region: Region) => number
       effort: number
-      ACCEPTABLE_COST: number
+      ACCEPTABLE_REGION_COST: number
       MAX_ATTEMPTS_PER_REGION: number
       MAX_ATTEMPTS_PER_SECTION?: number
       FRACTION_TO_REPLACE?: number
       alwaysRipConflicts?: boolean
-      boardCost?: (solvedRoutes: SolvedRoute[]) => number
+      computeSolvedGraphCost?: (solvedRoutes: SolvedRoute[]) => number
     },
   ) {
     super()
@@ -120,7 +120,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       effort: this.input.effort,
       fractionToReplace: this.fractionToReplace,
       alwaysRipConflicts: this.alwaysRipConflicts,
-      ACCEPTABLE_COST: this.input.ACCEPTABLE_COST,
+      ACCEPTABLE_COST: this.input.ACCEPTABLE_REGION_COST,
     }
   }
 
@@ -149,7 +149,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     }
   }
 
-  getCostOfCentralRegion(region: Region): number {
+  getCostOfRegionWithAttempts(region: Region): number {
     const attempts = this.regionAttemptCounts.get(region.regionId) ?? 0
     return this.input.regionCost(region) + attempts * 10_000
   }
@@ -161,8 +161,8 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     section: HyperGraphSection
     solvedRoutes: SolvedRoute[]
   }): number {
-    if (this.input.boardCost) {
-      return this.input.boardCost(solvedRoutes)
+    if (this.input.computeSolvedGraphCost) {
+      return this.input.computeSolvedGraphCost(solvedRoutes)
     }
     // Default: sum of all region scores in the section
     const solver = this.input.createHyperGraphSolver({
@@ -177,9 +177,9 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     return totalCost
   }
 
-  private computeBoardCost(solvedRoutes: SolvedRoute[]): number {
-    if (this.input.boardCost) {
-      return this.input.boardCost(solvedRoutes)
+  private computeSolvedGraphCost(solvedRoutes: SolvedRoute[]): number {
+    if (this.input.computeSolvedGraphCost) {
+      return this.input.computeSolvedGraphCost(solvedRoutes)
     }
     // Default: sum of all region scores
     const solver = this.input.createHyperGraphSolver({
@@ -194,6 +194,9 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     return totalCost
   }
 
+  /**
+   * TODO default behavior should be to rip entire section
+   */
   determineConnectionsToRip(
     section: HyperGraphSection,
     evaluationSolver: HyperGraphSolver<Region, RegionPort>,
@@ -256,11 +259,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
   }
 
   private getNextCentralRegion(): Region | null {
-    const evaluationSolver = this.input.createHyperGraphSolver({
-      inputGraph: this.graph,
-      inputConnections: this.connections,
-      inputSolvedRoutes: this.solvedRoutes ?? [],
-    })
     let bestRegion: Region | null = null
     let bestCost = Infinity
 
@@ -276,9 +274,9 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       const regionCost = this.input.regionCost(region)
 
       // Skip regions below acceptable threshold
-      if (regionCost < this.input.ACCEPTABLE_COST) continue
+      if (regionCost < this.input.ACCEPTABLE_REGION_COST) continue
 
-      const cost = this.getCostOfCentralRegion(region)
+      const cost = this.getCostOfRegionWithAttempts(region)
       if (cost >= bestCost) continue
       bestCost = cost
       bestRegion = region
@@ -366,7 +364,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       section: this.activeSection,
       solvedRoutes: baselineSectionSolvedRoutes,
     })
-    this.baselineBoardCost = this.computeBoardCost(this.solvedRoutes)
+    this.baselineBoardCost = this.computeSolvedGraphCost(this.solvedRoutes)
 
     this.activeSubSolver = this.input.createHyperGraphSolver({
       inputGraph: this.activeSection.graph,
@@ -426,7 +424,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       replacementSolvedRoutes,
     })
 
-    const candidateBoardCost = this.computeBoardCost(
+    const candidateBoardCost = this.computeSolvedGraphCost(
       replacementAppliedSolvedRoutes,
     )
 
