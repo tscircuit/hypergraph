@@ -6,55 +6,59 @@ import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-g
 import type { JumperGraph } from "lib/JumperGraphSolver/jumper-types"
 import { assertNoTraceIntersectionsOutsideThroughJumpers } from "./assertNoTraceIntersectionsOutsideThroughJumpers"
 
-test("jumper-graph-solver06: solve generated 0603 vertical 2x3 grid", {
-  // @ts-expect-error bun:test types don't include timeout option
-  timeout: 30000,
-}, () => {
-  const baseGraph = generate0603JumperHyperGraph({
-    rows: 2,
-    cols: 3,
-    orientation: "vertical",
-    pattern: "grid",
-    maxNeckRatio: 0.4,
-    minSplitBalanceRatio: 0.2,
-  }) as unknown as JumperGraph
+test(
+  "jumper-graph-solver06: solve generated 0603 vertical 2x3 grid",
+  {
+    // @ts-expect-error bun:test types don't include timeout option
+    timeout: 30000,
+  },
+  () => {
+    const baseGraph = generate0603JumperHyperGraph({
+      rows: 2,
+      cols: 3,
+      orientation: "vertical",
+      pattern: "grid",
+      maxNeckRatio: 0.4,
+      minSplitBalanceRatio: 0.2,
+    }) as unknown as JumperGraph
 
-  const graphWithConnections = createProblemFromBaseGraph({
-    baseGraph,
-    numCrossings: 2,
-    randomSeed: 0,
-  })
+    const graphWithConnections = createProblemFromBaseGraph({
+      baseGraph,
+      numCrossings: 2,
+      randomSeed: 0,
+    })
 
-  const solver = new JumperGraphSolver({
-    inputGraph: {
-      regions: graphWithConnections.regions,
-      ports: graphWithConnections.ports,
-    },
-    inputConnections: graphWithConnections.connections,
-  })
+    const solver = new JumperGraphSolver({
+      inputGraph: {
+        regions: graphWithConnections.regions,
+        ports: graphWithConnections.ports,
+      },
+      inputConnections: graphWithConnections.connections,
+    })
 
-  solver.solve()
+    solver.solve()
 
-  expect(solver.solved).toBe(true)
+    expect(solver.solved).toBe(true)
 
-  for (const region of graphWithConnections.regions) {
-    if (!region.d.isThroughJumper) continue
+    for (const region of graphWithConnections.regions) {
+      if (!region.d.isThroughJumper) continue
 
-    const networkIds = new Set(
-      (region.assignments ?? []).map(
-        (a) => a.connection.mutuallyConnectedNetworkId,
-      ),
+      const networkIds = new Set(
+        (region.assignments ?? []).map(
+          (a) => a.connection.mutuallyConnectedNetworkId,
+        ),
+      )
+
+      expect(networkIds.size).toBeLessThanOrEqual(1)
+    }
+
+    assertNoTraceIntersectionsOutsideThroughJumpers(
+      solver.solvedRoutes,
+      graphWithConnections.regions,
     )
 
-    expect(networkIds.size).toBeLessThanOrEqual(1)
-  }
-
-  assertNoTraceIntersectionsOutsideThroughJumpers(
-    solver.solvedRoutes,
-    graphWithConnections.regions,
-  )
-
-  expect(getSvgFromGraphicsObject(solver.visualize())).toMatchSvgSnapshot(
-    import.meta.path,
-  )
-})
+    expect(getSvgFromGraphicsObject(solver.visualize())).toMatchSvgSnapshot(
+      import.meta.path,
+    )
+  },
+)

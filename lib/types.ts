@@ -97,7 +97,7 @@ export type SerializedHyperGraph = {
 }
 
 export type SerializedSolvedRoute = {
-  pathPortIds: PortId[],
+  pathPortIds: PortId[]
   connectionId: ConnectionId
 }
 
