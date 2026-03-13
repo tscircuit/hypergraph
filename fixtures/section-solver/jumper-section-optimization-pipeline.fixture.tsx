@@ -14,7 +14,7 @@ const createSolver = () => {
   })
 
   const graphWithConnections = createProblemFromBaseGraph({
-    baseGraph,
+    baseGraph: baseGraph as any,
     numCrossings: 2,
     randomSeed: 13,
   })

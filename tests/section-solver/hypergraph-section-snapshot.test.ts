@@ -25,7 +25,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   })
 
   const graphWithConnections = createProblemFromBaseGraph({
-    baseGraph,
+    baseGraph: baseGraph as any,
     numCrossings: 2,
     randomSeed: 13,
   })

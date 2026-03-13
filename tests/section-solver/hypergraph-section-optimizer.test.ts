@@ -24,7 +24,7 @@ test("score should be lower", {
   })
 
   const graphWithConnections = createProblemFromBaseGraph({
-    baseGraph,
+    baseGraph: baseGraph as any,
     numCrossings: 2,
     randomSeed: 13,
   })
