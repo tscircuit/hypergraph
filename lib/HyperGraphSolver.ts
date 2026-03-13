@@ -6,7 +6,6 @@ import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHype
 import { PriorityQueue } from "./PriorityQueue"
 import {
   clearAssignmentsFromGraph,
-  rebuildAssignmentsFromSolvedRoutes,
   commitSolvedRoutes,
 } from "./solvedRoutes"
 import type {
@@ -82,7 +81,6 @@ export class HyperGraphSolver<
         connections: this.connections,
         solvedRoutes: input.inputSolvedRoutes,
       })
-      rebuildAssignmentsFromSolvedRoutes(this.graph, this.solvedRoutes)
     } else {
       ;(this.graph as HyperGraphWithSolvedRoutes).solvedRoutes =
         this.solvedRoutes

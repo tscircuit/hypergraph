@@ -1,13 +1,13 @@
 import { expect, test } from "bun:test"
 import { generate0603JumperHyperGraph } from "@tscircuit/jumper-topology-generator"
 import { getSvgFromGraphicsObject } from "graphics-debug"
-import { computeBoardCost } from "lib/HyperGraphSectionOptimizer/computeBoardCost"
+import { computeJumperGlobalCost } from "lib/HyperGraphSectionOptimizer/computeJumperGlobalCost"
 import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
 import { JumperSectionOptimizationPipeline } from "lib/JumperGraphSolver/JumperSectionOptimizationPipeline"
 import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
 
 const getTotalScore = (solver: JumperGraphSolver) => {
-  return computeBoardCost(solver)
+  return computeJumperGlobalCost(solver)
 }
 
 test("score should be lower", {

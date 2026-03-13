@@ -36,7 +36,7 @@ export const commitSolvedRoutes = ({
     connections.map((connection) => [connection.connectionId, connection]),
   )
 
-  return solvedRoutes.map((solvedRoute) => {
+  const committedSolvedRoutes = solvedRoutes.map((solvedRoute) => {
     const path: Candidate[] = []
 
     for (const originalCandidate of solvedRoute.path) {
@@ -73,16 +73,11 @@ export const commitSolvedRoutes = ({
       requiredRip: solvedRoute.requiredRip,
     }
   })
-}
 
-export const rebuildAssignmentsFromSolvedRoutes = (
-  graph: HyperGraph,
-  solvedRoutes: SolvedRoute[],
-) => {
   clearAssignmentsFromGraph(graph)
-  ;(graph as HyperGraphWithSolvedRoutes).solvedRoutes = solvedRoutes
+  ;(graph as HyperGraphWithSolvedRoutes).solvedRoutes = committedSolvedRoutes
 
-  for (const solvedRoute of solvedRoutes) {
+  for (const solvedRoute of committedSolvedRoutes) {
     for (const candidate of solvedRoute.path) {
       candidate.port.assignment = {
         solvedRoute,
@@ -103,4 +98,6 @@ export const rebuildAssignmentsFromSolvedRoutes = (
       candidate.lastRegion.assignments.push(regionPortAssignment)
     }
   }
+
+  return committedSolvedRoutes
 }

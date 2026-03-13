@@ -4,10 +4,7 @@ import { convertConnectionsToSerializedConnections } from "../convertConnections
 import { convertHyperGraphToSerializedHyperGraph } from "../convertHyperGraphToSerializedHyperGraph"
 import type { HyperGraphSolver } from "../HyperGraphSolver"
 import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
-import {
-  rebuildAssignmentsFromSolvedRoutes,
-  commitSolvedRoutes,
-} from "../solvedRoutes"
+import { commitSolvedRoutes } from "../solvedRoutes"
 import type {
   Connection,
   HyperGraph,
@@ -20,7 +17,6 @@ import type {
 } from "../types"
 import { previewSectionReplacement } from "./routes/previewSectionReplacement"
 import { getSectionOfHyperGraphAsHyperGraph } from "./sections/getSectionOfHyperGraphAsHyperGraph"
-import { seededShuffle } from "./seededShuffle"
 
 export type CreateHyperGraphSolverInput = {
   inputGraph: HyperGraph | SerializedHyperGraph
@@ -63,6 +59,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
   maxSectionAttempts: number
   fractionToReplace: number
   alwaysRipConflicts: boolean
+  random: () => number = createSeededRandom(31337)
 
   declare activeSubSolver: HyperGraphSolver<Region, RegionPort> | null
 
@@ -95,7 +92,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       connections: this.connections,
       solvedRoutes: initialSolvedRoutes,
     })
-    rebuildAssignmentsFromSolvedRoutes(this.graph, this.solvedRoutes)
     this.maxAttemptsPerRegion = input.MAX_ATTEMPTS_PER_REGION
     this.maxSectionAttempts = input.MAX_ATTEMPTS_PER_SECTION ?? 500
     this.iterations += this.iterations * (input.effort ?? 1)
@@ -208,11 +204,14 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       return new Set(allConnectionIds)
     }
 
-    const attempts = this.regionAttemptCounts.get(section.centralRegionId) ?? 0
-    const shuffledConnectionIds = seededShuffle(
-      allConnectionIds,
-      (attempts + 1) * 31337,
-    )
+    const shuffledConnectionIds = [...allConnectionIds]
+    for (let index = shuffledConnectionIds.length - 1; index > 0; index--) {
+      const swapIndex = Math.floor(this.random() * (index + 1))
+      ;[shuffledConnectionIds[index], shuffledConnectionIds[swapIndex]] = [
+        shuffledConnectionIds[swapIndex],
+        shuffledConnectionIds[index],
+      ]
+    }
     const ripCount = Math.max(
       1,
       Math.ceil(shuffledConnectionIds.length * this.fractionToReplace),
@@ -252,10 +251,9 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
           ) {
             continue
           }
-          const random = createSeededRandom(
-            (attempts + 1) * 31337 + firstId.length + secondId.length,
+          connectionsToReroute.add(
+            this.random() < 0.5 ? firstId : secondId,
           )
-          connectionsToReroute.add(random() < 0.5 ? firstId : secondId)
         }
       }
     }
@@ -447,10 +445,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
         connections: sourceSolver.connections,
         solvedRoutes: this.solvedRoutes,
       })
-      rebuildAssignmentsFromSolvedRoutes(
-        sourceSolver.graph,
-        sourceSolver.solvedRoutes,
-      )
 
       for (const regionId of this.activeSection.sectionRegionIds) {
         this.regionAttemptCounts.set(regionId, 0)

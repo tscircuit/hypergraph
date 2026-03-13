@@ -5,9 +5,9 @@ import {
   stackGraphicsVertically,
 } from "graphics-debug"
 import {
-  computeBoardCost,
-  computeRegionCost,
-} from "lib/HyperGraphSectionOptimizer/computeBoardCost"
+  computeJumperGlobalCost,
+  computeJumperRegionCost,
+} from "lib/HyperGraphSectionOptimizer/computeJumperGlobalCost"
 import { HyperGraphSectionOptimizer } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 import { JumperGraphSolver } from "lib/JumperGraphSolver/JumperGraphSolver"
 import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
@@ -39,7 +39,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   })
   initialSolver.solve()
 
-  const initialCost = computeBoardCost(initialSolver)
+  const initialCost = computeJumperGlobalCost(initialSolver)
   console.log(`Initial global cost: ${initialCost}`)
 
   const optimizer = new HyperGraphSectionOptimizer({
@@ -48,8 +48,8 @@ test("capture mid-section visualization for the section optimizer", async () => 
     expansionHopsFromCentralRegion: 1,
     MAX_ATTEMPTS_PER_REGION: 1,
     createHyperGraphSolver: (input) => new JumperGraphSolver(input),
-    computeRegionCost,
-    regionCost: computeRegionCost,
+    computeRegionCost: computeJumperRegionCost,
+    regionCost: computeJumperRegionCost,
     effort: 1,
     ACCEPTABLE_REGION_COST: 0,
   })
@@ -59,7 +59,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
   optimizer.step()
   optimizer.step()
 
-  const midCost = computeBoardCost(initialSolver)
+  const midCost = computeJumperGlobalCost(initialSolver)
   console.log(`After 4 steps global cost: ${midCost}`)
 
   const section = optimizer.activeSection
@@ -95,7 +95,7 @@ test("capture mid-section visualization for the section optimizer", async () => 
     `Optimizer solved: ${optimizer.solved}, failed: ${optimizer.failed}`,
   )
 
-  const finalCost = computeBoardCost(initialSolver)
+  const finalCost = computeJumperGlobalCost(initialSolver)
   console.log(`Final global cost after optimization: ${finalCost}`)
   console.log(
     `Cost improvement: ${initialCost} -> ${finalCost} (saved ${initialCost - finalCost} jumpers)`,

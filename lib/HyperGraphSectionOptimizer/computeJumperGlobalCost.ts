@@ -2,7 +2,7 @@ import type { HyperGraphSolver } from "lib/HyperGraphSolver"
 import type { Region, RegionPort } from "lib/types"
 
 // TODO: replace this in future
-export const computeRegionCost = (region: Region): number => {
+export const computeJumperRegionCost = (region: Region): number => {
   const assignments = region.assignments ?? []
   if (assignments.length === 0) return 0
 
@@ -29,13 +29,13 @@ export const computeRegionCost = (region: Region): number => {
 }
 
 // TODO: replace this in future
-export const computeBoardCost = (
+export const computeJumperGlobalCost = (
   solver: HyperGraphSolver<Region, RegionPort>,
 ): number => {
   let totalCost = 0
 
   for (const region of solver.graph.regions) {
-    totalCost += computeRegionCost(region)
+    totalCost += computeJumperRegionCost(region)
   }
 
   return totalCost

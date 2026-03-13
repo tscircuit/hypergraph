@@ -9,9 +9,8 @@ import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphTo
 import { convertSerializedConnectionsToConnections } from "lib/convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
 import {
-  computeBoardCost,
-  computeRegionCost,
-} from "../HyperGraphSectionOptimizer/computeBoardCost"
+  computeJumperRegionCost,
+} from "../HyperGraphSectionOptimizer/computeJumperGlobalCost"
 import { HyperGraphSectionOptimizer } from "../HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 import type {
   Connection,
@@ -90,8 +89,8 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
             instance as JumperSectionOptimizationPipeline
           ).inputProblem.maxSectionAttempts,
           createHyperGraphSolver: (input) => new JumperGraphSolver(input),
-          computeRegionCost,
-          regionCost: computeRegionCost,
+          computeRegionCost: computeJumperRegionCost,
+          regionCost: computeJumperRegionCost,
           effort:
             (instance as JumperSectionOptimizationPipeline).inputProblem
               .effort ?? 1,
