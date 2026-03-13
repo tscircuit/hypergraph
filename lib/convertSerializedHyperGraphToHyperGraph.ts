@@ -1,9 +1,9 @@
 import type {
-  RegionPort,
+  HyperGraph,
   PortId,
   Region,
   RegionId,
-  HyperGraph,
+  RegionPort,
   SerializedHyperGraph,
 } from "./types"
 
@@ -28,6 +28,9 @@ export const convertSerializedHyperGraphToHyperGraph = (
     const { assignments: _, ...regionWithoutAssignments } = region as any
     regionMap.set(region.regionId, {
       ...regionWithoutAssignments,
+      d: regionWithoutAssignments.d
+        ? structuredClone(regionWithoutAssignments.d)
+        : regionWithoutAssignments.d,
       ports: [],
       assignments: undefined,
     })

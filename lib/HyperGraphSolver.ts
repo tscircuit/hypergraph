@@ -4,6 +4,11 @@ import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSe
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
 import { PriorityQueue } from "./PriorityQueue"
+import {
+  clearAssignmentsFromGraph,
+  rebuildAssignmentsFromSolvedRoutes,
+  rehydrateSolvedRoutes,
+} from "./solvedRoutes"
 import type {
   Candidate,
   Connection,
@@ -18,6 +23,10 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "./types"
+
+type HyperGraphWithSolvedRoutes = HyperGraph & {
+  solvedRoutes?: SolvedRoute[]
+}
 
 export class HyperGraphSolver<
   RegionType extends Region = Region,
@@ -57,26 +66,46 @@ export class HyperGraphSolver<
       greedyMultiplier?: number
       rippingEnabled?: boolean
       ripCost?: number
+      inputSolvedRoutes?: SolvedRoute[]
     },
   ) {
     super()
     this.graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
-    this.graph.solvedRoutes = this.solvedRoutes
-    for (const region of this.graph.regions) {
-      region.assignments = []
-    }
+    clearAssignmentsFromGraph(this.graph)
     this.connections = convertSerializedConnectionsToConnections(
       input.inputConnections,
       this.graph,
     )
+    if (input.inputSolvedRoutes) {
+      this.solvedRoutes = rehydrateSolvedRoutes({
+        graph: this.graph,
+        connections: this.connections,
+        solvedRoutes: input.inputSolvedRoutes,
+      })
+      rebuildAssignmentsFromSolvedRoutes(this.graph, this.solvedRoutes)
+    } else {
+      ;(this.graph as HyperGraphWithSolvedRoutes).solvedRoutes =
+        this.solvedRoutes
+    }
     if (input.greedyMultiplier !== undefined)
       this.greedyMultiplier = input.greedyMultiplier
     if (input.rippingEnabled !== undefined)
       this.rippingEnabled = input.rippingEnabled
     if (input.ripCost !== undefined) this.ripCost = input.ripCost
-    this.unprocessedConnections = [...this.connections]
+    const preSolvedConnectionIds = new Set(
+      this.solvedRoutes.map(
+        (solvedRoute) => solvedRoute.connection.connectionId,
+      ),
+    )
+    this.unprocessedConnections = this.connections.filter(
+      (connection) => !preSolvedConnectionIds.has(connection.connectionId),
+    )
     this.candidateQueue = new PriorityQueue<Candidate>()
-    this.beginNewConnection()
+    if (this.unprocessedConnections.length === 0) {
+      this.solved = true
+    } else {
+      this.beginNewConnection()
+    }
   }
 
   override getConstructorParams() {
@@ -88,7 +117,12 @@ export class HyperGraphSolver<
       greedyMultiplier: this.greedyMultiplier,
       rippingEnabled: this.rippingEnabled,
       ripCost: this.ripCost,
+      inputSolvedRoutes: this.solvedRoutes,
     }
+  }
+
+  override getOutput() {
+    return this.solvedRoutes
   }
 
   computeH(candidate: CandidateType): number {

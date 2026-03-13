@@ -71,6 +71,7 @@ export class ViaGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   constructor(input: {
     inputGraph: HyperGraph | SerializedHyperGraph
     inputConnections: (Connection | SerializedConnection)[]
+    inputSolvedRoutes?: SolvedRoute[]
     viaTile?: ViaTile
     ripCost?: number
     portUsagePenalty?: number

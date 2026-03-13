@@ -1,6 +1,7 @@
 export * from "./convertConnectionsToSerializedConnections"
 export * from "./convertHyperGraphToSerializedHyperGraph"
 export * from "./HyperGraphSolver"
+export * from "./HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 export * from "./JumperGraphSolver/geometry/applyTransformToGraph"
 export * from "./JumperGraphSolver/JumperGraphSolver"
 export { calculateGraphBounds } from "./JumperGraphSolver/jumper-graph-generator/calculateGraphBounds"

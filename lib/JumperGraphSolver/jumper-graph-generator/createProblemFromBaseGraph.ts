@@ -12,7 +12,7 @@ import { findBoundaryRegion } from "./findBoundaryRegion"
 /**
  * Simple seeded random number generator (Linear Congruential Generator)
  */
-const createSeededRandom = (seed: number) => {
+export const createSeededRandom = (seed: number) => {
   let state = seed
   return () => {
     state = (state * 1664525 + 1013904223) >>> 0

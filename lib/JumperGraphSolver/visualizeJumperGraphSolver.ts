@@ -1,5 +1,5 @@
 import type { GraphicsObject } from "graphics-debug"
-import type { Candidate } from "../types"
+import type { Candidate, Connection, SolvedRoute } from "../types"
 import type { JumperGraphSolver } from "./JumperGraphSolver"
 import type { JPort, JRegion, JumperGraph } from "./jumper-types"
 import { visualizeJumperGraph } from "./visualizeJumperGraph"
@@ -13,17 +13,17 @@ const getConnectionColor = (connectionId: string, alpha = 0.8): string => {
   return `hsla(${hue}, 70%, 50%, ${alpha})`
 }
 
-export const visualizeJumperGraphSolver = (
-  solver: JumperGraphSolver,
-): GraphicsObject => {
-  const jumperGraph: JumperGraph = {
-    regions: solver.graph.regions as JRegion[],
-    ports: solver.graph.ports as JPort[],
-  }
-
-  const graphics = visualizeJumperGraph(jumperGraph, {
-    connections: solver.connections,
-    ...(solver.iterations > 0
+export const visualizeJumperGraphWithSolvedRoutes = (input: {
+  graph: JumperGraph
+  connections: Connection[]
+  solvedRoutes: SolvedRoute[]
+  hideInitialGeometry?: boolean
+  priorSolvedRoutes?: SolvedRoute[]
+  title?: string
+}): GraphicsObject => {
+  const graphics = visualizeJumperGraph(input.graph, {
+    connections: input.connections,
+    ...(input.hideInitialGeometry
       ? {
           hideRegionPortLines: true,
           hideConnectionLines: true,
@@ -32,20 +32,79 @@ export const visualizeJumperGraphSolver = (
       : {}),
   }) as Required<GraphicsObject>
 
-  if (solver.iterations === 0) {
+  if (!input.hideInitialGeometry) {
     for (const polygon of graphics.polygons) {
       polygon.stroke = "rgba(128, 128, 128, 0.5)"
       polygon.strokeWidth = 0.03
     }
   }
 
-  // Draw active connection line
+  if (input.title) {
+    graphics.title = input.title
+  }
+
+  for (const solvedRoute of input.priorSolvedRoutes ?? []) {
+    const pathPoints = solvedRoute.path.map((candidate) => {
+      const port = candidate.port as JPort
+      return { x: port.d.x, y: port.d.y }
+    })
+
+    if (pathPoints.length === 0) continue
+
+    graphics.lines.push({
+      points: pathPoints,
+      strokeColor: "rgba(80, 80, 80, 0.45)",
+      strokeDash: "4 4",
+    })
+  }
+
+  for (const solvedRoute of input.solvedRoutes) {
+    const connectionColor = getConnectionColor(
+      solvedRoute.connection.connectionId,
+    )
+    const pathPoints: { x: number; y: number }[] = []
+
+    for (const candidate of solvedRoute.path) {
+      const port = candidate.port as JPort
+      pathPoints.push({ x: port.d.x, y: port.d.y })
+    }
+
+    if (pathPoints.length > 0) {
+      graphics.lines.push({
+        points: pathPoints,
+        strokeColor: connectionColor,
+      })
+    }
+  }
+
+  return graphics
+}
+
+export const visualizeJumperGraphSolver = (
+  solver: JumperGraphSolver,
+): GraphicsObject => {
+  const jumperGraph: JumperGraph = {
+    regions: solver.graph.regions as JRegion[],
+    ports: solver.graph.ports as JPort[],
+  }
+
+  const graphics = visualizeJumperGraphWithSolvedRoutes({
+    graph: jumperGraph,
+    connections: solver.connections,
+    solvedRoutes: solver.solvedRoutes,
+    hideInitialGeometry: solver.iterations > 0,
+  }) as Required<GraphicsObject>
+
   if (solver.currentConnection && !solver.solved) {
     const connectionColor = getConnectionColor(
       solver.currentConnection.connectionId,
     )
     const startRegion = solver.currentConnection.startRegion as JRegion
     const endRegion = solver.currentConnection.endRegion as JRegion
+
+    if (!startRegion?.d || !endRegion?.d) {
+      return graphics
+    }
 
     const startCenter = {
       x: (startRegion.d.bounds.minX + startRegion.d.bounds.maxX) / 2,
@@ -77,27 +136,6 @@ export const visualizeJumperGraphSolver = (
     })
   }
 
-  // Draw solved routes
-  for (const solvedRoute of solver.solvedRoutes) {
-    const connectionColor = getConnectionColor(
-      solvedRoute.connection.connectionId,
-    )
-    const pathPoints: { x: number; y: number }[] = []
-
-    for (const candidate of solvedRoute.path) {
-      const port = candidate.port as JPort
-      pathPoints.push({ x: port.d.x, y: port.d.y })
-    }
-
-    if (pathPoints.length > 0) {
-      graphics.lines.push({
-        points: pathPoints,
-        strokeColor: connectionColor,
-      })
-    }
-  }
-
-  // Draw candidates (at most 10)
   const candidates = solver.candidateQueue.peekMany(10)
   for (
     let candidateIndex = 0;
@@ -121,7 +159,6 @@ export const visualizeJumperGraphSolver = (
     })
   }
 
-  // Draw path of next candidate to be processed
   const nextCandidate = candidates[0] as Candidate<JRegion, JPort> | undefined
   if (!solver.solved && nextCandidate && solver.currentConnection) {
     const connectionColor = getConnectionColor(

@@ -45,6 +45,7 @@ export class JumperGraphSolver extends HyperGraphSolver<JRegion, JPort> {
   constructor(input: {
     inputGraph: HyperGraph | SerializedHyperGraph
     inputConnections: (Connection | SerializedConnection)[]
+    inputSolvedRoutes?: SolvedRoute[]
     ripCost?: number
     portUsagePenalty?: number
     crossingPenalty?: number
