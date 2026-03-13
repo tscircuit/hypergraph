@@ -67,10 +67,6 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
       HyperGraphSectionOptimizer,
       (instance) => [
         {
-          inputGraph: (instance as JumperSectionOptimizationPipeline)
-            .normalizedGraph,
-          inputConnections: (instance as JumperSectionOptimizationPipeline)
-            .normalizedConnections,
           inputSolvedRoutes: (
             instance as JumperSectionOptimizationPipeline
           ).getSolver<JumperGraphSolver>("jumperGraphSolver")!.solvedRoutes,
@@ -92,8 +88,9 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
           effort:
             (instance as JumperSectionOptimizationPipeline).inputProblem
               .effort ?? 1,
-          ACCEPTABLE_COST: (instance as JumperSectionOptimizationPipeline)
-            .inputProblem.ACCEPTABLE_COST,
+          ACCEPTABLE_REGION_COST: (
+            instance as JumperSectionOptimizationPipeline
+          ).inputProblem.ACCEPTABLE_COST,
         },
       ],
     ),
