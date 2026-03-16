@@ -7,14 +7,9 @@ import type { Candidate, HyperGraph, RegionPort, SolvedRoute } from "lib/types"
  * Takes routes solved within a section subgraph and merges them back into the full route list,
  * mapping section graph references (ports/regions) back to their global equivalents.
  *
- * @param solvedRoutes - Current global solved routes
- * @param section - The section being optimized with metadata about which routes it contains
- * @param replacementSolvedRoutes - New routes from section solver to splice in
- * @param globalGraph - The full graph (needed to map section graph regions/ports back to global equivalents,
- *                       since section graphs may have temporary boundary regions that don't exist globally)
  * @returns Combined route set with section routes replaced by their optimized versions
  */
-export const mergeSectionRoutesIntoGlobal = (input: {
+export const previewSectionReplacement = (input: {
   solvedRoutes: SolvedRoute[]
   section: HyperGraphSection
   replacementSolvedRoutes: SolvedRoute[]

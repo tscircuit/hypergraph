@@ -16,7 +16,7 @@ import type { HyperGraphSolver } from "../HyperGraphSolver"
 import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
 import { commitSolvedRoutes } from "../solvedRoutes"
 import { countAssignmentsInSolvedRoutes } from "./helpers/countAssignmentsInSolvedRoutes"
-import { mergeSectionRoutesIntoGlobal } from "./routes/mergeSectionRoutesIntoGlobal"
+import { previewSectionReplacement } from "./routes/previewSectionReplacement"
 import { getSectionOfHyperGraphAsHyperGraph } from "./sections/getSectionOfHyperGraphAsHyperGraph"
 
 export type CreateHyperGraphSolverInput = {
@@ -410,7 +410,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       section: this.activeSection,
       solvedRoutes: candidateSectionSolvedRoutes,
     })
-    const replacementAppliedSolvedRoutes = mergeSectionRoutesIntoGlobal({
+    const replacementAppliedSolvedRoutes = previewSectionReplacement({
       solvedRoutes: this.solvedRoutes,
       section: this.activeSection,
       replacementSolvedRoutes: candidateSectionSolvedRoutes,
