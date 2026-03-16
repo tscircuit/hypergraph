@@ -14,7 +14,8 @@ import type {
   SerializedConnection,
   SerializedHyperGraph,
   SolvedRoute,
-} from "../types"
+} from "lib/types"
+import { countAssignmentsInSolvedRoutes } from "./helpers/countAssignmentsInSolvedRoutes"
 import { previewSectionReplacement } from "./routes/previewSectionReplacement"
 import { getSectionOfHyperGraphAsHyperGraph } from "./sections/getSectionOfHyperGraphAsHyperGraph"
 
@@ -187,18 +188,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       totalCost += this.input.regionCost(region)
     }
     return totalCost
-  }
-
-  private countAssignmentsInSolvedRoutes(solvedRoutes: SolvedRoute[]): number {
-    let assignmentCount = 0
-    for (const solvedRoute of solvedRoutes) {
-      for (const candidate of solvedRoute.path) {
-        if (candidate.lastPort && candidate.lastRegion) {
-          assignmentCount++
-        }
-      }
-    }
-    return assignmentCount
   }
 
   /**
@@ -432,10 +421,10 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       replacementAppliedSolvedRoutes,
     )
 
-    const baselineAssignments = this.countAssignmentsInSolvedRoutes(
+    const baselineAssignments = countAssignmentsInSolvedRoutes(
       this.solvedRoutes,
     )
-    const candidateAssignments = this.countAssignmentsInSolvedRoutes(
+    const candidateAssignments = countAssignmentsInSolvedRoutes(
       replacementAppliedSolvedRoutes,
     )
 

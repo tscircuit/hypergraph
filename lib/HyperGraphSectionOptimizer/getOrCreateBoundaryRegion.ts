@@ -15,6 +15,7 @@ export const getOrCreateBoundaryRegion = ({
     boundaryRegion = {
       regionId: `__section_boundary__${port.portId}`,
       ports: [],
+      isSectionBoundary: true,
       d: {
         isBoundaryRegion: true,
         boundaryPortId: port.portId,

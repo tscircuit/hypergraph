@@ -29,6 +29,8 @@ export type Region = {
   ports: RegionPort[]
   d: any
   assignments?: RegionPortAssignment[]
+  /** True if this region is a temporary boundary region created for section optimization */
+  isSectionBoundary?: boolean
 }
 
 export type PortAssignment = {

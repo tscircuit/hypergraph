@@ -15,15 +15,7 @@ import { sliceSolvedRouteIntoLocalSection } from "../routes/sliceSolvedRouteInto
 import { getRouteSectionSpan } from "./getRouteSectionSpan"
 import { getSectionRegionIds } from "./getSectionRegionIds"
 
-const portsShareARegion = (portA: RegionPort, portB: RegionPort): boolean => {
-  const aRegionIds = new Set([portA.region1.regionId, portA.region2.regionId])
-  return (
-    aRegionIds.has(portB.region1.regionId) ||
-    aRegionIds.has(portB.region2.regionId)
-  )
-}
-
-/** Extracts a focused section of the graph together with its local routes. */
+/** Extracts a small subgraph around a central region plus routes that pass through it for localized optimization. */
 export const getSectionOfHyperGraphAsHyperGraph = (input: {
   graph: HyperGraph
   solvedRoutes: SolvedRoute[]
@@ -200,9 +192,16 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
 
     let hasNonAdjacentTransition = false
     for (let index = 1; index < mappedRawPorts.length; index++) {
-      if (
-        !portsShareARegion(mappedRawPorts[index - 1], mappedRawPorts[index])
-      ) {
+      const prevPort = mappedRawPorts[index - 1]
+      const currPort = mappedRawPorts[index]
+      const prevRegionIds = new Set([
+        prevPort.region1.regionId,
+        prevPort.region2.regionId,
+      ])
+      const portsShareRegion =
+        prevRegionIds.has(currPort.region1.regionId) ||
+        prevRegionIds.has(currPort.region2.regionId)
+      if (!portsShareRegion) {
         hasNonAdjacentTransition = true
         break
       }

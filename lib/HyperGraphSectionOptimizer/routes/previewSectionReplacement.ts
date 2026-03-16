@@ -1,31 +1,17 @@
 import type { HyperGraphSection } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
-import type { Candidate, HyperGraph, SolvedRoute } from "lib/types"
+import type { Candidate, HyperGraph, RegionPort, SolvedRoute } from "lib/types"
+import { getSharedRegionId } from "lib/HyperGraphSectionOptimizer/helpers/getSharedRegionId"
 
-const countRouteAssignments = (route: SolvedRoute): number =>
-  route.path.reduce(
-    (sum, candidate) =>
-      sum + (candidate.lastPort && candidate.lastRegion ? 1 : 0),
-    0,
-  )
-
-const getSharedRegionId = (
-  previousPort: Candidate["port"],
-  nextPort: Candidate["port"],
-): string | null => {
-  const previousRegionIds = new Set([
-    previousPort.region1.regionId,
-    previousPort.region2.regionId,
-  ])
-  if (previousRegionIds.has(nextPort.region1.regionId)) {
-    return nextPort.region1.regionId
-  }
-  if (previousRegionIds.has(nextPort.region2.regionId)) {
-    return nextPort.region2.regionId
-  }
-  return null
-}
-
-/** Produces the combined solved routes if the replacement were accepted. */
+/**
+ * Produces the combined solved routes if the replacement were accepted.
+ *
+ * @param solvedRoutes - Current global solved routes before replacement
+ * @param section - The section being optimized with metadata about which routes it contains
+ * @param replacementSolvedRoutes - New routes from section solver to splice in
+ * @param globalGraph - The full graph (needed to map section graph regions/ports back to global equivalents,
+ *                       since section graphs may have temporary boundary regions that don't exist globally)
+ * @returns The combined routes with section routes replaced
+ */
 export const previewSectionReplacement = (input: {
   solvedRoutes: SolvedRoute[]
   section: HyperGraphSection
@@ -40,15 +26,12 @@ export const previewSectionReplacement = (input: {
     ]),
   )
 
-  // Create mappings from section graph to global graph
   const globalPortMap = new Map(
     globalGraph.ports.map((port) => [port.portId, port]),
   )
   const globalRegionMap = new Map(
     globalGraph.regions.map((region) => [region.regionId, region]),
   )
-
-  let protectedFallbackCount = 0
 
   const result = solvedRoutes.map((solvedRoute) => {
     const sectionRoute = section.sectionRoutes.find(
@@ -76,8 +59,6 @@ export const previewSectionReplacement = (input: {
       sectionRoute.sectionEndIndex + 1,
     )
 
-    // Keep the before/after parts as-is (they already have correct global refs)
-    // Only map the replacement parts from section graph to global graph
     const copiedPathBefore: Candidate[] = pathBeforeSection.map(
       (candidate) => ({
         port: candidate.port,
@@ -92,28 +73,39 @@ export const previewSectionReplacement = (input: {
       }),
     )
 
+    // Map section graph candidates to global graph (section may have boundary regions)
     const copiedPathReplacement: Candidate[] = replacementPath.map(
       (candidate) => {
-        // Map section ports/regions back to global graph
         const globalPort =
           globalPortMap.get(candidate.port.portId) ?? candidate.port
-        const globalLastPort = candidate.lastPort
-          ? (globalPortMap.get(candidate.lastPort.portId) ?? candidate.lastPort)
-          : undefined
-        // For boundary regions (which don't exist in global graph), return undefined
-        // so that commitSolvedRoutes won't try to add assignments to them
-        const globalLastRegion = candidate.lastRegion
-          ? candidate.lastRegion.regionId.startsWith("__section_boundary__")
-            ? undefined
-            : (globalRegionMap.get(candidate.lastRegion.regionId) ??
-              candidate.lastRegion)
-          : undefined
-        const globalNextRegion = candidate.nextRegion
-          ? candidate.nextRegion.regionId.startsWith("__section_boundary__")
-            ? undefined
-            : (globalRegionMap.get(candidate.nextRegion.regionId) ??
-              candidate.nextRegion)
-          : undefined
+
+        let globalLastPort: RegionPort | undefined
+        if (candidate.lastPort) {
+          globalLastPort =
+            globalPortMap.get(candidate.lastPort.portId) ?? candidate.lastPort
+        }
+
+        let globalLastRegion = candidate.lastRegion
+        if (candidate.lastRegion) {
+          if (candidate.lastRegion.isSectionBoundary) {
+            globalLastRegion = undefined
+          } else {
+            globalLastRegion =
+              globalRegionMap.get(candidate.lastRegion.regionId) ??
+              candidate.lastRegion
+          }
+        }
+
+        let globalNextRegion = candidate.nextRegion
+        if (candidate.nextRegion) {
+          if (candidate.nextRegion.isSectionBoundary) {
+            globalNextRegion = undefined
+          } else {
+            globalNextRegion =
+              globalRegionMap.get(candidate.nextRegion.regionId) ??
+              candidate.nextRegion
+          }
+        }
 
         return {
           port: globalPort,
@@ -147,8 +139,14 @@ export const previewSectionReplacement = (input: {
       ...copiedPathAfter,
     ]
 
-    const originalAssignmentCount = countRouteAssignments(solvedRoute)
+    const originalAssignmentCount = solvedRoute.path.reduce(
+      (sum, candidate) =>
+        sum + (candidate.lastPort && candidate.lastRegion ? 1 : 0),
+      0,
+    )
 
+    // Fix up parent/lastPort/lastRegion/nextRegion references after splicing paths together.
+    // These may be incorrect after mapping from section graph to global graph.
     for (let i = 0; i < copiedPath.length; i++) {
       const current = copiedPath[i]
       const previous = i > 0 ? copiedPath[i - 1] : undefined
@@ -192,15 +190,16 @@ export const previewSectionReplacement = (input: {
       }
     }
 
-    const replacementAssignmentCount = countRouteAssignments({
-      connection: solvedRoute.connection,
-      path: copiedPath,
-      requiredRip: solvedRoute.requiredRip,
-    })
+    const replacementAssignmentCount = copiedPath.reduce(
+      (sum, candidate) =>
+        sum + (candidate.lastPort && candidate.lastRegion ? 1 : 0),
+      0,
+    )
 
     if (originalAssignmentCount > 0 && replacementAssignmentCount === 0) {
-      protectedFallbackCount++
-      return solvedRoute
+      throw new Error(
+        `Route replacement would remove all assignments for connection ${solvedRoute.connection.connectionId}`,
+      )
     }
 
     return {
