@@ -1,10 +1,5 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
 import type { GraphicsObject } from "graphics-debug"
-import { convertConnectionsToSerializedConnections } from "../convertConnectionsToSerializedConnections"
-import { convertHyperGraphToSerializedHyperGraph } from "../convertHyperGraphToSerializedHyperGraph"
-import type { HyperGraphSolver } from "../HyperGraphSolver"
-import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
-import { commitSolvedRoutes } from "../solvedRoutes"
 import type {
   Connection,
   HyperGraph,
@@ -15,8 +10,13 @@ import type {
   SerializedHyperGraph,
   SolvedRoute,
 } from "lib/types"
+import { convertConnectionsToSerializedConnections } from "../convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "../convertHyperGraphToSerializedHyperGraph"
+import type { HyperGraphSolver } from "../HyperGraphSolver"
+import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
+import { commitSolvedRoutes } from "../solvedRoutes"
 import { countAssignmentsInSolvedRoutes } from "./helpers/countAssignmentsInSolvedRoutes"
-import { previewSectionReplacement } from "./routes/previewSectionReplacement"
+import { mergeSectionRoutesIntoGlobal } from "./routes/mergeSectionRoutesIntoGlobal"
 import { getSectionOfHyperGraphAsHyperGraph } from "./sections/getSectionOfHyperGraphAsHyperGraph"
 
 export type CreateHyperGraphSolverInput = {
@@ -410,7 +410,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       section: this.activeSection,
       solvedRoutes: candidateSectionSolvedRoutes,
     })
-    const replacementAppliedSolvedRoutes = previewSectionReplacement({
+    const replacementAppliedSolvedRoutes = mergeSectionRoutesIntoGlobal({
       solvedRoutes: this.solvedRoutes,
       section: this.activeSection,
       replacementSolvedRoutes: candidateSectionSolvedRoutes,

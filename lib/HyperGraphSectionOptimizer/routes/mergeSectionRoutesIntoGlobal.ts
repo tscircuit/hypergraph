@@ -1,18 +1,20 @@
 import type { HyperGraphSection } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
-import type { Candidate, HyperGraph, RegionPort, SolvedRoute } from "lib/types"
 import { getSharedRegionId } from "lib/HyperGraphSectionOptimizer/helpers/getSharedRegionId"
+import type { Candidate, HyperGraph, RegionPort, SolvedRoute } from "lib/types"
 
 /**
- * Produces the combined solved routes if the replacement were accepted.
+ * Splices section-optimized routes into the global route set.
+ * Takes routes solved within a section subgraph and merges them back into the full route list,
+ * mapping section graph references (ports/regions) back to their global equivalents.
  *
- * @param solvedRoutes - Current global solved routes before replacement
+ * @param solvedRoutes - Current global solved routes
  * @param section - The section being optimized with metadata about which routes it contains
  * @param replacementSolvedRoutes - New routes from section solver to splice in
  * @param globalGraph - The full graph (needed to map section graph regions/ports back to global equivalents,
  *                       since section graphs may have temporary boundary regions that don't exist globally)
- * @returns The combined routes with section routes replaced
+ * @returns Combined route set with section routes replaced by their optimized versions
  */
-export const previewSectionReplacement = (input: {
+export const mergeSectionRoutesIntoGlobal = (input: {
   solvedRoutes: SolvedRoute[]
   section: HyperGraphSection
   replacementSolvedRoutes: SolvedRoute[]
