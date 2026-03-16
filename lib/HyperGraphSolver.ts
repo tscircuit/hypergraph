@@ -115,11 +115,6 @@ export class HyperGraphSolver<
       inputSolvedRoutes: this.solvedRoutes,
     }
   }
-
-  override getOutput() {
-    return this.solvedRoutes
-  }
-
   computeH(candidate: CandidateType): number {
     return this.estimateCostToEnd(candidate.port)
   }
