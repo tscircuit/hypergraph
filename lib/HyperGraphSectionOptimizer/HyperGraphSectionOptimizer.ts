@@ -69,7 +69,6 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       inputSolvedRoutes: SolvedRoute[]
       expansionHopsFromCentralRegion: number
       createHyperGraphSolver: CreateHyperGraphSolver
-      computeRegionCost: (region: Region) => number
       regionCost: (region: Region) => number
       effort: number
       ACCEPTABLE_REGION_COST: number

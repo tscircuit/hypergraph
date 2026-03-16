@@ -18,9 +18,7 @@ export const getOrCreateBoundaryRegion = ({
       d: {
         isBoundaryRegion: true,
         boundaryPortId: port.portId,
-        isPad: false,
-        isThroughJumper: false,
-        isConnectionRegion: true,
+        ...port.d,
         center: { x, y },
         bounds: {
           minX: x - 0.05,

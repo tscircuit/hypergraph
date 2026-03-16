@@ -48,7 +48,6 @@ test("capture mid-section visualization for the section optimizer", async () => 
     expansionHopsFromCentralRegion: 1,
     MAX_ATTEMPTS_PER_REGION: 1,
     createHyperGraphSolver: (input) => new JumperGraphSolver(input),
-    computeRegionCost: computeJumperRegionCost,
     regionCost: computeJumperRegionCost,
     effort: 1,
     ACCEPTABLE_REGION_COST: 0,
