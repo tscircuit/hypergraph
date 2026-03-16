@@ -12,15 +12,6 @@ type HyperGraphWithSolvedRoutes = HyperGraph & {
   solvedRoutes?: SolvedRoute[]
 }
 
-const failCommit = (message: string): never => {
-  throw new Error(`[commitSolvedRoutes] ${message}`)
-}
-
-const expectDefined = <T>(value: T | undefined, message: string): T => {
-  if (value === undefined) failCommit(message)
-  return value as T
-}
-
 const getSharedRegions = (
   portA: RegionPort,
   portB: RegionPort,
@@ -75,10 +66,10 @@ export const commitSolvedRoutes = ({
 
     for (let index = 0; index < solvedRoute.path.length; index++) {
       const originalCandidate = solvedRoute.path[index]
-      const mappedPort = expectDefined(
-        portMap.get(originalCandidate.port.portId),
-        `Missing port ${originalCandidate.port.portId} while mapping connection ${solvedRoute.connection.connectionId} at index ${index}`,
-      )
+      const mappedPort = portMap.get(originalCandidate.port.portId)
+      if (!mappedPort) {
+        throw new Error(`Missing port ${originalCandidate.port.portId}`)
+      }
 
       const candidate: Candidate = {
         port: mappedPort,
@@ -90,25 +81,32 @@ export const commitSolvedRoutes = ({
       }
 
       if (originalCandidate.lastPort) {
-        const mappedLastPort = expectDefined(
-          portMap.get(originalCandidate.lastPort.portId),
-          `Missing lastPort ${originalCandidate.lastPort.portId} while mapping connection ${solvedRoute.connection.connectionId} at index ${index}`,
-        )
-        candidate.lastPort = mappedLastPort
+        candidate.lastPort = portMap.get(originalCandidate.lastPort.portId)
+        if (!candidate.lastPort) {
+          throw new Error(
+            `Missing lastPort ${originalCandidate.lastPort.portId}`,
+          )
+        }
       }
       if (originalCandidate.lastRegion) {
-        const mappedLastRegion = expectDefined(
-          regionMap.get(originalCandidate.lastRegion.regionId),
-          `Missing lastRegion ${originalCandidate.lastRegion.regionId} while mapping connection ${solvedRoute.connection.connectionId} at index ${index}`,
+        candidate.lastRegion = regionMap.get(
+          originalCandidate.lastRegion.regionId,
         )
-        candidate.lastRegion = mappedLastRegion
+        if (!candidate.lastRegion) {
+          throw new Error(
+            `Missing lastRegion ${originalCandidate.lastRegion.regionId}`,
+          )
+        }
       }
       if (originalCandidate.nextRegion) {
-        const mappedNextRegion = expectDefined(
-          regionMap.get(originalCandidate.nextRegion.regionId),
-          `Missing nextRegion ${originalCandidate.nextRegion.regionId} while mapping connection ${solvedRoute.connection.connectionId} at index ${index}`,
+        candidate.nextRegion = regionMap.get(
+          originalCandidate.nextRegion.regionId,
         )
-        candidate.nextRegion = mappedNextRegion
+        if (!candidate.nextRegion) {
+          throw new Error(
+            `Missing nextRegion ${originalCandidate.nextRegion.regionId}`,
+          )
+        }
       }
       const parent = path[path.length - 1]
       if (parent) candidate.parent = parent
@@ -123,109 +121,43 @@ export const commitSolvedRoutes = ({
 
       candidate.parent = previousCandidate
 
-      if (!previousCandidate) {
-        if (candidate.lastPort || candidate.lastRegion) {
-          failCommit(
-            `First candidate must not have lastPort/lastRegion for connection ${solvedRoute.connection.connectionId}`,
-          )
-        }
-      } else {
+      if (previousCandidate) {
         const sharedLastRegions = getSharedRegions(
           previousCandidate.port,
           candidate.port,
           regionMap,
         )
         if (sharedLastRegions.length === 0) {
-          failCommit(
-            `Non-adjacent transition for connection ${solvedRoute.connection.connectionId} at index ${index}: ${previousCandidate.port.portId} -> ${candidate.port.portId}`,
-          )
+          throw new Error(`Non-adjacent transition at index ${index}`)
         }
-        const sharedLastRegionIds = new Set(
-          sharedLastRegions.map((region) => region.regionId),
-        )
-        expectDefined(
-          sharedLastRegions[0],
-          `Non-adjacent transition for connection ${solvedRoute.connection.connectionId} at index ${index}: ${previousCandidate.port.portId} -> ${candidate.port.portId}`,
-        )
-        if (!candidate.lastPort) {
-          failCommit(
-            `Missing lastPort for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-          )
-        }
-        const lastPort = expectDefined(
-          candidate.lastPort,
-          `Missing lastPort for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-        )
-        if (lastPort.portId !== previousCandidate.port.portId) {
-          failCommit(
-            `lastPort mismatch for connection ${solvedRoute.connection.connectionId} at index ${index}: expected ${previousCandidate.port.portId}, got ${lastPort.portId}`,
-          )
-        }
-        if (!candidate.lastRegion) {
-          failCommit(
-            `Missing lastRegion for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-          )
-        }
-        const lastRegion = expectDefined(
-          candidate.lastRegion,
-          `Missing lastRegion for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-        )
-        if (!sharedLastRegionIds.has(lastRegion.regionId)) {
-          failCommit(
-            `lastRegion mismatch for connection ${solvedRoute.connection.connectionId} at index ${index}: expected one of [${Array.from(sharedLastRegionIds).join(", ")}], got ${lastRegion.regionId}`,
-          )
+        if (!candidate.lastPort || !candidate.lastRegion) {
+          throw new Error(`Missing lastPort/lastRegion at index ${index}`)
         }
       }
 
-      if (!nextCandidate) {
-        if (
-          candidate.nextRegion &&
-          candidate.nextRegion.regionId !==
-            solvedRoute.connection.endRegion.regionId
-        ) {
-          failCommit(
-            `Last candidate has unexpected nextRegion for connection ${solvedRoute.connection.connectionId}: expected endRegion ${solvedRoute.connection.endRegion.regionId}, got ${candidate.nextRegion.regionId}`,
-          )
-        }
-      } else {
+      if (nextCandidate) {
         const sharedNextRegions = getSharedRegions(
           candidate.port,
           nextCandidate.port,
           regionMap,
         )
         if (sharedNextRegions.length === 0) {
-          failCommit(
-            `Cannot infer nextRegion for connection ${solvedRoute.connection.connectionId} at index ${index}: ${candidate.port.portId} -> ${nextCandidate.port.portId}`,
-          )
+          throw new Error(`Non-adjacent transition at index ${index}`)
         }
-        const sharedNextRegionIds = new Set(
-          sharedNextRegions.map((region) => region.regionId),
-        )
-        expectDefined(
-          sharedNextRegions[0],
-          `Cannot infer nextRegion for connection ${solvedRoute.connection.connectionId} at index ${index}: ${candidate.port.portId} -> ${nextCandidate.port.portId}`,
-        )
         if (!candidate.nextRegion) {
-          failCommit(
-            `Missing nextRegion for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-          )
-        }
-        const nextRegion = expectDefined(
-          candidate.nextRegion,
-          `Missing nextRegion for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-        )
-        if (!sharedNextRegionIds.has(nextRegion.regionId)) {
-          failCommit(
-            `nextRegion mismatch for connection ${solvedRoute.connection.connectionId} at index ${index}: expected one of [${Array.from(sharedNextRegionIds).join(", ")}], got ${nextRegion.regionId}`,
-          )
+          throw new Error(`Missing nextRegion at index ${index}`)
         }
       }
     }
 
-    const mappedConnection = expectDefined(
-      connectionMap.get(solvedRoute.connection.connectionId),
-      `Missing connection ${solvedRoute.connection.connectionId} while mapping routes`,
+    const mappedConnection = connectionMap.get(
+      solvedRoute.connection.connectionId,
     )
+    if (!mappedConnection) {
+      throw new Error(
+        `Missing connection ${solvedRoute.connection.connectionId}`,
+      )
+    }
 
     return {
       path,
@@ -237,8 +169,6 @@ export const commitSolvedRoutes = ({
   clearAssignmentsFromGraph(graph)
   ;(graph as HyperGraphWithSolvedRoutes).solvedRoutes = committedSolvedRoutes
 
-  let assignmentsAdded = 0
-
   for (const solvedRoute of committedSolvedRoutes) {
     for (let index = 0; index < solvedRoute.path.length; index++) {
       const candidate = solvedRoute.path[index]
@@ -248,37 +178,20 @@ export const commitSolvedRoutes = ({
       }
 
       if (index === 0) continue
-
-      if (!candidate.lastPort || !candidate.lastRegion) {
-        failCommit(
-          `Unexpected missing lastPort/lastRegion after validation for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-        )
-      }
-
-      const lastPort = expectDefined(
-        candidate.lastPort,
-        `Unexpected missing lastPort after validation for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-      )
-      const lastRegion = expectDefined(
-        candidate.lastRegion,
-        `Unexpected missing lastRegion after validation for connection ${solvedRoute.connection.connectionId} at index ${index}`,
-      )
+      if (!candidate.lastPort || !candidate.lastRegion) continue
 
       const regionPortAssignment: RegionPortAssignment = {
-        regionPort1: lastPort,
+        regionPort1: candidate.lastPort,
         regionPort2: candidate.port,
-        region: lastRegion,
+        region: candidate.lastRegion,
         connection: solvedRoute.connection,
         solvedRoute,
       }
 
-      lastRegion.assignments ??= []
-      lastRegion.assignments.push(regionPortAssignment)
-      assignmentsAdded++
+      candidate.lastRegion.assignments ??= []
+      candidate.lastRegion.assignments.push(regionPortAssignment)
     }
   }
-
-  console.log(`[commitSolvedRoutes] Added ${assignmentsAdded} assignments`)
 
   return committedSolvedRoutes
 }

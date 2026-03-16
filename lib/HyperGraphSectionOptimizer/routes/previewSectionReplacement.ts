@@ -48,8 +48,6 @@ export const previewSectionReplacement = (input: {
     globalGraph.regions.map((region) => [region.regionId, region]),
   )
 
-  let replacedCount = 0
-  let skippedCount = 0
   let protectedFallbackCount = 0
 
   const result = solvedRoutes.map((solvedRoute) => {
@@ -59,7 +57,6 @@ export const previewSectionReplacement = (input: {
         solvedRoute.connection.connectionId,
     )
     if (!sectionRoute) {
-      skippedCount++
       return solvedRoute
     }
 
@@ -67,11 +64,8 @@ export const previewSectionReplacement = (input: {
       solvedRoute.connection.connectionId,
     )
     if (!replacementSolvedRoute) {
-      skippedCount++
       return solvedRoute
     }
-
-    replacedCount++
 
     const pathBeforeSection = solvedRoute.path.slice(
       0,
@@ -166,55 +160,30 @@ export const previewSectionReplacement = (input: {
         current.lastPort = undefined
         current.lastRegion = undefined
       } else {
-        const expectedLastPortId = previous.port.portId
-        if (current.lastPort?.portId !== expectedLastPortId) {
-          console.log(
-            `[previewSectionReplacement] Fixing lastPort mismatch for connection ${solvedRoute.connection.connectionId} at index ${i}: had ${current.lastPort?.portId ?? "undefined"}, expected ${expectedLastPortId}`,
-          )
+        if (current.lastPort?.portId !== previous.port.portId) {
           current.lastPort = previous.port
         }
 
         const sharedRegionId = getSharedRegionId(previous.port, current.port)
-        if (!sharedRegionId) {
-          console.error(
-            `[previewSectionReplacement] Route discontinuity for connection ${solvedRoute.connection.connectionId} between ports ${previous.port.portId} and ${current.port.portId} at index ${i}`,
-          )
-        } else {
+        if (sharedRegionId) {
           const sharedRegion = globalRegionMap.get(sharedRegionId)
-          if (!sharedRegion) {
-            console.error(
-              `[previewSectionReplacement] Missing shared region ${sharedRegionId} in global graph for connection ${solvedRoute.connection.connectionId}`,
-            )
-          } else if (current.lastRegion?.regionId !== sharedRegion.regionId) {
-            console.log(
-              `[previewSectionReplacement] Fixing lastRegion mismatch for connection ${solvedRoute.connection.connectionId} at index ${i}: had ${current.lastRegion?.regionId ?? "undefined"}, expected ${sharedRegion.regionId}`,
-            )
+          if (
+            sharedRegion &&
+            current.lastRegion?.regionId !== sharedRegion.regionId
+          ) {
             current.lastRegion = sharedRegion
           }
         }
       }
 
       if (!next) {
-        if (current.nextRegion) {
-          console.log(
-            `[previewSectionReplacement] Clearing stale nextRegion on terminal candidate for connection ${solvedRoute.connection.connectionId} at index ${i}: had ${current.nextRegion.regionId}`,
-          )
-        }
         current.nextRegion = undefined
       } else {
         const inferredNextRegionId = getSharedRegionId(current.port, next.port)
-
-        if (!inferredNextRegionId) {
-          console.error(
-            `[previewSectionReplacement] Cannot infer nextRegion for connection ${solvedRoute.connection.connectionId} between ports ${current.port.portId} and ${next.port.portId} at index ${i}`,
-          )
-        } else {
+        if (inferredNextRegionId) {
           const inferredNextRegion = globalRegionMap.get(inferredNextRegionId)
-          if (!inferredNextRegion) {
-            console.error(
-              `[previewSectionReplacement] Missing inferred nextRegion ${inferredNextRegionId} in global graph for connection ${solvedRoute.connection.connectionId}`,
-            )
-          } else if (
+          if (
+            inferredNextRegion &&
             current.nextRegion?.regionId !== inferredNextRegion.regionId
           ) {
             current.nextRegion = inferredNextRegion
@@ -229,17 +198,8 @@ export const previewSectionReplacement = (input: {
       requiredRip: solvedRoute.requiredRip,
     })
 
-    if (replacementAssignmentCount < originalAssignmentCount - 1) {
-      console.log(
-        `[previewSectionReplacement] Assignment drop for connection ${solvedRoute.connection.connectionId}: ${originalAssignmentCount} -> ${replacementAssignmentCount}`,
-      )
-    }
-
     if (originalAssignmentCount > 0 && replacementAssignmentCount === 0) {
       protectedFallbackCount++
-      console.warn(
-        `[previewSectionReplacement] Protected fallback for connection ${solvedRoute.connection.connectionId}: replacement removed all assignments (${originalAssignmentCount} -> 0), keeping original route`,
-      )
       return solvedRoute
     }
 
@@ -251,8 +211,5 @@ export const previewSectionReplacement = (input: {
     }
   })
 
-  console.log(
-    `[previewSectionReplacement] Replaced ${replacedCount} routes, skipped ${skippedCount}, protected fallbacks ${protectedFallbackCount}`,
-  )
   return result
 }

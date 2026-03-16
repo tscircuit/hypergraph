@@ -204,21 +204,12 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
         !portsShareARegion(mappedRawPorts[index - 1], mappedRawPorts[index])
       ) {
         hasNonAdjacentTransition = true
-        console.warn(
-          `[getSectionOfHyperGraphAsHyperGraph] Non-adjacent fixed-route transition for connection ${solvedRoute.connection.connectionId}: ${mappedRawPorts[index - 1].portId} -> ${mappedRawPorts[index].portId}`,
-        )
         break
       }
     }
 
     const canRemainFixedInSectionSolve =
       missingPortIds.length === 0 && !hasNonAdjacentTransition
-
-    if (!canRemainFixedInSectionSolve) {
-      console.warn(
-        `[getSectionOfHyperGraphAsHyperGraph] Connection ${solvedRoute.connection.connectionId} cannot remain fixed in section ${centralRegion.regionId}; missing section ports: ${missingPortIds.join(", ") || "none"}, nonAdjacentTransition=${hasNonAdjacentTransition}`,
-      )
-    }
 
     const sectionRouteBase = {
       globalRoute: solvedRoute,
