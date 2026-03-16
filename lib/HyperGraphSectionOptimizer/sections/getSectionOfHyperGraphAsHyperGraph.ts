@@ -15,6 +15,14 @@ import { sliceSolvedRouteIntoLocalSection } from "../routes/sliceSolvedRouteInto
 import { getRouteSectionSpan } from "./getRouteSectionSpan"
 import { getSectionRegionIds } from "./getSectionRegionIds"
 
+const portsShareARegion = (portA: RegionPort, portB: RegionPort): boolean => {
+  const aRegionIds = new Set([portA.region1.regionId, portA.region2.regionId])
+  return (
+    aRegionIds.has(portB.region1.regionId) ||
+    aRegionIds.has(portB.region2.regionId)
+  )
+}
+
 /** Extracts a focused section of the graph together with its local routes. */
 export const getSectionOfHyperGraphAsHyperGraph = (input: {
   graph: HyperGraph
@@ -179,6 +187,39 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       endRegion,
     }
     const rawPath = solvedRoute.path.slice(span.startIndex, span.endIndex + 1)
+    const sectionPortMap = new Map(
+      sectionGraph.ports.map((port) => [port.portId, port]),
+    )
+    const missingPortIds = rawPath
+      .filter((candidate) => !sectionPortMap.has(candidate.port.portId))
+      .map((candidate) => candidate.port.portId)
+
+    const mappedRawPorts = rawPath
+      .map((candidate) => sectionPortMap.get(candidate.port.portId))
+      .filter((port): port is RegionPort => Boolean(port))
+
+    let hasNonAdjacentTransition = false
+    for (let index = 1; index < mappedRawPorts.length; index++) {
+      if (
+        !portsShareARegion(mappedRawPorts[index - 1], mappedRawPorts[index])
+      ) {
+        hasNonAdjacentTransition = true
+        console.warn(
+          `[getSectionOfHyperGraphAsHyperGraph] Non-adjacent fixed-route transition for connection ${solvedRoute.connection.connectionId}: ${mappedRawPorts[index - 1].portId} -> ${mappedRawPorts[index].portId}`,
+        )
+        break
+      }
+    }
+
+    const canRemainFixedInSectionSolve =
+      missingPortIds.length === 0 && !hasNonAdjacentTransition
+
+    if (!canRemainFixedInSectionSolve) {
+      console.warn(
+        `[getSectionOfHyperGraphAsHyperGraph] Connection ${solvedRoute.connection.connectionId} cannot remain fixed in section ${centralRegion.regionId}; missing section ports: ${missingPortIds.join(", ") || "none"}, nonAdjacentTransition=${hasNonAdjacentTransition}`,
+      )
+    }
+
     const sectionRouteBase = {
       globalRoute: solvedRoute,
       globalConnection: solvedRoute.connection,
@@ -188,15 +229,17 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
     }
     sectionRoutes.push({
       ...sectionRouteBase,
-      canRemainFixedInSectionSolve: rawPath.every((candidate) =>
-        sectionGraph.ports.some(
-          (port) => port.portId === candidate.port.portId,
-        ),
-      ),
-      sectionRoute: sliceSolvedRouteIntoLocalSection({
-        sectionRoute: sectionRouteBase,
-        graph: sectionGraph,
-      }),
+      canRemainFixedInSectionSolve,
+      sectionRoute: canRemainFixedInSectionSolve
+        ? sliceSolvedRouteIntoLocalSection({
+            sectionRoute: sectionRouteBase,
+            graph: sectionGraph,
+          })
+        : {
+            connection: sectionConnection,
+            path: [],
+            requiredRip: true,
+          },
     })
     sectionConnections.push(sectionConnection)
   }

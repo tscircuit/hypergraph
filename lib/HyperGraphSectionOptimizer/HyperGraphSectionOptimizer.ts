@@ -1,9 +1,9 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
 import type { GraphicsObject } from "graphics-debug"
-import { convertConnectionsToSerializedConnections } from "../convertConnectionsToSerializedConnections"
-import { convertHyperGraphToSerializedHyperGraph } from "../convertHyperGraphToSerializedHyperGraph"
 import type { HyperGraphSolver } from "../HyperGraphSolver"
 import { createSeededRandom } from "../JumperGraphSolver/jumper-graph-generator/createProblemFromBaseGraph"
+import { convertConnectionsToSerializedConnections } from "../convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "../convertHyperGraphToSerializedHyperGraph"
 import { commitSolvedRoutes } from "../solvedRoutes"
 import type {
   Connection,
@@ -189,6 +189,18 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
     return totalCost
   }
 
+  private countAssignmentsInSolvedRoutes(solvedRoutes: SolvedRoute[]): number {
+    let assignmentCount = 0
+    for (const solvedRoute of solvedRoutes) {
+      for (const candidate of solvedRoute.path) {
+        if (candidate.lastPort && candidate.lastRegion) {
+          assignmentCount++
+        }
+      }
+    }
+    return assignmentCount
+  }
+
   /**
    * TODO default behavior should be to rip entire section
    */
@@ -350,14 +362,7 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       (route) => route.sectionRoute,
     )
 
-    const baselineSectionSolvedRoutes = [
-      ...fixedSectionSolvedRoutes,
-      ...this.activeSection.sectionRoutes
-        .filter((route) =>
-          connectionsToReroute.has(route.globalConnection.connectionId),
-        )
-        .map((route) => route.sectionRoute),
-    ]
+    const baselineSectionSolvedRoutes = [...fixedSectionSolvedRoutes]
     this.baselineSectionCost = this.computeCostOfSection({
       section: this.activeSection,
       solvedRoutes: baselineSectionSolvedRoutes,
@@ -420,20 +425,43 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
       solvedRoutes: this.solvedRoutes,
       section: this.activeSection,
       replacementSolvedRoutes: candidateSectionSolvedRoutes,
+      globalGraph: this.graph,
     })
 
     const candidateGlobalCost = this.computeSolvedGraphCost(
       replacementAppliedSolvedRoutes,
     )
 
+    const baselineAssignments = this.countAssignmentsInSolvedRoutes(
+      this.solvedRoutes,
+    )
+    const candidateAssignments = this.countAssignmentsInSolvedRoutes(
+      replacementAppliedSolvedRoutes,
+    )
+
+    console.log(
+      `[HyperGraphSectionOptimizer] Section ${this.activeSection.centralRegionId}: sectionCost ${this.baselineSectionCost.toFixed(2)} -> ${candidateCost.toFixed(2)}, globalCost ${this.baselineGlobalCost.toFixed(2)} -> ${candidateGlobalCost.toFixed(2)}, assignments ${baselineAssignments} -> ${candidateAssignments}`,
+    )
+
     const sectionNotWorse = candidateCost <= this.baselineSectionCost
     const globalImproved = candidateGlobalCost < this.baselineGlobalCost
+    const preservesNonEmptyAssignments =
+      baselineAssignments === 0 || candidateAssignments > 0
 
-    if (sectionNotWorse && globalImproved) {
+    if (sectionNotWorse && globalImproved && preservesNonEmptyAssignments) {
+      if (candidateAssignments < baselineAssignments) {
+        console.log(
+          `[HyperGraphSectionOptimizer] Accepting improvement with lower assignments (${baselineAssignments} -> ${candidateAssignments}) because global cost improved`,
+        )
+      }
       this.solvedRoutes = replacementAppliedSolvedRoutes
 
       const sourceSolver = this.input.hyperGraphSolver
       if (!sourceSolver) return
+
+      console.log(
+        `[HyperGraphSectionOptimizer] Committing ${this.solvedRoutes.length} routes to source solver`,
+      )
 
       sourceSolver.solvedRoutes = commitSolvedRoutes({
         graph: sourceSolver.graph,
@@ -441,12 +469,31 @@ export class HyperGraphSectionOptimizer extends BaseSolver {
         solvedRoutes: this.solvedRoutes,
       })
 
+      // Verify assignments in source solver
+      let totalAssignments = 0
+      for (const region of sourceSolver.graph.regions) {
+        if (region.assignments) {
+          totalAssignments += region.assignments.length
+        }
+      }
+      console.log(
+        `[HyperGraphSectionOptimizer] Source solver now has ${totalAssignments} total assignments`,
+      )
+
       for (const regionId of this.activeSection.sectionRegionIds) {
         this.regionAttemptCounts.set(regionId, 0)
       }
       this.baselineSectionCost = candidateCost
       this.baselineGlobalCost = candidateGlobalCost
     } else {
+      if (!preservesNonEmptyAssignments) {
+        console.warn(
+          `[HyperGraphSectionOptimizer] Rejecting candidate because assignments would become empty (${baselineAssignments} -> ${candidateAssignments})`,
+        )
+      }
+      console.log(
+        `[HyperGraphSectionOptimizer] Rejecting candidate for section ${this.activeSection.centralRegionId} (sectionNotWorse=${sectionNotWorse}, globalImproved=${globalImproved}, preservesNonEmptyAssignments=${preservesNonEmptyAssignments})`,
+      )
       const attempts =
         this.regionAttemptCounts.get(this.activeSection.centralRegionId) ?? 0
       this.regionAttemptCounts.set(

@@ -1,9 +1,9 @@
 import { BaseSolver } from "@tscircuit/solver-utils"
+import { PriorityQueue } from "./PriorityQueue"
 import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
 import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertSerializedConnectionsToConnections } from "./convertSerializedConnectionsToConnections"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
-import { PriorityQueue } from "./PriorityQueue"
 import { clearAssignmentsFromGraph, commitSolvedRoutes } from "./solvedRoutes"
 import type {
   Candidate,
@@ -381,7 +381,8 @@ export class HyperGraphSolver<
         connection: this.currentConnection!,
         solvedRoute,
       }
-      candidate.lastRegion!.assignments?.push(regionPortAssignment)
+      candidate.lastRegion!.assignments ??= []
+      candidate.lastRegion!.assignments.push(regionPortAssignment)
     }
 
     this.solvedRoutes.push(solvedRoute)
