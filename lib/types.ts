@@ -94,6 +94,28 @@ export type SerializedHyperGraph = {
   regions: SerializedGraphRegion[]
 }
 
+export type SerializedCandidate = {
+  portId: PortId
+  g: number
+  h: number
+  f: number
+  hops: number
+  ripRequired: boolean
+  lastPortId?: PortId
+  lastRegionId?: RegionId
+  nextRegionId?: RegionId
+}
+
+export type SerializedSolvedRoute = {
+  path: SerializedCandidate[]
+  connection: SerializedConnection
+  requiredRip: boolean
+}
+
+export type SerializedHyperGraphWithSolvedRoutes = SerializedHyperGraph & {
+  solvedRoutes: SerializedSolvedRoute[]
+}
+
 export type Connection = {
   connectionId: ConnectionId
   mutuallyConnectedNetworkId: NetworkId
@@ -105,4 +127,5 @@ export type SerializedConnection = {
   connectionId: ConnectionId
   startRegionId: RegionId
   endRegionId: RegionId
+  mutuallyConnectedNetworkId?: NetworkId
 }

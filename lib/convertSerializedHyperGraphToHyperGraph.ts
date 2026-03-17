@@ -41,16 +41,16 @@ export const convertSerializedHyperGraphToHyperGraph = (
     const region1 = regionMap.get(port.region1Id ?? port.region1?.regionId)!
     const region2 = regionMap.get(port.region2Id ?? port.region2?.regionId)!
 
-    const hydratedPort: RegionPort = {
+    const deserializedPort: RegionPort = {
       portId: port.portId,
       region1,
       region2,
       d: port.d,
     }
 
-    portMap.set(port.portId, hydratedPort)
-    region1.ports.push(hydratedPort)
-    region2.ports.push(hydratedPort)
+    portMap.set(port.portId, deserializedPort)
+    region1.ports.push(deserializedPort)
+    region2.ports.push(deserializedPort)
   }
 
   return {

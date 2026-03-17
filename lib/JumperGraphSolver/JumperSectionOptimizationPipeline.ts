@@ -39,18 +39,19 @@ export class JumperSectionOptimizationPipeline extends BasePipelineSolver<Jumper
   constructor(input: JumperSectionOptimizationPipelineInput) {
     super(input)
 
-    const hydratedGraph = convertSerializedHyperGraphToHyperGraph(
+    const deserializedGraph = convertSerializedHyperGraphToHyperGraph(
       input.inputGraph,
     )
-    const hydratedConnections = convertSerializedConnectionsToConnections(
+    const deserializedConnections = convertSerializedConnectionsToConnections(
       input.inputConnections,
-      hydratedGraph,
+      deserializedGraph,
     )
 
     this.normalizedGraph =
-      convertHyperGraphToSerializedHyperGraph(hydratedGraph)
-    this.normalizedConnections =
-      convertConnectionsToSerializedConnections(hydratedConnections)
+      convertHyperGraphToSerializedHyperGraph(deserializedGraph)
+    this.normalizedConnections = convertConnectionsToSerializedConnections(
+      deserializedConnections,
+    )
   }
 
   pipelineDef: PipelineStep<any>[] = [

@@ -9,7 +9,8 @@ export const convertSerializedConnectionsToConnections = (
     if ("startRegionId" in inputConn) {
       connections.push({
         connectionId: inputConn.connectionId,
-        mutuallyConnectedNetworkId: inputConn.connectionId,
+        mutuallyConnectedNetworkId:
+          inputConn.mutuallyConnectedNetworkId ?? inputConn.connectionId,
         startRegion: graph.regions.find(
           (region) => region.regionId === inputConn.startRegionId,
         )!,

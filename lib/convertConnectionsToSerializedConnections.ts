@@ -7,5 +7,6 @@ export const convertConnectionsToSerializedConnections = (
     connectionId: conn.connectionId,
     startRegionId: conn.startRegion.regionId,
     endRegionId: conn.endRegion.regionId,
+    mutuallyConnectedNetworkId: conn.mutuallyConnectedNetworkId,
   }))
 }

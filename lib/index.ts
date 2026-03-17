@@ -1,5 +1,6 @@
 export * from "./convertConnectionsToSerializedConnections"
 export * from "./convertHyperGraphToSerializedHyperGraph"
+export * from "./extractSectionOfHyperGraph"
 export * from "./HyperGraphSolver"
 export * from "./HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"
 export * from "./JumperGraphSolver/geometry/applyTransformToGraph"

@@ -26,6 +26,7 @@
     "high-density-dataset-z04": "git+https://github.com/tscircuit/high-density-dataset-z04.git#b9128ed52f5a50102b6526319be1d4ec33dca2c2",
     "react-cosmos": "^7.1.0",
     "react-cosmos-plugin-vite": "^7.1.0",
+    "stack-svgs": "^0.0.1",
     "transformation-matrix": "^3.1.0",
     "tsup": "^8.5.1"
   },
