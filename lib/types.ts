@@ -116,6 +116,10 @@ export type SerializedHyperGraphWithSolvedRoutes = SerializedHyperGraph & {
   solvedRoutes: SerializedSolvedRoute[]
 }
 
+export type SerializedHyperGraphWithConnections = SerializedHyperGraph & {
+  connections: SerializedConnection[]
+}
+
 export type Connection = {
   connectionId: ConnectionId
   mutuallyConnectedNetworkId: NetworkId
