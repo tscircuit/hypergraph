@@ -60,6 +60,10 @@ export const createBlankHyperGraph = (
   return {
     ...convertHyperGraphToSerializedHyperGraph(blankGraph),
     connections: convertConnectionsToSerializedConnections(connections),
+    _sectionCentralRegionId: inputGraph._sectionCentralRegionId,
+    _sectionRouteBindings: inputGraph._sectionRouteBindings
+      ? structuredClone(inputGraph._sectionRouteBindings)
+      : undefined,
   }
 }
 

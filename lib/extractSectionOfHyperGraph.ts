@@ -1,4 +1,5 @@
 import { getSectionOfHyperGraphAsHyperGraph } from "./HyperGraphSectionOptimizer/sections/getSectionOfHyperGraphAsHyperGraph"
+import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
 import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
 import { convertSerializedSolvedRoutesToSolvedRoutes } from "./convertSerializedSolvedRoutesToSolvedRoutes"
@@ -41,8 +42,15 @@ export const extractSectionOfHyperGraph = (input: {
 
   return {
     ...convertHyperGraphToSerializedHyperGraph(section.graph),
+    connections: convertConnectionsToSerializedConnections(section.connections),
     solvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes(
       section.sectionRoutes.map((route) => route.sectionRoute),
     ),
+    _sectionCentralRegionId: section.centralRegionId,
+    _sectionRouteBindings: section.sectionRoutes.map((route) => ({
+      connectionId: route.globalConnection.connectionId,
+      solvedPathStartIndex: route.sectionStartIndex,
+      solvedPathEndIndex: route.sectionEndIndex,
+    })),
   }
 }

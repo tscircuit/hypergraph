@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { getSvgFromGraphicsObject } from "graphics-debug"
+import { HyperGraphSolver } from "lib/HyperGraphSolver"
 import { visualizeJumperGraph } from "lib/JumperGraphSolver/visualizeJumperGraph"
 import { visualizeJumperGraphWithSolvedRoutes } from "lib/JumperGraphSolver/visualizeJumperGraphSolver"
 import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
@@ -9,11 +10,22 @@ import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializ
 import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
 import { createBlankHyperGraph } from "lib/createBlankHyperGraph"
 import { extractSectionOfHyperGraph } from "lib/extractSectionOfHyperGraph"
+import { reattachSectionToGraph } from "lib/reattachSectionToGraph"
 import { stackSvgsVertically } from "stack-svgs"
 import {
   asJumperGraph,
   createSketchedHyperGraph,
 } from "./sketch-section-graph.fixture"
+
+class SimpleSectionSolver extends HyperGraphSolver {
+  override estimateCostToEnd(): number {
+    return 0
+  }
+
+  override computeIncreasedRegionCostIfPortsAreUsed(): number {
+    return 0
+  }
+}
 
 test("section extraction pipeline keeps only routed leaf ports and produces a blank graph", async () => {
   const { graph, solvedRoutes } = createSketchedHyperGraph()
@@ -36,6 +48,15 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
   expect(sectionRegionIds).not.toContain("C")
   expect(sectionRegionIds).not.toContain("F")
   expect(sectionPortIds).toEqual(["p-ab", "p-bd", "p-de", "p-ef"])
+  expect(sectionGraph.connections).toHaveLength(1)
+  expect(sectionGraph._sectionCentralRegionId).toBe("D")
+  expect(sectionGraph._sectionRouteBindings).toEqual([
+    {
+      connectionId: "route-main",
+      solvedPathStartIndex: 1,
+      solvedPathEndIndex: 4,
+    },
+  ])
   expect(sectionGraph.solvedRoutes).toHaveLength(1)
   expect(
     sectionGraph.solvedRoutes?.[0]!.path.map((candidate) => candidate.portId),
@@ -70,6 +91,30 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
     "connection:route-main:end",
   )
 
+  const blankSolver = new SimpleSectionSolver({
+    inputGraph: blankGraph,
+    inputConnections: blankGraph.connections ?? [],
+  })
+  blankSolver.solve()
+  expect(blankSolver.solved).toBe(true)
+
+  const solvedBlankGraph = {
+    ...blankGraph,
+    solvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes(
+      blankSolver.solvedRoutes,
+    ),
+  }
+
+  const reattachedGraph = reattachSectionToGraph({
+    fullGraph: serializedGraph,
+    solvedSectionGraph: solvedBlankGraph,
+  })
+  expect(
+    reattachedGraph.solvedRoutes?.[0]!.path.map(
+      (candidate) => candidate.portId,
+    ),
+  ).toEqual(["p-start", "p-ab", "p-bd", "p-de", "p-ef", "p-end"])
+
   const deserializedSectionGraph =
     convertSerializedHyperGraphToHyperGraph(sectionGraph)
   const deserializedSectionRoutes = convertSerializedSolvedRoutesToSolvedRoutes(
@@ -83,6 +128,13 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
     convertSerializedConnectionsToConnections(
       blankGraph.connections ?? [],
       deserializedBlankGraph,
+    )
+  const deserializedReattachedGraph =
+    convertSerializedHyperGraphToHyperGraph(reattachedGraph)
+  const deserializedReattachedRoutes =
+    convertSerializedSolvedRoutesToSolvedRoutes(
+      reattachedGraph.solvedRoutes ?? [],
+      deserializedReattachedGraph,
     )
 
   const fullSvg = getSvgFromGraphicsObject(
@@ -130,10 +182,31 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
   }
   const blankSvg = getSvgFromGraphicsObject(blankGraphics)
 
-  await expect(
-    stackSvgsVertically([fullSvg, sectionSvg, blankSvg], {
-      gap: 48,
-      normalizeSize: false,
+  const solvedSectionSvg = getSvgFromGraphicsObject(
+    visualizeJumperGraphWithSolvedRoutes({
+      graph: asJumperGraph(deserializedBlankGraph),
+      connections: deserializedBlankConnections,
+      solvedRoutes: blankSolver.solvedRoutes,
+      title: "Solved section",
     }),
+  )
+
+  const reattachedSvg = getSvgFromGraphicsObject(
+    visualizeJumperGraphWithSolvedRoutes({
+      graph: asJumperGraph(deserializedReattachedGraph),
+      connections: [],
+      solvedRoutes: deserializedReattachedRoutes,
+      title: "Reattached full graph",
+    }),
+  )
+
+  await expect(
+    stackSvgsVertically(
+      [fullSvg, sectionSvg, blankSvg, solvedSectionSvg, reattachedSvg],
+      {
+        gap: 48,
+        normalizeSize: false,
+      },
+    ),
   ).toMatchSvgSnapshot(import.meta.path)
 })
