@@ -20,7 +20,6 @@ export const sliceSolvedRouteIntoLocalSection = (input: {
 
   const path: Candidate[] = []
   let currentRegion = sectionRoute.sectionConnection.startRegion
-
   for (let index = 0; index < originalLocalPath.length; index++) {
     const originalCandidate = originalLocalPath[index]
     const port = graph.ports.find(
@@ -31,9 +30,9 @@ export const sliceSolvedRouteIntoLocalSection = (input: {
 
     path.push({
       port,
-      g: originalCandidate.g,
-      h: originalCandidate.h,
-      f: originalCandidate.f,
+      g: 0,
+      h: 0,
+      f: 0,
       hops: index,
       ripRequired: originalCandidate.ripRequired,
       parent: index > 0 ? path[index - 1] : undefined,
