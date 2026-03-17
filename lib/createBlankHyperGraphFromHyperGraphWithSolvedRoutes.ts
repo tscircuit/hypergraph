@@ -7,17 +7,21 @@ import type {
   HyperGraph,
   Region,
   RegionPort,
-  SerializedHyperGraphWithConnections,
-  SerializedHyperGraphWithSolvedRoutes,
+  SerializedHyperGraph,
   SolvedRoute,
 } from "./types"
 
 const CONNECTION_REGION_SIZE = 0.8
 
 export const createBlankHyperGraphFromHyperGraphWithSolvedRoutes = (
-  inputGraph: SerializedHyperGraphWithSolvedRoutes,
-): SerializedHyperGraphWithConnections => {
+  inputGraph: SerializedHyperGraph,
+): SerializedHyperGraph => {
   const deserializedGraph = convertSerializedHyperGraphToHyperGraph(inputGraph)
+  if (!inputGraph.solvedRoutes) {
+    throw new Error(
+      "createBlankHyperGraphFromHyperGraphWithSolvedRoutes requires graph.solvedRoutes to be present",
+    )
+  }
   const solvedRoutes = convertSerializedSolvedRoutesToSolvedRoutes(
     inputGraph.solvedRoutes,
     deserializedGraph,
