@@ -15,7 +15,7 @@ import {
   createSketchedHyperGraph,
 } from "./sketch-section-graph.fixture"
 
-test("createBlankHyperGraph turns section endpoints into connection regions", async () => {
+test("section extraction pipeline keeps only routed leaf ports and produces a blank graph", async () => {
   const { graph, solvedRoutes } = createSketchedHyperGraph()
   const serializedGraph = {
     ...convertHyperGraphToSerializedHyperGraph(graph),
@@ -28,9 +28,28 @@ test("createBlankHyperGraph turns section endpoints into connection regions", as
     expansionHopsFromCentralRegion: 0,
   })
 
-  const blankGraph = createBlankHyperGraph(sectionGraph)
+  const sectionRegionIds = sectionGraph.regions.map((region) => region.regionId)
+  const sectionPortIds = sectionGraph.ports.map((port) => port.portId)
 
+  expect(sectionRegionIds).toEqual(expect.arrayContaining(["B", "D", "E"]))
+  expect(sectionRegionIds).not.toContain("A")
+  expect(sectionRegionIds).not.toContain("C")
+  expect(sectionRegionIds).not.toContain("F")
+  expect(sectionPortIds).toEqual(["p-ab", "p-bd", "p-de", "p-ef"])
+  expect(sectionGraph.solvedRoutes).toHaveLength(1)
+  expect(
+    sectionGraph.solvedRoutes?.[0]!.path.map((candidate) => candidate.portId),
+  ).toEqual(["p-ab", "p-bd", "p-de", "p-ef"])
+  expect(sectionGraph.solvedRoutes?.[0]!.connection.startRegionId).toBe(
+    "__section_boundary__p-ab",
+  )
+  expect(sectionGraph.solvedRoutes?.[0]!.connection.endRegionId).toBe(
+    "__section_boundary__p-ef",
+  )
+
+  const blankGraph = createBlankHyperGraph(sectionGraph)
   const blankRegionIds = blankGraph.regions.map((region) => region.regionId)
+
   expect(blankRegionIds).toEqual(
     expect.arrayContaining([
       "B",
@@ -54,7 +73,7 @@ test("createBlankHyperGraph turns section endpoints into connection regions", as
   const deserializedSectionGraph =
     convertSerializedHyperGraphToHyperGraph(sectionGraph)
   const deserializedSectionRoutes = convertSerializedSolvedRoutesToSolvedRoutes(
-    sectionGraph.solvedRoutes,
+    sectionGraph.solvedRoutes ?? [],
     deserializedSectionGraph,
   )
 
@@ -66,19 +85,28 @@ test("createBlankHyperGraph turns section endpoints into connection regions", as
       deserializedBlankGraph,
     )
 
+  const fullSvg = getSvgFromGraphicsObject(
+    visualizeJumperGraphWithSolvedRoutes({
+      graph: asJumperGraph(graph),
+      connections: [],
+      solvedRoutes,
+      title: "Full graph",
+    }),
+  )
+
   const sectionSvg = getSvgFromGraphicsObject(
     visualizeJumperGraphWithSolvedRoutes({
       graph: asJumperGraph(deserializedSectionGraph),
       connections: [],
       solvedRoutes: deserializedSectionRoutes,
-      title: "Section",
+      title: "Extracted section",
     }),
   )
 
   const blankGraphics = visualizeJumperGraph(
     asJumperGraph(deserializedBlankGraph),
   )
-  blankGraphics.title = "Blank section"
+  blankGraphics.title = "Blank graph"
   for (const connection of deserializedBlankConnections) {
     for (const region of [connection.startRegion, connection.endRegion]) {
       const bounds = region.d.bounds
@@ -103,7 +131,7 @@ test("createBlankHyperGraph turns section endpoints into connection regions", as
   const blankSvg = getSvgFromGraphicsObject(blankGraphics)
 
   await expect(
-    stackSvgsVertically([sectionSvg, blankSvg], {
+    stackSvgsVertically([fullSvg, sectionSvg, blankSvg], {
       gap: 48,
       normalizeSize: false,
     }),
