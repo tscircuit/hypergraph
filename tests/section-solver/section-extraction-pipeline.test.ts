@@ -10,6 +10,7 @@ import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializ
 import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
 import { createBlankHyperGraph } from "lib/createBlankHyperGraph"
 import { extractSectionOfHyperGraph } from "lib/extractSectionOfHyperGraph"
+import { pruneDeadEndPorts } from "lib/pruneDeadEndPorts"
 import { reattachSectionToGraph } from "lib/reattachSectionToGraph"
 import { stackSvgsVertically } from "stack-svgs"
 import {
@@ -27,7 +28,7 @@ class SimpleSectionSolver extends HyperGraphSolver {
   }
 }
 
-test("section extraction pipeline keeps only routed leaf ports and produces a blank graph", async () => {
+test("section extraction pipeline preserves section ports and produces a blank graph", async () => {
   const { graph, solvedRoutes } = createSketchedHyperGraph()
   const serializedGraph = {
     ...convertHyperGraphToSerializedHyperGraph(graph),
@@ -47,7 +48,19 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
   expect(sectionRegionIds).not.toContain("A")
   expect(sectionRegionIds).not.toContain("C")
   expect(sectionRegionIds).not.toContain("F")
-  expect(sectionPortIds).toEqual(["p-ab", "p-bd", "p-de", "p-ef"])
+  expect(sectionPortIds).toEqual([
+    "p-ab",
+    "p-bc",
+    "p-bd",
+    "p-ce",
+    "p-de",
+    "p-ef-upper",
+    "p-ef",
+    "p-d-bottom-left",
+    "p-d-bottom-right",
+    "p-e-bottom-left",
+    "p-e-bottom-right",
+  ])
   expect(sectionGraph.connections).toHaveLength(1)
   expect(sectionGraph._sectionCentralRegionId).toBe("D")
   expect(sectionGraph._sectionRouteBindings).toEqual([
@@ -68,7 +81,15 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
     "__section_boundary__p-ef",
   )
 
-  const blankGraph = createBlankHyperGraph(sectionGraph)
+  const prunedSectionGraph = pruneSerializedSectionGraph(sectionGraph)
+  expect(prunedSectionGraph.ports.map((port) => port.portId)).toEqual([
+    "p-ab",
+    "p-bd",
+    "p-de",
+    "p-ef",
+  ])
+
+  const blankGraph = createBlankHyperGraph(prunedSectionGraph)
   const blankRegionIds = blankGraph.regions.map((region) => region.regionId)
 
   expect(blankRegionIds).toEqual(
@@ -159,6 +180,8 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
     asJumperGraph(deserializedBlankGraph),
   )
   blankGraphics.title = "Blank graph"
+  blankGraphics.rects ??= []
+  blankGraphics.points ??= []
   for (const connection of deserializedBlankConnections) {
     for (const region of [connection.startRegion, connection.endRegion]) {
       const bounds = region.d.bounds
@@ -210,3 +233,29 @@ test("section extraction pipeline keeps only routed leaf ports and produces a bl
     ),
   ).toMatchSvgSnapshot(import.meta.path)
 })
+
+const pruneSerializedSectionGraph = (
+  graph: ReturnType<typeof extractSectionOfHyperGraph>,
+): ReturnType<typeof extractSectionOfHyperGraph> => {
+  const deserializedGraph = convertSerializedHyperGraphToHyperGraph(graph)
+  const retainedPortIds =
+    graph.solvedRoutes?.flatMap((solvedRoute) => {
+      const startPortId = solvedRoute.path[0]?.portId
+      const endPortId = solvedRoute.path[solvedRoute.path.length - 1]?.portId
+      return [startPortId, endPortId].filter(
+        (portId): portId is string => Boolean(portId),
+      )
+    }) ?? []
+
+  pruneDeadEndPorts(deserializedGraph, retainedPortIds)
+
+  return {
+    ...convertHyperGraphToSerializedHyperGraph(deserializedGraph),
+    connections: graph.connections ? structuredClone(graph.connections) : undefined,
+    solvedRoutes: graph.solvedRoutes ? structuredClone(graph.solvedRoutes) : undefined,
+    _sectionCentralRegionId: graph._sectionCentralRegionId,
+    _sectionRouteBindings: graph._sectionRouteBindings
+      ? structuredClone(graph._sectionRouteBindings)
+      : undefined,
+  }
+}
