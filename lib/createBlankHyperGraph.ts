@@ -11,31 +11,26 @@ import type {
   SolvedRoute,
 } from "./types"
 
-const CONNECTION_REGION_SIZE = 0.8
-
-export const createBlankHyperGraphFromHyperGraphWithSolvedRoutes = (
+export const createBlankHyperGraph = (
   inputGraph: SerializedHyperGraph,
 ): SerializedHyperGraph => {
   const deserializedGraph = convertSerializedHyperGraphToHyperGraph(inputGraph)
   if (!inputGraph.solvedRoutes) {
     throw new Error(
-      "createBlankHyperGraphFromHyperGraphWithSolvedRoutes requires graph.solvedRoutes to be present",
+      "createBlankHyperGraph requires graph.solvedRoutes to be present",
     )
   }
+
   const solvedRoutes = convertSerializedSolvedRoutesToSolvedRoutes(
     inputGraph.solvedRoutes,
     deserializedGraph,
   )
 
-  const boundaryRegionIds = new Set(
-    deserializedGraph.regions
-      .filter((region) => isSyntheticBoundaryRegion(region))
-      .map((region) => region.regionId),
-  )
-
-  const blankGraph = cloneGraphWithoutBoundaryRegions(
+  const removableLeafRegionIds = getRemovableLeafRegionIds(deserializedGraph)
+  const replacedEndpointRegionIds = getReplacedEndpointRegionIds(solvedRoutes)
+  const blankGraph = cloneGraphExcludingRegions(
     deserializedGraph,
-    boundaryRegionIds,
+    removableLeafRegionIds,
   )
   const connections: Connection[] = []
 
@@ -43,13 +38,13 @@ export const createBlankHyperGraphFromHyperGraphWithSolvedRoutes = (
     const startRegion = getBlankConnectionEndpointRegion({
       solvedRoute,
       blankGraph,
-      boundaryRegionIds,
+      replacedEndpointRegionIds,
       endpoint: "start",
     })
     const endRegion = getBlankConnectionEndpointRegion({
       solvedRoute,
       blankGraph,
-      boundaryRegionIds,
+      replacedEndpointRegionIds,
       endpoint: "end",
     })
 
@@ -68,15 +63,65 @@ export const createBlankHyperGraphFromHyperGraphWithSolvedRoutes = (
   }
 }
 
-const cloneGraphWithoutBoundaryRegions = (
+const getRemovableLeafRegionIds = (graph: HyperGraph): Set<string> => {
+  return new Set(
+    graph.regions
+      .filter((region) => region.ports.length === 1)
+      .map((region) => region.regionId),
+  )
+}
+
+const getReplacedEndpointRegionIds = (
+  solvedRoutes: SolvedRoute[],
+): Set<string> => {
+  const replacedEndpointRegionIds = new Set<string>()
+
+  for (const solvedRoute of solvedRoutes) {
+    const startCandidate = solvedRoute.path[0]
+    if (
+      startCandidate &&
+      shouldReplaceEndpointRegion(
+        solvedRoute.connection.startRegion,
+        startCandidate,
+      )
+    ) {
+      replacedEndpointRegionIds.add(solvedRoute.connection.startRegion.regionId)
+    }
+
+    const endCandidate = solvedRoute.path[solvedRoute.path.length - 1]
+    if (
+      endCandidate &&
+      shouldReplaceEndpointRegion(
+        solvedRoute.connection.endRegion,
+        endCandidate,
+      )
+    ) {
+      replacedEndpointRegionIds.add(solvedRoute.connection.endRegion.regionId)
+    }
+  }
+
+  return replacedEndpointRegionIds
+}
+
+const shouldReplaceEndpointRegion = (
+  endpointRegion: Region,
+  endpointCandidate: SolvedRoute["path"][number],
+): boolean => {
+  return (
+    endpointRegion.ports.length === 1 &&
+    endpointRegion.ports[0]?.portId === endpointCandidate.port.portId
+  )
+}
+
+const cloneGraphExcludingRegions = (
   graph: HyperGraph,
-  boundaryRegionIds: Set<string>,
+  excludedRegionIds: Set<string>,
 ): HyperGraph => {
   const clonedRegionMap = new Map<string, Region>()
   const clonedPorts: RegionPort[] = []
 
   for (const region of graph.regions) {
-    if (boundaryRegionIds.has(region.regionId)) continue
+    if (excludedRegionIds.has(region.regionId)) continue
     clonedRegionMap.set(region.regionId, {
       regionId: region.regionId,
       ports: [],
@@ -87,8 +132,8 @@ const cloneGraphWithoutBoundaryRegions = (
 
   for (const port of graph.ports) {
     if (
-      boundaryRegionIds.has(port.region1.regionId) ||
-      boundaryRegionIds.has(port.region2.regionId)
+      excludedRegionIds.has(port.region1.regionId) ||
+      excludedRegionIds.has(port.region2.regionId)
     ) {
       continue
     }
@@ -113,10 +158,10 @@ const cloneGraphWithoutBoundaryRegions = (
 const getBlankConnectionEndpointRegion = (input: {
   solvedRoute: SolvedRoute
   blankGraph: HyperGraph
-  boundaryRegionIds: Set<string>
+  replacedEndpointRegionIds: Set<string>
   endpoint: "start" | "end"
 }): Region => {
-  const { solvedRoute, blankGraph, boundaryRegionIds, endpoint } = input
+  const { solvedRoute, blankGraph, replacedEndpointRegionIds, endpoint } = input
   const originalRegion =
     endpoint === "start"
       ? solvedRoute.connection.startRegion
@@ -127,7 +172,7 @@ const getBlankConnectionEndpointRegion = (input: {
   )
   if (existingRegion) return existingRegion
 
-  if (!isSyntheticBoundaryRegion(originalRegion)) {
+  if (!replacedEndpointRegionIds.has(originalRegion.regionId)) {
     throw new Error(
       `Connection endpoint region ${originalRegion.regionId} is missing from blank graph`,
     )
@@ -143,113 +188,62 @@ const getBlankConnectionEndpointRegion = (input: {
     )
   }
 
-  const insideRegionId =
-    endpoint === "start"
-      ? (endpointCandidate.nextRegion?.regionId ??
-        getOtherNonBoundaryRegionId(endpointCandidate.port, boundaryRegionIds))
-      : (endpointCandidate.lastRegion?.regionId ??
-        getOtherNonBoundaryRegionId(endpointCandidate.port, boundaryRegionIds))
-
-  if (!insideRegionId) {
+  const attachedRegionId = getAttachedRegionId({
+    port: endpointCandidate.port,
+    originalRegionId: originalRegion.regionId,
+    preferredRegionId:
+      endpoint === "start"
+        ? endpointCandidate.nextRegion?.regionId
+        : endpointCandidate.lastRegion?.regionId,
+  })
+  if (!attachedRegionId) {
     throw new Error(
       `Could not determine ${endpoint} region for connection ${solvedRoute.connection.connectionId}`,
     )
   }
 
-  const insideRegion = blankGraph.regions.find(
-    (region) => region.regionId === insideRegionId,
+  const attachedRegion = blankGraph.regions.find(
+    (region) => region.regionId === attachedRegionId,
   )
-  if (!insideRegion) {
+  if (!attachedRegion) {
     throw new Error(
-      `Region ${insideRegionId} not found in blank graph for connection ${solvedRoute.connection.connectionId}`,
+      `Region ${attachedRegionId} not found in blank graph for connection ${solvedRoute.connection.connectionId}`,
     )
   }
 
-  const connectionRegion = createConnectionRegionAtBoundary({
-    regionId: `conn:${solvedRoute.connection.connectionId}:${endpoint}`,
-    insideRegion,
-    port: endpointCandidate.port,
-  })
+  const connectionRegion: Region = {
+    regionId: `connection:${solvedRoute.connection.connectionId}:${endpoint}`,
+    ports: [],
+    d: originalRegion.d ? structuredClone(originalRegion.d) : originalRegion.d,
+    assignments: [],
+  }
   blankGraph.regions.push(connectionRegion)
 
   const connectionPort: RegionPort = {
-    portId: `conn:${solvedRoute.connection.connectionId}:${endpoint}-port`,
+    portId: `connection:${solvedRoute.connection.connectionId}:${endpoint}-port`,
     region1: connectionRegion,
-    region2: insideRegion,
+    region2: attachedRegion,
     d: endpointCandidate.port.d
       ? structuredClone(endpointCandidate.port.d)
       : endpointCandidate.port.d,
   }
   connectionRegion.ports.push(connectionPort)
-  insideRegion.ports.push(connectionPort)
+  attachedRegion.ports.push(connectionPort)
   blankGraph.ports.push(connectionPort)
 
   return connectionRegion
 }
 
-const createConnectionRegionAtBoundary = (input: {
-  regionId: string
-  insideRegion: Region
+const getAttachedRegionId = (input: {
   port: RegionPort
-}): Region => {
-  const { regionId, insideRegion, port } = input
-  const { x, y } = port.d ?? { x: 0, y: 0 }
-  const side = getClosestBoundarySide(insideRegion.d.bounds, { x, y })
-  const halfSize = CONNECTION_REGION_SIZE / 2
-
-  let center = { x, y }
-  if (side === "left") center = { x: insideRegion.d.bounds.minX - halfSize, y }
-  if (side === "right") center = { x: insideRegion.d.bounds.maxX + halfSize, y }
-  if (side === "top") center = { x, y: insideRegion.d.bounds.maxY + halfSize }
-  if (side === "bottom")
-    center = { x, y: insideRegion.d.bounds.minY - halfSize }
-
-  return {
-    regionId,
-    ports: [],
-    d: {
-      bounds: {
-        minX: center.x - halfSize,
-        maxX: center.x + halfSize,
-        minY: center.y - halfSize,
-        maxY: center.y + halfSize,
-      },
-      center,
-      isPad: false,
-      isConnectionRegion: true,
-    },
-    assignments: [],
+  originalRegionId: string
+  preferredRegionId?: string
+}): string | undefined => {
+  const { port, originalRegionId, preferredRegionId } = input
+  if (preferredRegionId && preferredRegionId !== originalRegionId) {
+    return preferredRegionId
   }
-}
-
-const getClosestBoundarySide = (
-  bounds: { minX: number; maxX: number; minY: number; maxY: number },
-  point: { x: number; y: number },
-): "left" | "right" | "top" | "bottom" => {
-  const sideDistances = [
-    { side: "left" as const, distance: Math.abs(point.x - bounds.minX) },
-    { side: "right" as const, distance: Math.abs(point.x - bounds.maxX) },
-    { side: "top" as const, distance: Math.abs(point.y - bounds.maxY) },
-    { side: "bottom" as const, distance: Math.abs(point.y - bounds.minY) },
-  ]
-  sideDistances.sort((a, b) => a.distance - b.distance)
-  return sideDistances[0]!.side
-}
-
-const getOtherNonBoundaryRegionId = (
-  port: RegionPort,
-  boundaryRegionIds: Set<string>,
-): string | undefined => {
-  if (!boundaryRegionIds.has(port.region1.regionId))
-    return port.region1.regionId
-  if (!boundaryRegionIds.has(port.region2.regionId))
-    return port.region2.regionId
+  if (port.region1.regionId !== originalRegionId) return port.region1.regionId
+  if (port.region2.regionId !== originalRegionId) return port.region2.regionId
   return undefined
-}
-
-const isSyntheticBoundaryRegion = (region: Region): boolean => {
-  return (
-    region.regionId.startsWith("__section_boundary__") ||
-    Boolean(region.d?.isBoundaryRegion)
-  )
 }

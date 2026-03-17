@@ -1,6 +1,6 @@
 export * from "./convertConnectionsToSerializedConnections"
 export * from "./convertHyperGraphToSerializedHyperGraph"
-export * from "./createBlankHyperGraphFromHyperGraphWithSolvedRoutes"
+export * from "./createBlankHyperGraph"
 export * from "./extractSectionOfHyperGraph"
 export * from "./HyperGraphSolver"
 export * from "./HyperGraphSectionOptimizer/HyperGraphSectionOptimizer"

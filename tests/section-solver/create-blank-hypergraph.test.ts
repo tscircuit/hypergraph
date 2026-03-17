@@ -7,7 +7,7 @@ import { convertSerializedConnectionsToConnections } from "lib/convertSerialized
 import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
 import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializedSolvedRoutesToSolvedRoutes"
 import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
-import { createBlankHyperGraphFromHyperGraphWithSolvedRoutes } from "lib/createBlankHyperGraphFromHyperGraphWithSolvedRoutes"
+import { createBlankHyperGraph } from "lib/createBlankHyperGraph"
 import { extractSectionOfHyperGraph } from "lib/extractSectionOfHyperGraph"
 import { stackSvgsVertically } from "stack-svgs"
 import {
@@ -15,7 +15,7 @@ import {
   createSketchedHyperGraph,
 } from "./sketch-section-graph.fixture"
 
-test("createBlankHyperGraphFromHyperGraphWithSolvedRoutes turns section endpoints into connection regions", async () => {
+test("createBlankHyperGraph turns section endpoints into connection regions", async () => {
   const { graph, solvedRoutes } = createSketchedHyperGraph()
   const serializedGraph = {
     ...convertHyperGraphToSerializedHyperGraph(graph),
@@ -28,8 +28,7 @@ test("createBlankHyperGraphFromHyperGraphWithSolvedRoutes turns section endpoint
     expansionHopsFromCentralRegion: 0,
   })
 
-  const blankGraph =
-    createBlankHyperGraphFromHyperGraphWithSolvedRoutes(sectionGraph)
+  const blankGraph = createBlankHyperGraph(sectionGraph)
 
   const blankRegionIds = blankGraph.regions.map((region) => region.regionId)
   expect(blankRegionIds).toEqual(
@@ -37,16 +36,20 @@ test("createBlankHyperGraphFromHyperGraphWithSolvedRoutes turns section endpoint
       "B",
       "D",
       "E",
-      "conn:route-main:start",
-      "conn:route-main:end",
+      "connection:route-main:start",
+      "connection:route-main:end",
     ]),
   )
   expect(
     blankRegionIds.some((id) => id.startsWith("__section_boundary__")),
   ).toBe(false)
   expect(blankGraph.connections).toHaveLength(1)
-  expect(blankGraph.connections[0]!.startRegionId).toBe("conn:route-main:start")
-  expect(blankGraph.connections[0]!.endRegionId).toBe("conn:route-main:end")
+  expect(blankGraph.connections?.[0]!.startRegionId).toBe(
+    "connection:route-main:start",
+  )
+  expect(blankGraph.connections?.[0]!.endRegionId).toBe(
+    "connection:route-main:end",
+  )
 
   const deserializedSectionGraph =
     convertSerializedHyperGraphToHyperGraph(sectionGraph)
@@ -59,7 +62,7 @@ test("createBlankHyperGraphFromHyperGraphWithSolvedRoutes turns section endpoint
     convertSerializedHyperGraphToHyperGraph(blankGraph)
   const deserializedBlankConnections =
     convertSerializedConnectionsToConnections(
-      blankGraph.connections,
+      blankGraph.connections ?? [],
       deserializedBlankGraph,
     )
 
@@ -77,6 +80,15 @@ test("createBlankHyperGraphFromHyperGraphWithSolvedRoutes turns section endpoint
   )
   blankGraphics.title = "Blank section"
   for (const connection of deserializedBlankConnections) {
+    for (const region of [connection.startRegion, connection.endRegion]) {
+      const bounds = region.d.bounds
+      blankGraphics.rects.push({
+        center: region.d.center,
+        width: bounds.maxX - bounds.minX,
+        height: bounds.maxY - bounds.minY,
+        fill: "rgba(255, 120, 120, 0.45)",
+      })
+    }
     blankGraphics.points.push({
       x: connection.startRegion.d.center.x,
       y: connection.startRegion.d.center.y,
