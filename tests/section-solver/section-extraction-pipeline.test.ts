@@ -242,8 +242,8 @@ const pruneSerializedSectionGraph = (
     graph.solvedRoutes?.flatMap((solvedRoute) => {
       const startPortId = solvedRoute.path[0]?.portId
       const endPortId = solvedRoute.path[solvedRoute.path.length - 1]?.portId
-      return [startPortId, endPortId].filter(
-        (portId): portId is string => Boolean(portId),
+      return [startPortId, endPortId].filter((portId): portId is string =>
+        Boolean(portId),
       )
     }) ?? []
 
@@ -251,8 +251,12 @@ const pruneSerializedSectionGraph = (
 
   return {
     ...convertHyperGraphToSerializedHyperGraph(deserializedGraph),
-    connections: graph.connections ? structuredClone(graph.connections) : undefined,
-    solvedRoutes: graph.solvedRoutes ? structuredClone(graph.solvedRoutes) : undefined,
+    connections: graph.connections
+      ? structuredClone(graph.connections)
+      : undefined,
+    solvedRoutes: graph.solvedRoutes
+      ? structuredClone(graph.solvedRoutes)
+      : undefined,
     _sectionCentralRegionId: graph._sectionCentralRegionId,
     _sectionRouteBindings: graph._sectionRouteBindings
       ? structuredClone(graph._sectionRouteBindings)
