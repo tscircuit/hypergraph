@@ -63,7 +63,7 @@ test("HyperGraphSectionOptimizer2 resolves a blank extracted section and reattac
   const optimizer = new TestHyperGraphSectionOptimizer2({
     sourceSolver,
     currentSolvedRoutes: sourceSolver.solvedRoutes,
-    sectionExpansionHops: 2,
+    sectionExpansionHops: 1,
     createSectionSolver: (input) => new PreferenceGraphSolver(input),
     maxTargetRegionAttempts: 1,
     maxSectionAttempts: 1,
@@ -114,7 +114,7 @@ const createSolvedRoute = (
   portIds: string[],
 ): SolvedRoute => {
   const portMap = new Map(ports.map((port) => [port.portId, port]))
-  const path = portIds.map((portId, index) => {
+  const path: Candidate[] = portIds.map((portId, index) => {
     const port = portMap.get(portId)
     if (!port) {
       throw new Error(`Missing port ${portId}`)
@@ -137,7 +137,7 @@ const createSolvedRoute = (
         : undefined,
       nextRegion: nextPort ? getSharedRegion(port, nextPort) : undefined,
       ripRequired: false,
-    } satisfies Candidate
+    }
   })
 
   for (let index = 1; index < path.length; index++) {
