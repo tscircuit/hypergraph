@@ -208,7 +208,7 @@ test("HyperGraphSectionOptimizer2 resolves a blank extracted section and reattac
 
   await expect(
     stackSvgsVertically(stepSvgs, {
-      gap: 48,
+      gap: 8,
       normalizeSize: false,
     }),
   ).toMatchSvgSnapshot(import.meta.path)
