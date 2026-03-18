@@ -1,8 +1,16 @@
 import { GenericSolverDebugger } from "@tscircuit/solver-utils/react"
 import type { GraphicsObject } from "graphics-debug"
-import { HyperGraphSectionOptimizer2 } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer2"
+import {
+  HyperGraphSectionOptimizer2,
+  type CreateSectionSolverInput,
+} from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer2"
 import { HyperGraphSolver } from "lib/HyperGraphSolver"
 import { visualizeJumperGraphWithSolvedRoutes } from "lib/JumperGraphSolver/visualizeJumperGraphSolver"
+import { convertConnectionsToSerializedConnections } from "lib/convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
+import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializedSolvedRoutesToSolvedRoutes"
+import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
 import type {
   Candidate,
   Connection,
@@ -92,6 +100,18 @@ class PreferenceGraphSolver extends HyperGraphSolver {
 }
 
 class DebugHyperGraphSectionOptimizer2 extends HyperGraphSectionOptimizer2 {
+  protected override createHyperGraphSolver(input: CreateSectionSolverInput) {
+    const graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
+    return new PreferenceGraphSolver({
+      inputGraph: graph,
+      inputConnections: input.inputConnections,
+      inputSolvedRoutes: convertSerializedSolvedRoutesToSolvedRoutes(
+        input.inputSolvedRoutes,
+        graph,
+      ),
+    })
+  }
+
   override getCostOfCentralRegion(region: Region): number {
     if (region.regionId === "B") return 1
     return 100
@@ -132,17 +152,13 @@ const createSolver = () => {
     "p-end",
   ])
 
-  const sourceSolver = new PreferenceGraphSolver({
-    inputGraph: graph,
-    inputConnections: [connection],
-    inputSolvedRoutes: [initialSolvedRoute],
-  })
-
   return new DebugHyperGraphSectionOptimizer2({
-    sourceSolver,
-    currentSolvedRoutes: sourceSolver.solvedRoutes,
+    inputGraph: convertHyperGraphToSerializedHyperGraph(graph),
+    inputConnections: convertConnectionsToSerializedConnections([connection]),
+    inputSolvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes([
+      initialSolvedRoute,
+    ]),
     sectionExpansionHops: 1,
-    createSectionSolver: (input) => new PreferenceGraphSolver(input),
     maxTargetRegionAttempts: 1,
     maxSectionAttempts: 1,
     minCentralRegionCost: 0,

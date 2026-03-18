@@ -1,8 +1,17 @@
 import { expect, test } from "bun:test"
+import type { GraphicsObject } from "graphics-debug"
 import { getSvgFromGraphicsObject } from "graphics-debug"
-import { HyperGraphSectionOptimizer2 } from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer2"
+import {
+  HyperGraphSectionOptimizer2,
+  type CreateSectionSolverInput,
+} from "lib/HyperGraphSectionOptimizer/HyperGraphSectionOptimizer2"
 import { HyperGraphSolver } from "lib/HyperGraphSolver"
 import { visualizeJumperGraphWithSolvedRoutes } from "lib/JumperGraphSolver/visualizeJumperGraphSolver"
+import { convertConnectionsToSerializedConnections } from "lib/convertConnectionsToSerializedConnections"
+import { convertHyperGraphToSerializedHyperGraph } from "lib/convertHyperGraphToSerializedHyperGraph"
+import { convertSerializedHyperGraphToHyperGraph } from "lib/convertSerializedHyperGraphToHyperGraph"
+import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializedSolvedRoutesToSolvedRoutes"
+import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
 import type {
   Candidate,
   Connection,
@@ -28,12 +37,99 @@ class PreferenceGraphSolver extends HyperGraphSolver {
     if (region.regionId === "D" && transitionKey === "p-bd:p-de") return 5
     return 0
   }
+
+  override visualize(): GraphicsObject {
+    const graphics = visualizeJumperGraphWithSolvedRoutes({
+      graph: this.graph as any,
+      connections: this.connections,
+      solvedRoutes: this.solvedRoutes,
+      title: "Section solver",
+    })
+    graphics.points ??= []
+    graphics.lines ??= []
+
+    const portMap = new Map(this.graph.ports.map((port) => [port.portId, port]))
+    const queuedCandidates = this.candidateQueue.peekMany(16)
+
+    for (const [portId, g] of this.visitedPointsForCurrentConnection.entries()) {
+      const port = portMap.get(portId)
+      if (!port) continue
+      graphics.points.push({
+        x: port.d.x,
+        y: port.d.y,
+        color: "rgba(255, 140, 0, 0.9)",
+        label: `visited\n${portId}\ng: ${g.toFixed(2)}`,
+      })
+    }
+
+    for (let index = 0; index < queuedCandidates.length; index++) {
+      const candidate = queuedCandidates[index]!
+      graphics.points.push({
+        x: candidate.port.d.x,
+        y: candidate.port.d.y,
+        color:
+          index === 0 ? "rgba(0, 180, 0, 0.95)" : "rgba(0, 120, 255, 0.6)",
+        label: [
+          index === 0 ? "next" : `queue ${index + 1}`,
+          candidate.port.portId,
+          `g: ${candidate.g.toFixed(2)}`,
+          `h: ${candidate.h.toFixed(2)}`,
+          `f: ${candidate.f.toFixed(2)}`,
+        ].join("\n"),
+      })
+    }
+
+    if (this.lastCandidate) {
+      const pathPoints: Array<{ x: number; y: number }> = []
+      let cursor: Candidate | null | undefined = this.lastCandidate
+
+      while (cursor) {
+        pathPoints.unshift({ x: cursor.port.d.x, y: cursor.port.d.y })
+        cursor = cursor.parent
+      }
+
+      if (pathPoints.length > 1) {
+        graphics.lines.push({
+          points: pathPoints,
+          strokeColor: "rgba(255, 160, 0, 0.9)",
+          strokeDash: "4 4",
+        })
+      }
+    }
+
+    return graphics
+  }
 }
 
 class TestHyperGraphSectionOptimizer2 extends HyperGraphSectionOptimizer2 {
+  protected override createHyperGraphSolver(input: CreateSectionSolverInput) {
+    const graph = convertSerializedHyperGraphToHyperGraph(input.inputGraph)
+    return new PreferenceGraphSolver({
+      inputGraph: graph,
+      inputConnections: input.inputConnections,
+      inputSolvedRoutes: convertSerializedSolvedRoutesToSolvedRoutes(
+        input.inputSolvedRoutes,
+        graph,
+      ),
+    })
+  }
+
   override getCostOfCentralRegion(region: Region): number {
     if (region.regionId === "B") return 1
     return 100
+  }
+
+  override visualize(): GraphicsObject {
+    if (this.activeSubSolver) {
+      return this.activeSubSolver.visualize()
+    }
+
+    return visualizeJumperGraphWithSolvedRoutes({
+      graph: this.graph as any,
+      connections: this.connections,
+      solvedRoutes: this.solvedRoutes,
+      title: "Optimizer state",
+    })
   }
 }
 
@@ -54,59 +150,65 @@ test("HyperGraphSectionOptimizer2 resolves a blank extracted section and reattac
     "p-end",
   ])
 
-  const sourceSolver = new PreferenceGraphSolver({
-    inputGraph: graph,
-    inputConnections: [connection],
-    inputSolvedRoutes: [initialSolvedRoute],
-  })
-
   const optimizer = new TestHyperGraphSectionOptimizer2({
-    sourceSolver,
-    currentSolvedRoutes: sourceSolver.solvedRoutes,
+    inputGraph: convertHyperGraphToSerializedHyperGraph(graph),
+    inputConnections: convertConnectionsToSerializedConnections([connection]),
+    inputSolvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes([
+      initialSolvedRoute,
+    ]),
     sectionExpansionHops: 1,
-    createSectionSolver: (input) => new PreferenceGraphSolver(input),
     maxTargetRegionAttempts: 1,
     maxSectionAttempts: 1,
     minCentralRegionCost: 0,
   })
 
-  const beforeSvg = getSvgFromGraphicsObject(
-    visualizeJumperGraphWithSolvedRoutes({
-      graph: asJumperGraph(graph),
-      connections: [connection],
-      solvedRoutes: sourceSolver.solvedRoutes,
-      title: "Before optimization",
-    }),
-  )
+  const stepSvgs = [
+    getSvgFromGraphicsObject(
+      withTitle(
+        visualizeJumperGraphWithSolvedRoutes({
+          graph: asJumperGraph(graph),
+          connections: [connection],
+          solvedRoutes: optimizer.solvedRoutes,
+          title: "Before optimization",
+        }),
+        "Step 0",
+      ),
+    ),
+  ]
 
-  optimizer.step()
-
-  expect(optimizer.activeSubSolver).not.toBeNull()
-  expect(optimizer.activeAttempt?.targetRegionId).toBe("B")
+  for (let stepIndex = 1; stepIndex <= 6; stepIndex++) {
+    optimizer.step()
+    if (stepIndex === 1) {
+      expect(optimizer.activeSubSolver).not.toBeNull()
+      expect(optimizer.activeAttempt?.targetRegionId).toBe("B")
+    }
+    stepSvgs.push(
+      getSvgFromGraphicsObject(withTitle(optimizer.visualize(), `Step ${stepIndex}`)),
+    )
+  }
 
   optimizer.solve()
 
   expect(optimizer.solved).toBe(true)
   expect(optimizer.failed).toBe(false)
-  expect(sourceSolver.solvedRoutes[0]?.path.map((candidate) => candidate.port.portId))
-    .toEqual(["p-start", "p-ab", "p-bc", "p-ce", "p-ef", "p-end"])
-
-  const afterSvg = getSvgFromGraphicsObject(
-    visualizeJumperGraphWithSolvedRoutes({
-      graph: asJumperGraph(graph),
-      connections: [connection],
-      solvedRoutes: sourceSolver.solvedRoutes,
-      title: "After optimization",
-    }),
-  )
+  expect(
+    optimizer.solvedRoutes[0]?.path.map((candidate) => candidate.port.portId),
+  ).toEqual(["p-start", "p-ab", "p-bc", "p-ce", "p-ef", "p-end"])
 
   await expect(
-    stackSvgsVertically([beforeSvg, afterSvg], {
+    stackSvgsVertically(stepSvgs, {
       gap: 48,
       normalizeSize: false,
     }),
   ).toMatchSvgSnapshot(import.meta.path)
 })
+
+const withTitle = (graphics: GraphicsObject, title: string): GraphicsObject => {
+  return {
+    ...graphics,
+    title,
+  }
+}
 
 const createSolvedRoute = (
   ports: RegionPort[],
