@@ -152,7 +152,9 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
 
   getCostOfCentralRegion(region: Region): number {
     const attempts = this.targetRegionAttemptCounts.get(region.regionId) ?? 0
-    return this.getRegionSolutionCost(this.rootSolver, region) + attempts * 10_000
+    return (
+      this.getRegionSolutionCost(this.rootSolver, region) + attempts * 10_000
+    )
   }
 
   getSectionCost(input: {
@@ -338,7 +340,9 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
     return {
       ...convertHyperGraphToSerializedHyperGraph(this.graph),
       connections: convertConnectionsToSerializedConnections(this.connections),
-      solvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes(this.solvedRoutes),
+      solvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes(
+        this.solvedRoutes,
+      ),
     }
   }
 
@@ -350,8 +354,12 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
     )
   }
 
-  private getSectionRegionIds(sectionGraph: SerializedHyperGraph): Set<RegionId> {
-    const fullRegionIds = new Set(this.graph.regions.map((region) => region.regionId))
+  private getSectionRegionIds(
+    sectionGraph: SerializedHyperGraph,
+  ): Set<RegionId> {
+    const fullRegionIds = new Set(
+      this.graph.regions.map((region) => region.regionId),
+    )
     return new Set(
       sectionGraph.regions
         .map((region) => region.regionId)
@@ -362,15 +370,14 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
   private pruneSectionForBlanking(
     extractedSection: SerializedHyperGraph,
   ): SerializedHyperGraph {
-    const mutableSectionGraph = convertSerializedHyperGraphToHyperGraph(
-      extractedSection,
-    )
+    const mutableSectionGraph =
+      convertSerializedHyperGraphToHyperGraph(extractedSection)
     const retainedPortIds =
       extractedSection.solvedRoutes?.flatMap((solvedRoute) => {
         const firstPortId = solvedRoute.path[0]?.portId
         const lastPortId = solvedRoute.path[solvedRoute.path.length - 1]?.portId
-        return [firstPortId, lastPortId].filter(
-          (portId): portId is string => Boolean(portId),
+        return [firstPortId, lastPortId].filter((portId): portId is string =>
+          Boolean(portId),
         )
       }) ?? []
 
@@ -415,8 +422,10 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
 const normalizeInput = (
   input: HyperGraphSectionOptimizer2Input,
 ): NormalizedHyperGraphSectionOptimizer2Input => {
-  const inputConnections = input.inputConnections ?? input.inputGraph.connections
-  const inputSolvedRoutes = input.inputSolvedRoutes ?? input.inputGraph.solvedRoutes
+  const inputConnections =
+    input.inputConnections ?? input.inputGraph.connections
+  const inputSolvedRoutes =
+    input.inputSolvedRoutes ?? input.inputGraph.solvedRoutes
   const sectionExpansionHops =
     input.sectionExpansionHops ?? input.expansionHopsFromCentralRegion
   const maxTargetRegionAttempts =

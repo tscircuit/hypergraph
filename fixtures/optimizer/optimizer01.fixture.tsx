@@ -49,7 +49,10 @@ class PreferenceGraphSolver extends HyperGraphSolver {
     const portMap = new Map(this.graph.ports.map((port) => [port.portId, port]))
     const queuedCandidates = this.candidateQueue.peekMany(16)
 
-    for (const [portId, g] of this.visitedPointsForCurrentConnection.entries()) {
+    for (const [
+      portId,
+      g,
+    ] of this.visitedPointsForCurrentConnection.entries()) {
       const port = portMap.get(portId)
       if (!port) continue
       graphics.points.push({
@@ -65,8 +68,7 @@ class PreferenceGraphSolver extends HyperGraphSolver {
       graphics.points.push({
         x: candidate.port.d.x,
         y: candidate.port.d.y,
-        color:
-          index === 0 ? "rgba(0, 180, 0, 0.95)" : "rgba(0, 120, 255, 0.6)",
+        color: index === 0 ? "rgba(0, 180, 0, 0.95)" : "rgba(0, 120, 255, 0.6)",
         label: [
           index === 0 ? "next" : `queue ${index + 1}`,
           candidate.port.portId,
@@ -316,7 +318,8 @@ const createSolvedRoute = (
       throw new Error(`Missing port ${portId}`)
     }
 
-    const previousPort = index > 0 ? portMap.get(portIds[index - 1]!) : undefined
+    const previousPort =
+      index > 0 ? portMap.get(portIds[index - 1]!) : undefined
     const nextPort =
       index < portIds.length - 1 ? portMap.get(portIds[index + 1]!) : undefined
 
