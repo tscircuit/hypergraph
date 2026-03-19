@@ -152,6 +152,7 @@ const cloneSerializedGraphExcludingRegions = (
       region1Id: port.region1Id,
       region2Id: port.region2Id,
       d: port.d,
+      _deadendInSection: port._deadendInSection,
     }
     clonedRegionMap.get(port.region1Id)?.pointIds.push(clonedPort.portId)
     clonedRegionMap.get(port.region2Id)?.pointIds.push(clonedPort.portId)
@@ -247,6 +248,7 @@ const getBlankConnectionEndpointRegionId = (input: {
     region1Id: connectionRegionId,
     region2Id: attachedRegionId,
     d: endpointPort.d,
+    _deadendInSection: endpointPort._deadendInSection,
   }
   connectionRegion.pointIds.push(connectionPort.portId)
   blankGraph._regionMap

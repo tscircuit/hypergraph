@@ -15,6 +15,7 @@ export const convertHyperGraphToSerializedHyperGraph = (
     region1Id: port.region1.regionId,
     region2Id: port.region2.regionId,
     d: port.d,
+    _deadendInSection: port._deadendInSection,
   }))
 
   const serializedRegions: SerializedGraphRegion[] = graph.regions.map(

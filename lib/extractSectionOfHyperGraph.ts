@@ -57,6 +57,7 @@ export const extractSectionOfHyperGraph = (input: {
         region1Id: port.region1Id,
         region2Id: port.region2Id,
         d: port.d,
+        _deadendInSection: port._deadendInSection,
       })
       sectionRegions.get(port.region1Id)?.pointIds.push(port.portId)
       sectionRegions.get(port.region2Id)?.pointIds.push(port.portId)
@@ -73,6 +74,7 @@ export const extractSectionOfHyperGraph = (input: {
       region1Id: insideRegionId,
       region2Id: boundaryRegion.regionId,
       d: port.d,
+      _deadendInSection: port._deadendInSection,
     })
     sectionRegions.get(insideRegionId)?.pointIds.push(port.portId)
     boundaryRegion.pointIds.push(port.portId)

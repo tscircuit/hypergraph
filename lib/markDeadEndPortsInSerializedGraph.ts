@@ -31,21 +31,20 @@ const markSerializedPortDeadEndState = (input: {
   const region2PortCount =
     graph._portsByRegionId?.get(port.region2Id)?.length ?? 0
   const isDeadEndPort = region1PortCount === 1 || region2PortCount === 1
-  const nextD =
-    port.d && typeof port.d === "object"
-      ? Array.isArray(port.d)
-        ? [...port.d]
-        : { ...port.d }
-      : {}
 
   if (isDeadEndPort && !retainedPortIdSet.has(port.portId)) {
-    nextD.deadEnd = true
-  } else if ("deadEnd" in nextD) {
-    delete nextD.deadEnd
+    return {
+      ...port,
+      _deadendInSection: true,
+    }
   }
 
-  return {
-    ...port,
-    d: nextD,
+  if (port._deadendInSection) {
+    return {
+      ...port,
+      _deadendInSection: undefined,
+    }
   }
+
+  return port
 }

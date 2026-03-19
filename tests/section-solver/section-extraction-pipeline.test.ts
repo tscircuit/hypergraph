@@ -100,7 +100,7 @@ test("section extraction pipeline preserves section ports and produces a blank g
   )
   expect(
     sectionGraphWithDeadEndMarks.ports
-      .filter((port) => port.d?.deadEnd)
+      .filter((port) => port._deadendInSection)
       .map((port) => port.portId),
   ).toEqual([
     "p-bc",

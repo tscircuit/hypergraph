@@ -14,17 +14,10 @@ export const markDeadEndPorts = (
       regionPortCounts.get(port.region1.regionId) === 1 ||
       regionPortCounts.get(port.region2.regionId) === 1
 
-    port.d =
-      port.d && typeof port.d === "object"
-        ? Array.isArray(port.d)
-          ? [...port.d]
-          : { ...port.d }
-        : {}
-
     if (isDeadEndPort && !retainedPortIdSet.has(port.portId)) {
-      port.d.deadEnd = true
-    } else if ("deadEnd" in port.d) {
-      delete port.d.deadEnd
+      port._deadendInSection = true
+    } else if ("_deadendInSection" in port) {
+      delete port._deadendInSection
     }
   }
 
@@ -32,4 +25,4 @@ export const markDeadEndPorts = (
 }
 
 export const isMarkedDeadEndPort = (port: RegionPort): boolean =>
-  Boolean(port.d?.deadEnd)
+  Boolean(port._deadendInSection)
