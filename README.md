@@ -203,7 +203,7 @@ interface SerializedConnection {
 }
 ```
 
-The solver automatically converts serialized inputs to hydrated object references.
+The solver automatically converts serialized inputs to deserialized object references.
 
 ## Algorithm
 

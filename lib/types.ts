@@ -96,6 +96,10 @@ export type SerializedHyperGraph = {
   connections?: SerializedConnection[]
   _sectionRouteBindings?: SerializedSectionRouteBinding[]
   _sectionCentralRegionId?: RegionId
+  _portMap?: Map<PortId, SerializedGraphPort>
+  _regionMap?: Map<RegionId, SerializedGraphRegion>
+  _portsByRegionId?: Map<RegionId, SerializedGraphPort[]>
+  _adjacentRegionIdsByRegionId?: Map<RegionId, Set<RegionId>>
 }
 
 export type SerializedCandidate = {

@@ -5,6 +5,7 @@ import type {
   SerializedGraphRegion,
   SolvedRoute,
 } from "./types"
+import { attachSerializedGraphMetadata } from "./serializedGraphMetadata"
 
 export const convertHyperGraphToSerializedHyperGraph = (
   graph: HyperGraph,
@@ -24,8 +25,8 @@ export const convertHyperGraphToSerializedHyperGraph = (
     }),
   )
 
-  return {
+  return attachSerializedGraphMetadata({
     ports: serializedPorts,
     regions: serializedRegions,
-  }
+  })
 }

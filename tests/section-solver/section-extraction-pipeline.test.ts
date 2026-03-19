@@ -10,7 +10,7 @@ import { convertSerializedSolvedRoutesToSolvedRoutes } from "lib/convertSerializ
 import { convertSolvedRoutesToSerializedSolvedRoutes } from "lib/convertSolvedRoutesToSerializedSolvedRoutes"
 import { createBlankHyperGraph } from "lib/createBlankHyperGraph"
 import { extractSectionOfHyperGraph } from "lib/extractSectionOfHyperGraph"
-import { pruneDeadEndPorts } from "lib/pruneDeadEndPorts"
+import { markDeadEndPorts } from "lib/markDeadEndPorts"
 import { reattachSectionToGraph } from "lib/reattachSectionToGraph"
 import { stackSvgsVertically } from "stack-svgs"
 import {
@@ -81,15 +81,43 @@ test("section extraction pipeline preserves section ports and produces a blank g
     "__section_boundary__p-ef",
   )
 
-  const prunedSectionGraph = pruneSerializedSectionGraph(sectionGraph)
-  expect(prunedSectionGraph.ports.map((port) => port.portId)).toEqual([
-    "p-ab",
-    "p-bd",
-    "p-de",
-    "p-ef",
+  const sectionGraphWithDeadEndMarks =
+    markSerializedSectionDeadEnds(sectionGraph)
+  expect(sectionGraphWithDeadEndMarks.ports.map((port) => port.portId)).toEqual(
+    [
+      "p-ab",
+      "p-bc",
+      "p-bd",
+      "p-ce",
+      "p-de",
+      "p-ef-upper",
+      "p-ef",
+      "p-d-bottom-left",
+      "p-d-bottom-right",
+      "p-e-bottom-left",
+      "p-e-bottom-right",
+    ],
+  )
+  expect(
+    sectionGraphWithDeadEndMarks.ports
+      .filter((port) => port.d?.deadEnd)
+      .map((port) => port.portId),
+  ).toEqual([
+    "p-bc",
+    "p-ce",
+    "p-ef-upper",
+    "p-d-bottom-left",
+    "p-d-bottom-right",
+    "p-e-bottom-left",
+    "p-e-bottom-right",
   ])
+  expect(
+    sectionGraphWithDeadEndMarks.solvedRoutes?.[0]!.path.map(
+      (candidate) => candidate.portId,
+    ),
+  ).toEqual(["p-ab", "p-bd", "p-de", "p-ef"])
 
-  const blankGraph = createBlankHyperGraph(prunedSectionGraph)
+  const blankGraph = createBlankHyperGraph(sectionGraphWithDeadEndMarks)
   const blankRegionIds = blankGraph.regions.map((region) => region.regionId)
 
   expect(blankRegionIds).toEqual(
@@ -234,20 +262,16 @@ test("section extraction pipeline preserves section ports and produces a blank g
   ).toMatchSvgSnapshot(import.meta.path)
 })
 
-const pruneSerializedSectionGraph = (
+const markSerializedSectionDeadEnds = (
   graph: ReturnType<typeof extractSectionOfHyperGraph>,
 ): ReturnType<typeof extractSectionOfHyperGraph> => {
   const deserializedGraph = convertSerializedHyperGraphToHyperGraph(graph)
   const retainedPortIds =
-    graph.solvedRoutes?.flatMap((solvedRoute) => {
-      const startPortId = solvedRoute.path[0]?.portId
-      const endPortId = solvedRoute.path[solvedRoute.path.length - 1]?.portId
-      return [startPortId, endPortId].filter((portId): portId is string =>
-        Boolean(portId),
-      )
-    }) ?? []
+    graph.solvedRoutes?.flatMap((solvedRoute) =>
+      solvedRoute.path.map((candidate) => candidate.portId),
+    ) ?? []
 
-  pruneDeadEndPorts(deserializedGraph, retainedPortIds)
+  markDeadEndPorts(deserializedGraph, retainedPortIds)
 
   return {
     ...convertHyperGraphToSerializedHyperGraph(deserializedGraph),
