@@ -45,8 +45,6 @@ export type HyperGraphSectionOptimizer2Input = {
   ACCEPTABLE_CENTRAL_REGION_COST?: number
   ACCEPTABLE_CENTRAL_REGION_COST_START?: number
   ACCEPTABLE_CENTRAL_REGION_COST_END?: number
-  ACCEPTABLE_HIGH_DENSITY_COST_START?: number
-  ACCEPTABLE_HIGH_DENSITY_COST_END?: number
 }
 
 type NormalizedHyperGraphSectionOptimizer2Input = {
@@ -276,21 +274,24 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
   }
 
   protected getMinCentralRegionCost(): number {
+    const { centralRegionCostStart, centralRegionCostEnd } = this.config
     if (
-      this.config.centralRegionCostStart === undefined ||
-      this.config.centralRegionCostEnd === undefined
+      centralRegionCostStart === undefined ||
+      centralRegionCostEnd === undefined
     ) {
       return this.config.minCentralRegionCost
     }
 
-    const totalAttempts = Math.max(1, this.config.maxSectionAttempts - 1)
-    const progress = Math.min(1, this.attemptedSectionCount / totalAttempts)
-
-    return (
-      this.config.centralRegionCostStart +
-      (this.config.centralRegionCostEnd - this.config.centralRegionCostStart) *
-        progress
+    return this.interpolateCentralRegionCost(
+      centralRegionCostStart,
+      centralRegionCostEnd,
     )
+  }
+
+  private interpolateCentralRegionCost(start: number, end: number): number {
+    const attemptsToMax = Math.max(1, this.config.maxSectionAttempts - 1)
+    const progress = Math.min(1, this.attemptedSectionCount / attemptsToMax)
+    return start + (end - start) * progress
   }
 
   private createSectionSolveAttempt(
@@ -474,11 +475,9 @@ const normalizeInput = (
   }
 
   const acceptableCentralRegionCostStart =
-    input.ACCEPTABLE_CENTRAL_REGION_COST_START ??
-    input.ACCEPTABLE_HIGH_DENSITY_COST_START
+    input.ACCEPTABLE_CENTRAL_REGION_COST_START
   const acceptableCentralRegionCostEnd =
-    input.ACCEPTABLE_CENTRAL_REGION_COST_END ??
-    input.ACCEPTABLE_HIGH_DENSITY_COST_END
+    input.ACCEPTABLE_CENTRAL_REGION_COST_END
 
   if (
     (acceptableCentralRegionCostStart === undefined) !==
