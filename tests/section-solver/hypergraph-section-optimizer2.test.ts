@@ -124,6 +124,10 @@ class TestHyperGraphSectionOptimizer2 extends HyperGraphSectionOptimizer2 {
     return 100
   }
 
+  getCurrentMinCentralRegionCostForTest() {
+    return this.getMinCentralRegionCost()
+  }
+
   override visualize(): GraphicsObject {
     if (this.activeSubSolver) {
       return this.activeSubSolver.visualize()
@@ -212,6 +216,49 @@ test("HyperGraphSectionOptimizer2 resolves a blank extracted section and reattac
       normalizeSize: false,
     }),
   ).toMatchSvgSnapshot(import.meta.path)
+})
+
+test("HyperGraphSectionOptimizer2 interpolates the acceptable cost when high-density bounds are configured", () => {
+  const { graph } = createSketchedHyperGraph()
+  const connection = {
+    connectionId: "route-main",
+    mutuallyConnectedNetworkId: "route-main",
+    startRegion: graph.regions.find(
+      (region) => region.regionId === "boundary:left",
+    )!,
+    endRegion: graph.regions.find(
+      (region) => region.regionId === "boundary:right",
+    )!,
+  }
+  const initialSolvedRoute = createSolvedRoute(graph.ports, connection, [
+    "p-start",
+    "p-ab",
+    "p-bd",
+    "p-de",
+    "p-ef",
+    "p-end",
+  ])
+
+  const optimizer = new TestHyperGraphSectionOptimizer2({
+    inputGraph: convertHyperGraphToSerializedHyperGraph(graph),
+    inputConnections: convertConnectionsToSerializedConnections([connection]),
+    inputSolvedRoutes: convertSolvedRoutesToSerializedSolvedRoutes([
+      initialSolvedRoute,
+    ]),
+    sectionExpansionHops: 1,
+    maxTargetRegionAttempts: 1,
+    maxSectionAttempts: 5,
+    ACCEPTABLE_CENTRAL_REGION_COST_START: 10,
+    ACCEPTABLE_CENTRAL_REGION_COST_END: 2,
+  })
+
+  expect(optimizer.getCurrentMinCentralRegionCostForTest()).toBe(10)
+
+  optimizer.attemptedSectionCount = 2
+  expect(optimizer.getCurrentMinCentralRegionCostForTest()).toBe(6)
+
+  optimizer.attemptedSectionCount = 4
+  expect(optimizer.getCurrentMinCentralRegionCostForTest()).toBe(2)
 })
 
 const withTitle = (graphics: GraphicsObject, title: string): GraphicsObject => {
