@@ -1,0 +1,4363 @@
+{
+  "ports": [
+    {
+      "portId": "ce0_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp0_z0::0",
+        "x": -1.3000000000000003,
+        "y": -6.775,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.5625000000000009
+      }
+    },
+    {
+      "portId": "ce0_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp0_z1::1",
+        "x": -1.3000000000000003,
+        "y": -6.775,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5625000000000009
+      }
+    },
+    {
+      "portId": "ce0_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp1_z0::0",
+        "x": -1.3000000000000003,
+        "y": -6.254166666666666,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.041666666666667
+      }
+    },
+    {
+      "portId": "ce0_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp1_z1::1",
+        "x": -1.3000000000000003,
+        "y": -6.254166666666666,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.041666666666667
+      }
+    },
+    {
+      "portId": "ce0_pp2_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp2_z0::0",
+        "x": -1.3000000000000003,
+        "y": -5.733333333333333,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5208333333333339
+      }
+    },
+    {
+      "portId": "ce0_pp2_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp2_z1::1",
+        "x": -1.3000000000000003,
+        "y": -5.733333333333333,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5208333333333339
+      }
+    },
+    {
+      "portId": "ce0_pp3_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp3_z0::0",
+        "x": -1.3000000000000003,
+        "y": -5.2124999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce0_pp3_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp3_z1::1",
+        "x": -1.3000000000000003,
+        "y": -5.2124999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce0_pp4_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp4_z0::0",
+        "x": -1.3000000000000003,
+        "y": -4.691666666666666,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.520833333333333
+      }
+    },
+    {
+      "portId": "ce0_pp4_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp4_z1::1",
+        "x": -1.3000000000000003,
+        "y": -4.691666666666666,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.520833333333333
+      }
+    },
+    {
+      "portId": "ce0_pp5_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp5_z0::0",
+        "x": -1.3000000000000003,
+        "y": -4.170833333333333,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.041666666666666
+      }
+    },
+    {
+      "portId": "ce0_pp5_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp5_z1::1",
+        "x": -1.3000000000000003,
+        "y": -4.170833333333333,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.041666666666666
+      }
+    },
+    {
+      "portId": "ce0_pp6_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp6_z0::0",
+        "x": -1.3000000000000003,
+        "y": -3.65,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.5624999999999996
+      }
+    },
+    {
+      "portId": "ce0_pp6_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce0_pp6_z1::1",
+        "x": -1.3000000000000003,
+        "y": -3.65,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5624999999999996
+      }
+    },
+    {
+      "portId": "ce1_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce1_pp0_z1::1",
+        "x": -1.3000000000000003,
+        "y": -3.1999999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce1_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce1_pp1_z1::1",
+        "x": -1.3000000000000003,
+        "y": -2.6249999999999996,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce2_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce2_pp0_z0::0",
+        "x": -1.3000000000000003,
+        "y": -3.1999999999999997,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce2_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce2_pp1_z0::0",
+        "x": -1.3000000000000003,
+        "y": -2.6249999999999996,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce3_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce3_pp0_z0::0",
+        "x": -1.3000000000000003,
+        "y": -2.175,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce3_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce3_pp0_z1::1",
+        "x": -1.3000000000000003,
+        "y": -2.175,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce3_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce3_pp1_z0::0",
+        "x": -1.3000000000000003,
+        "y": -1.8250000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.34999999999999964
+      }
+    },
+    {
+      "portId": "ce3_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce3_pp1_z1::1",
+        "x": -1.3000000000000003,
+        "y": -1.8250000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.34999999999999964
+      }
+    },
+    {
+      "portId": "ce4_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce4_pp0_z1::1",
+        "x": -1.3000000000000003,
+        "y": -1.375,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000001
+      }
+    },
+    {
+      "portId": "ce4_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce4_pp1_z1::1",
+        "x": -1.3000000000000003,
+        "y": -0.7999999999999999,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce5_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce5_pp0_z0::0",
+        "x": -1.3000000000000003,
+        "y": -1.375,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000001
+      }
+    },
+    {
+      "portId": "ce5_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce5_pp1_z0::0",
+        "x": -1.3000000000000003,
+        "y": -0.7999999999999999,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce6_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce6_pp0_z0::0",
+        "x": -1.3000000000000003,
+        "y": -0.35,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce6_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce6_pp0_z1::1",
+        "x": -1.3000000000000003,
+        "y": -0.35,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce6_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce6_pp1_z0::0",
+        "x": -1.3000000000000003,
+        "y": 0.07500000000000007,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.42500000000000004
+      }
+    },
+    {
+      "portId": "ce6_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce6_pp1_z1::1",
+        "x": -1.3000000000000003,
+        "y": 0.07500000000000007,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.42500000000000004
+      }
+    },
+    {
+      "portId": "ce7_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce7_pp0_z0::0",
+        "x": -1.3000000000000005,
+        "y": 0.5249999999999999,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3416666666666669
+      }
+    },
+    {
+      "portId": "ce7_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce7_pp1_z0::0",
+        "x": -1.3000000000000005,
+        "y": 0.8666666666666668,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce7_pp2_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce7_pp2_z0::0",
+        "x": -1.3000000000000005,
+        "y": 1.2083333333333335,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3416666666666667
+      }
+    },
+    {
+      "portId": "ce7_pp3_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce7_pp3_z0::0",
+        "x": -1.3000000000000005,
+        "y": 1.5500000000000003,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.6833333333333335
+      }
+    },
+    {
+      "portId": "ce8_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp0_z1::1",
+        "x": -1.0750000000000006,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.9249999999999994
+      }
+    },
+    {
+      "portId": "ce8_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp1_z1::1",
+        "x": -0.2900000000000007,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.1399999999999997
+      }
+    },
+    {
+      "portId": "ce8_pp2_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp2_z1::1",
+        "x": 0.4949999999999992,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 2.3549999999999995
+      }
+    },
+    {
+      "portId": "ce8_pp3_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp3_z1::1",
+        "x": 1.2799999999999994,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5699999999999994
+      }
+    },
+    {
+      "portId": "ce8_pp4_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp4_z1::1",
+        "x": 2.0649999999999995,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.7849999999999993
+      }
+    },
+    {
+      "portId": "ce8_pp5_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp5_z1::1",
+        "x": 2.8499999999999988,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce8_pp6_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp6_z1::1",
+        "x": 3.634999999999999,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.7850000000000001
+      }
+    },
+    {
+      "portId": "ce8_pp7_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp7_z1::1",
+        "x": 4.419999999999999,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5700000000000003
+      }
+    },
+    {
+      "portId": "ce8_pp8_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp8_z1::1",
+        "x": 5.204999999999999,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 2.3550000000000004
+      }
+    },
+    {
+      "portId": "ce8_pp9_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp9_z1::1",
+        "x": 5.989999999999999,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.1400000000000006
+      }
+    },
+    {
+      "portId": "ce8_pp10_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce8_pp10_z1::1",
+        "x": 6.774999999999999,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.925
+      }
+    },
+    {
+      "portId": "ce9_pp0_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce9_pp0_z1::1",
+        "x": -1.3000000000000007,
+        "y": 0.5249999999999999,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3416666666666669
+      }
+    },
+    {
+      "portId": "ce9_pp1_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce9_pp1_z1::1",
+        "x": -1.3000000000000007,
+        "y": 0.8666666666666668,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce9_pp2_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce9_pp2_z1::1",
+        "x": -1.3000000000000007,
+        "y": 1.2083333333333335,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3416666666666667
+      }
+    },
+    {
+      "portId": "ce9_pp3_z1",
+      "region1Id": "cmn_0",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce9_pp3_z1::1",
+        "x": -1.3000000000000007,
+        "y": 1.5500000000000003,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6833333333333335
+      }
+    },
+    {
+      "portId": "ce10_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp0_z0::0",
+        "x": -1.0750000000000002,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.25
+      }
+    },
+    {
+      "portId": "ce10_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp1_z0::0",
+        "x": -0.6583333333333337,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.8333333333333335
+      }
+    },
+    {
+      "portId": "ce10_pp2_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp2_z0::0",
+        "x": -0.24166666666666692,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.41666666666666674
+      }
+    },
+    {
+      "portId": "ce10_pp3_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp3_z0::0",
+        "x": 0.17499999999999982,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce10_pp4_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp4_z0::0",
+        "x": 0.5916666666666663,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4166666666666665
+      }
+    },
+    {
+      "portId": "ce10_pp5_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp5_z0::0",
+        "x": 1.0083333333333333,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.8333333333333335
+      }
+    },
+    {
+      "portId": "ce10_pp6_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce10_pp6_z0::0",
+        "x": 1.4249999999999998,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.25
+      }
+    },
+    {
+      "portId": "ce11_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_21",
+      "d": {
+        "portId": "ce11_pp0_z0::0",
+        "x": 1.95,
+        "y": 1.7750000000000001,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce12_pp0_z0_cramped",
+      "region1Id": "cmn_0",
+      "region2Id": "new-cmn_0-1",
+      "d": {
+        "portId": "ce12_pp0_z0_cramped::0",
+        "x": 2.325,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce13_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce13_pp0_z0::0",
+        "x": 2.6250000000000004,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.44999999999999973
+      }
+    },
+    {
+      "portId": "ce13_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce13_pp1_z0::0",
+        "x": 3.075,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce13_pp2_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce13_pp2_z0::0",
+        "x": 3.525,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.44999999999999973
+      }
+    },
+    {
+      "portId": "ce14_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_22",
+      "d": {
+        "portId": "ce14_pp0_z0::0",
+        "x": 4.05,
+        "y": 1.7750000000000001,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce15_pp0_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp0_z0::0",
+        "x": 4.574999999999999,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.1000000000000005
+      }
+    },
+    {
+      "portId": "ce15_pp1_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp1_z0::0",
+        "x": 4.941666666666666,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7333333333333334
+      }
+    },
+    {
+      "portId": "ce15_pp2_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp2_z0::0",
+        "x": 5.308333333333333,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36666666666666714
+      }
+    },
+    {
+      "portId": "ce15_pp3_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp3_z0::0",
+        "x": 5.675,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce15_pp4_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp4_z0::0",
+        "x": 6.041666666666666,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36666666666666625
+      }
+    },
+    {
+      "portId": "ce15_pp5_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp5_z0::0",
+        "x": 6.408333333333333,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7333333333333334
+      }
+    },
+    {
+      "portId": "ce15_pp6_z0",
+      "region1Id": "cmn_0",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce15_pp6_z0::0",
+        "x": 6.775,
+        "y": 1.7750000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.1000000000000005
+      }
+    },
+    {
+      "portId": "ce16_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp0_z0::0",
+        "x": -6.775,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce16_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp0_z1::1",
+        "x": -6.775,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce16_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp1_z0::0",
+        "x": -6.420833333333333,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce16_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp1_z1::1",
+        "x": -6.420833333333333,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce16_pp2_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp2_z0::0",
+        "x": -6.066666666666667,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.35416666666666696
+      }
+    },
+    {
+      "portId": "ce16_pp2_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp2_z1::1",
+        "x": -6.066666666666667,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.35416666666666696
+      }
+    },
+    {
+      "portId": "ce16_pp3_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp3_z0::0",
+        "x": -5.7125,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce16_pp3_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp3_z1::1",
+        "x": -5.7125,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce16_pp4_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp4_z0::0",
+        "x": -5.358333333333334,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3541666666666661
+      }
+    },
+    {
+      "portId": "ce16_pp4_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp4_z1::1",
+        "x": -5.358333333333334,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3541666666666661
+      }
+    },
+    {
+      "portId": "ce16_pp5_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp5_z0::0",
+        "x": -5.004166666666667,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce16_pp5_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp5_z1::1",
+        "x": -5.004166666666667,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce16_pp6_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp6_z0::0",
+        "x": -4.65,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce16_pp6_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce16_pp6_z1::1",
+        "x": -4.65,
+        "y": 0.2999999999999998,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce17_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce17_pp0_z0::0",
+        "x": -4.2,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000006
+      }
+    },
+    {
+      "portId": "ce17_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce17_pp1_z0::0",
+        "x": -3.6249999999999996,
+        "y": 0.2999999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce18_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce18_pp0_z1::1",
+        "x": -4.2,
+        "y": 0.29999999999999993,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000006
+      }
+    },
+    {
+      "portId": "ce18_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce18_pp1_z1::1",
+        "x": -3.6249999999999996,
+        "y": 0.29999999999999993,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce19_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce19_pp0_z0::0",
+        "x": -3.05,
+        "y": 0.30000000000000004,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce19_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce19_pp0_z1::1",
+        "x": -3.05,
+        "y": 0.30000000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce20_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp0_z0::0",
+        "x": -2.7,
+        "y": -6.775,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.5625000000000009
+      }
+    },
+    {
+      "portId": "ce20_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp0_z1::1",
+        "x": -2.7,
+        "y": -6.775,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5625000000000009
+      }
+    },
+    {
+      "portId": "ce20_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp1_z0::0",
+        "x": -2.7,
+        "y": -6.254166666666666,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.041666666666667
+      }
+    },
+    {
+      "portId": "ce20_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp1_z1::1",
+        "x": -2.7,
+        "y": -6.254166666666666,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.041666666666667
+      }
+    },
+    {
+      "portId": "ce20_pp2_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp2_z0::0",
+        "x": -2.7,
+        "y": -5.733333333333333,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5208333333333339
+      }
+    },
+    {
+      "portId": "ce20_pp2_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp2_z1::1",
+        "x": -2.7,
+        "y": -5.733333333333333,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5208333333333339
+      }
+    },
+    {
+      "portId": "ce20_pp3_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp3_z0::0",
+        "x": -2.7,
+        "y": -5.2124999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce20_pp3_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp3_z1::1",
+        "x": -2.7,
+        "y": -5.2124999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce20_pp4_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp4_z0::0",
+        "x": -2.7,
+        "y": -4.691666666666666,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.520833333333333
+      }
+    },
+    {
+      "portId": "ce20_pp4_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp4_z1::1",
+        "x": -2.7,
+        "y": -4.691666666666666,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.520833333333333
+      }
+    },
+    {
+      "portId": "ce20_pp5_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp5_z0::0",
+        "x": -2.7,
+        "y": -4.170833333333333,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.041666666666666
+      }
+    },
+    {
+      "portId": "ce20_pp5_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp5_z1::1",
+        "x": -2.7,
+        "y": -4.170833333333333,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.041666666666666
+      }
+    },
+    {
+      "portId": "ce20_pp6_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp6_z0::0",
+        "x": -2.7,
+        "y": -3.65,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.5624999999999996
+      }
+    },
+    {
+      "portId": "ce20_pp6_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_2",
+      "d": {
+        "portId": "ce20_pp6_z1::1",
+        "x": -2.7,
+        "y": -3.65,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.5624999999999996
+      }
+    },
+    {
+      "portId": "ce21_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce21_pp0_z1::1",
+        "x": -2.7,
+        "y": -3.1999999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce21_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce21_pp1_z1::1",
+        "x": -2.7,
+        "y": -2.6249999999999996,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce22_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce22_pp0_z0::0",
+        "x": -2.7,
+        "y": -3.1999999999999997,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce22_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce22_pp1_z0::0",
+        "x": -2.7,
+        "y": -2.6249999999999996,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce23_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce23_pp0_z0::0",
+        "x": -2.7,
+        "y": -2.175,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce23_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce23_pp0_z1::1",
+        "x": -2.7,
+        "y": -2.175,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce23_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce23_pp1_z0::0",
+        "x": -2.7,
+        "y": -1.8250000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.34999999999999964
+      }
+    },
+    {
+      "portId": "ce23_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_4",
+      "d": {
+        "portId": "ce23_pp1_z1::1",
+        "x": -2.7,
+        "y": -1.8250000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.34999999999999964
+      }
+    },
+    {
+      "portId": "ce24_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce24_pp0_z1::1",
+        "x": -2.7,
+        "y": -1.375,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000001
+      }
+    },
+    {
+      "portId": "ce24_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce24_pp1_z1::1",
+        "x": -2.7,
+        "y": -0.7999999999999999,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce25_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce25_pp0_z0::0",
+        "x": -2.7,
+        "y": -1.375,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000001
+      }
+    },
+    {
+      "portId": "ce25_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce25_pp1_z0::0",
+        "x": -2.7,
+        "y": -0.7999999999999999,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce26_pp0_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce26_pp0_z0::0",
+        "x": -2.7,
+        "y": -0.35,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce26_pp0_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce26_pp0_z1::1",
+        "x": -2.7,
+        "y": -0.35,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce26_pp1_z0",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce26_pp1_z0::0",
+        "x": -2.7,
+        "y": 0.07499999999999984,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4249999999999998
+      }
+    },
+    {
+      "portId": "ce26_pp1_z1",
+      "region1Id": "cmn_1",
+      "region2Id": "cmn_6",
+      "d": {
+        "portId": "ce26_pp1_z1::1",
+        "x": -2.7,
+        "y": 0.07499999999999984,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.4249999999999998
+      }
+    },
+    {
+      "portId": "ce27_pp0_z1",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce27_pp0_z1::1",
+        "x": -2.475,
+        "y": -3.425,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce27_pp1_z1",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce27_pp1_z1::1",
+        "x": -2.158333333333333,
+        "y": -3.425,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce27_pp2_z1",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce27_pp2_z1::1",
+        "x": -1.8416666666666668,
+        "y": -3.425,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce27_pp3_z1",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce27_pp3_z1::1",
+        "x": -1.525,
+        "y": -3.425,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce28_pp0_z0",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce28_pp0_z0::0",
+        "x": -2.475,
+        "y": -3.425,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce28_pp1_z0",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce28_pp1_z0::0",
+        "x": -2.158333333333333,
+        "y": -3.425,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce28_pp2_z0",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce28_pp2_z0::0",
+        "x": -1.8416666666666668,
+        "y": -3.425,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce28_pp3_z0",
+      "region1Id": "cmn_2",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce28_pp3_z0::0",
+        "x": -1.525,
+        "y": -3.425,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce29_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp0_z0::0",
+        "x": -6.775,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce29_pp0_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp0_z1::1",
+        "x": -6.775,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce29_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp1_z0::0",
+        "x": -6.420833333333333,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce29_pp1_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp1_z1::1",
+        "x": -6.420833333333333,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce29_pp2_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp2_z0::0",
+        "x": -6.066666666666667,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.35416666666666696
+      }
+    },
+    {
+      "portId": "ce29_pp2_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp2_z1::1",
+        "x": -6.066666666666667,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.35416666666666696
+      }
+    },
+    {
+      "portId": "ce29_pp3_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp3_z0::0",
+        "x": -5.7125,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce29_pp3_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp3_z1::1",
+        "x": -5.7125,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce29_pp4_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp4_z0::0",
+        "x": -5.358333333333334,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3541666666666661
+      }
+    },
+    {
+      "portId": "ce29_pp4_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp4_z1::1",
+        "x": -5.358333333333334,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3541666666666661
+      }
+    },
+    {
+      "portId": "ce29_pp5_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp5_z0::0",
+        "x": -5.004166666666667,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce29_pp5_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp5_z1::1",
+        "x": -5.004166666666667,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.708333333333333
+      }
+    },
+    {
+      "portId": "ce29_pp6_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp6_z0::0",
+        "x": -4.65,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce29_pp6_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_5",
+      "d": {
+        "portId": "ce29_pp6_z1::1",
+        "x": -4.65,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.0625
+      }
+    },
+    {
+      "portId": "ce30_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce30_pp0_z0::0",
+        "x": -4.2,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.5750000000000006
+      }
+    },
+    {
+      "portId": "ce30_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce30_pp1_z0::0",
+        "x": -3.6249999999999996,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce31_pp0_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_10",
+      "d": {
+        "portId": "ce31_pp0_z1::1",
+        "x": -4.2,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5749999999999997
+      }
+    },
+    {
+      "portId": "ce31_pp1_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_10",
+      "d": {
+        "portId": "ce31_pp1_z1::1",
+        "x": -3.6250000000000004,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce32_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce32_pp0_z0::0",
+        "x": -3.1750000000000003,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce32_pp0_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce32_pp0_z1::1",
+        "x": -3.1750000000000003,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce32_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce32_pp1_z0::0",
+        "x": -2.8249999999999997,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.35000000000000053
+      }
+    },
+    {
+      "portId": "ce32_pp1_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce32_pp1_z1::1",
+        "x": -2.8249999999999997,
+        "y": 2.2250000000000005,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.35000000000000053
+      }
+    },
+    {
+      "portId": "ce33_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce33_pp0_z0::0",
+        "x": -2.3749999999999996,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4249999999999996
+      }
+    },
+    {
+      "portId": "ce33_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce33_pp1_z0::0",
+        "x": -1.95,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce33_pp2_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce33_pp2_z0::0",
+        "x": -1.5250000000000004,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4249999999999996
+      }
+    },
+    {
+      "portId": "ce34_pp0_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp0_z1::1",
+        "x": -2.3749999999999996,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 4.159090909090908
+      }
+    },
+    {
+      "portId": "ce34_pp1_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp1_z1::1",
+        "x": -1.5431818181818178,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.327272727272727
+      }
+    },
+    {
+      "portId": "ce34_pp2_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp2_z1::1",
+        "x": -0.711363636363636,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 2.495454545454545
+      }
+    },
+    {
+      "portId": "ce34_pp3_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp3_z1::1",
+        "x": 0.12045454545454648,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.6636363636363627
+      }
+    },
+    {
+      "portId": "ce34_pp4_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp4_z1::1",
+        "x": 0.9522727272727285,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.8318181818181807
+      }
+    },
+    {
+      "portId": "ce34_pp5_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp5_z1::1",
+        "x": 1.7840909090909092,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce34_pp6_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp6_z1::1",
+        "x": 2.615909090909091,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.831818181818182
+      }
+    },
+    {
+      "portId": "ce34_pp7_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp7_z1::1",
+        "x": 3.4477272727272723,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 1.6636363636363631
+      }
+    },
+    {
+      "portId": "ce34_pp8_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp8_z1::1",
+        "x": 4.279545454545455,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 2.495454545454546
+      }
+    },
+    {
+      "portId": "ce34_pp9_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp9_z1::1",
+        "x": 5.111363636363637,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 3.327272727272728
+      }
+    },
+    {
+      "portId": "ce34_pp10_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp10_z1::1",
+        "x": 5.943181818181818,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 4.159090909090909
+      }
+    },
+    {
+      "portId": "ce34_pp11_z1",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce34_pp11_z1::1",
+        "x": 6.775,
+        "y": 2.225,
+        "z": 1,
+        "distToCentermostPortOnZ": 4.990909090909091
+      }
+    },
+    {
+      "portId": "ce35_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp0_z0::0",
+        "x": -1.0750000000000002,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.25
+      }
+    },
+    {
+      "portId": "ce35_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp1_z0::0",
+        "x": -0.6583333333333337,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.8333333333333335
+      }
+    },
+    {
+      "portId": "ce35_pp2_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp2_z0::0",
+        "x": -0.24166666666666692,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.41666666666666674
+      }
+    },
+    {
+      "portId": "ce35_pp3_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp3_z0::0",
+        "x": 0.17499999999999982,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce35_pp4_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp4_z0::0",
+        "x": 0.5916666666666663,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4166666666666665
+      }
+    },
+    {
+      "portId": "ce35_pp5_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp5_z0::0",
+        "x": 1.0083333333333333,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.8333333333333335
+      }
+    },
+    {
+      "portId": "ce35_pp6_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce35_pp6_z0::0",
+        "x": 1.4249999999999998,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.25
+      }
+    },
+    {
+      "portId": "ce36_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_21",
+      "d": {
+        "portId": "ce36_pp0_z0::0",
+        "x": 1.95,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce37_pp0_z0_cramped",
+      "region1Id": "cmn_3",
+      "region2Id": "new-cmn_0-1",
+      "d": {
+        "portId": "ce37_pp0_z0_cramped::0",
+        "x": 2.325,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce38_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce38_pp0_z0::0",
+        "x": 2.6250000000000004,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.44999999999999973
+      }
+    },
+    {
+      "portId": "ce38_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce38_pp1_z0::0",
+        "x": 3.075,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce38_pp2_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_12",
+      "d": {
+        "portId": "ce38_pp2_z0::0",
+        "x": 3.525,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.44999999999999973
+      }
+    },
+    {
+      "portId": "ce39_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_22",
+      "d": {
+        "portId": "ce39_pp0_z0::0",
+        "x": 4.05,
+        "y": 2.2250000000000005,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce40_pp0_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp0_z0::0",
+        "x": 4.574999999999999,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.1000000000000005
+      }
+    },
+    {
+      "portId": "ce40_pp1_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp1_z0::0",
+        "x": 4.941666666666666,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7333333333333334
+      }
+    },
+    {
+      "portId": "ce40_pp2_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp2_z0::0",
+        "x": 5.308333333333333,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36666666666666714
+      }
+    },
+    {
+      "portId": "ce40_pp3_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp3_z0::0",
+        "x": 5.675,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce40_pp4_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp4_z0::0",
+        "x": 6.041666666666666,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36666666666666625
+      }
+    },
+    {
+      "portId": "ce40_pp5_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp5_z0::0",
+        "x": 6.408333333333333,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7333333333333334
+      }
+    },
+    {
+      "portId": "ce40_pp6_z0",
+      "region1Id": "cmn_3",
+      "region2Id": "cmn_13",
+      "d": {
+        "portId": "ce40_pp6_z0::0",
+        "x": 6.775,
+        "y": 2.225,
+        "z": 0,
+        "distToCentermostPortOnZ": 1.1000000000000005
+      }
+    },
+    {
+      "portId": "ce41_pp0_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce41_pp0_z1::1",
+        "x": -2.475,
+        "y": -2.3999999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce41_pp1_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce41_pp1_z1::1",
+        "x": -2.158333333333333,
+        "y": -2.3999999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce41_pp2_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce41_pp2_z1::1",
+        "x": -1.8416666666666668,
+        "y": -2.3999999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce41_pp3_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_8",
+      "d": {
+        "portId": "ce41_pp3_z1::1",
+        "x": -1.525,
+        "y": -2.3999999999999995,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce42_pp0_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce42_pp0_z0::0",
+        "x": -2.475,
+        "y": -2.3999999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce42_pp1_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce42_pp1_z0::0",
+        "x": -2.158333333333333,
+        "y": -2.3999999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce42_pp2_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce42_pp2_z0::0",
+        "x": -1.8416666666666668,
+        "y": -2.3999999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce42_pp3_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_19",
+      "d": {
+        "portId": "ce42_pp3_z0::0",
+        "x": -1.525,
+        "y": -2.3999999999999995,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce43_pp0_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce43_pp0_z1::1",
+        "x": -2.475,
+        "y": -1.6,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce43_pp1_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce43_pp1_z1::1",
+        "x": -2.158333333333333,
+        "y": -1.6,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce43_pp2_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce43_pp2_z1::1",
+        "x": -1.8416666666666668,
+        "y": -1.6,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce43_pp3_z1",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce43_pp3_z1::1",
+        "x": -1.525,
+        "y": -1.6,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce44_pp0_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce44_pp0_z0::0",
+        "x": -2.475,
+        "y": -1.6,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce44_pp1_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce44_pp1_z0::0",
+        "x": -2.158333333333333,
+        "y": -1.6,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce44_pp2_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce44_pp2_z0::0",
+        "x": -1.8416666666666668,
+        "y": -1.6,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce44_pp3_z0",
+      "region1Id": "cmn_4",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce44_pp3_z0::0",
+        "x": -1.525,
+        "y": -1.6,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce45_pp0_z0",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce45_pp0_z0::0",
+        "x": -4.425000000000001,
+        "y": 0.5249999999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7375000000000002
+      }
+    },
+    {
+      "portId": "ce45_pp1_z0",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce45_pp1_z0::0",
+        "x": -4.425000000000001,
+        "y": 0.8937499999999998,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36875000000000013
+      }
+    },
+    {
+      "portId": "ce45_pp2_z0",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce45_pp2_z0::0",
+        "x": -4.425000000000001,
+        "y": 1.2625,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce45_pp3_z0",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce45_pp3_z0::0",
+        "x": -4.425000000000001,
+        "y": 1.63125,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.36875000000000013
+      }
+    },
+    {
+      "portId": "ce45_pp4_z0",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce45_pp4_z0::0",
+        "x": -4.425000000000001,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7375
+      }
+    },
+    {
+      "portId": "ce46_pp0_z1",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce46_pp0_z1::1",
+        "x": -4.425000000000001,
+        "y": 0.525,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666665
+      }
+    },
+    {
+      "portId": "ce46_pp1_z1",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce46_pp1_z1::1",
+        "x": -4.425000000000001,
+        "y": 0.8416666666666667,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce46_pp2_z1",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce46_pp2_z1::1",
+        "x": -4.425000000000001,
+        "y": 1.1583333333333334,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666676
+      }
+    },
+    {
+      "portId": "ce46_pp3_z1",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce46_pp3_z1::1",
+        "x": -4.425000000000001,
+        "y": 1.4749999999999999,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333332
+      }
+    },
+    {
+      "portId": "ce47_pp0_z1",
+      "region1Id": "cmn_5",
+      "region2Id": "cmn_10",
+      "d": {
+        "portId": "ce47_pp0_z1::1",
+        "x": -4.425000000000001,
+        "y": 1.9624999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce48_pp0_z0_cramped",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce48_pp0_z0_cramped::0",
+        "x": -2.65,
+        "y": 0.30000000000000016,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce48_pp0_z1_cramped",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_9",
+      "d": {
+        "portId": "ce48_pp0_z1_cramped::1",
+        "x": -2.65,
+        "y": 0.30000000000000016,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce49_pp0_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce49_pp0_z1::1",
+        "x": -2.475,
+        "y": -0.575,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce49_pp1_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce49_pp1_z1::1",
+        "x": -2.158333333333333,
+        "y": -0.575,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce49_pp2_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce49_pp2_z1::1",
+        "x": -1.8416666666666668,
+        "y": -0.575,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce49_pp3_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_7",
+      "d": {
+        "portId": "ce49_pp3_z1::1",
+        "x": -1.525,
+        "y": -0.575,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce50_pp0_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce50_pp0_z0::0",
+        "x": -2.475,
+        "y": -0.575,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3166666666666669
+      }
+    },
+    {
+      "portId": "ce50_pp1_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce50_pp1_z0::0",
+        "x": -2.158333333333333,
+        "y": -0.575,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce50_pp2_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce50_pp2_z0::0",
+        "x": -1.8416666666666668,
+        "y": -0.575,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.31666666666666643
+      }
+    },
+    {
+      "portId": "ce50_pp3_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_20",
+      "d": {
+        "portId": "ce50_pp3_z0::0",
+        "x": -1.525,
+        "y": -0.575,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce51_pp0_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce51_pp0_z0::0",
+        "x": -2.3749999999999996,
+        "y": 0.3,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4249999999999996
+      }
+    },
+    {
+      "portId": "ce51_pp1_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce51_pp1_z0::0",
+        "x": -1.95,
+        "y": 0.3,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce51_pp2_z0",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce51_pp2_z0::0",
+        "x": -1.5250000000000004,
+        "y": 0.3,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.4249999999999996
+      }
+    },
+    {
+      "portId": "ce52_pp0_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce52_pp0_z1::1",
+        "x": -2.3749999999999996,
+        "y": 0.30000000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce52_pp1_z1",
+      "region1Id": "cmn_6",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce52_pp1_z1::1",
+        "x": -1.7999999999999994,
+        "y": 0.30000000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce53_pp0_z1_cramped",
+      "region1Id": "cmn_6",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce53_pp0_z1_cramped::1",
+        "x": -1.4375,
+        "y": 0.3,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce54_pp0_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce54_pp0_z0::0",
+        "x": -3.4,
+        "y": 0.5250000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7374999999999999
+      }
+    },
+    {
+      "portId": "ce54_pp1_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce54_pp1_z0::0",
+        "x": -3.4,
+        "y": 0.8937500000000003,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3687499999999999
+      }
+    },
+    {
+      "portId": "ce54_pp2_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce54_pp2_z0::0",
+        "x": -3.4,
+        "y": 1.2625000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce54_pp3_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce54_pp3_z0::0",
+        "x": -3.4,
+        "y": 1.63125,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3687499999999999
+      }
+    },
+    {
+      "portId": "ce54_pp4_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_14",
+      "d": {
+        "portId": "ce54_pp4_z0::0",
+        "x": -3.4,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7374999999999998
+      }
+    },
+    {
+      "portId": "ce55_pp0_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce55_pp0_z1::1",
+        "x": -3.4,
+        "y": 0.5250000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666654
+      }
+    },
+    {
+      "portId": "ce55_pp1_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce55_pp1_z1::1",
+        "x": -3.4,
+        "y": 0.8416666666666668,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce55_pp2_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce55_pp2_z1::1",
+        "x": -3.4,
+        "y": 1.1583333333333334,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666665
+      }
+    },
+    {
+      "portId": "ce55_pp3_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce55_pp3_z1::1",
+        "x": -3.4,
+        "y": 1.475,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce56_pp0_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_10",
+      "d": {
+        "portId": "ce56_pp0_z1::1",
+        "x": -3.4000000000000004,
+        "y": 1.9624999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce57_pp0_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce57_pp0_z0::0",
+        "x": -2.5999999999999996,
+        "y": 0.5250000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7374999999999999
+      }
+    },
+    {
+      "portId": "ce57_pp1_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce57_pp1_z0::0",
+        "x": -2.5999999999999996,
+        "y": 0.8937500000000003,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3687499999999999
+      }
+    },
+    {
+      "portId": "ce57_pp2_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce57_pp2_z0::0",
+        "x": -2.5999999999999996,
+        "y": 1.2625000000000002,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce57_pp3_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce57_pp3_z0::0",
+        "x": -2.5999999999999996,
+        "y": 1.63125,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.3687499999999999
+      }
+    },
+    {
+      "portId": "ce57_pp4_z0",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_15",
+      "d": {
+        "portId": "ce57_pp4_z0::0",
+        "x": -2.5999999999999996,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0.7374999999999998
+      }
+    },
+    {
+      "portId": "ce58_pp0_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce58_pp0_z1::1",
+        "x": -2.5999999999999996,
+        "y": 0.5250000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666654
+      }
+    },
+    {
+      "portId": "ce58_pp1_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce58_pp1_z1::1",
+        "x": -2.5999999999999996,
+        "y": 0.8416666666666668,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce58_pp2_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce58_pp2_z1::1",
+        "x": -2.5999999999999996,
+        "y": 1.1583333333333334,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666665
+      }
+    },
+    {
+      "portId": "ce58_pp3_z1",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_17",
+      "d": {
+        "portId": "ce58_pp3_z1::1",
+        "x": -2.5999999999999996,
+        "y": 1.475,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333333
+      }
+    },
+    {
+      "portId": "ce59_pp0_z1_cramped",
+      "region1Id": "cmn_9",
+      "region2Id": "cmn_11",
+      "d": {
+        "portId": "ce59_pp0_z1_cramped::1",
+        "x": -2.5999999999999996,
+        "y": 2,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce60_pp0_z1_cramped",
+      "region1Id": "cmn_9",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce60_pp0_z1_cramped::1",
+        "x": -2.5999999999999996,
+        "y": 1.7375000000000003,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce61_pp0_z1",
+      "region1Id": "cmn_10",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce61_pp0_z1::1",
+        "x": -4.2,
+        "y": 1.6999999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5749999999999997
+      }
+    },
+    {
+      "portId": "ce61_pp1_z1",
+      "region1Id": "cmn_10",
+      "region2Id": "cmn_18",
+      "d": {
+        "portId": "ce61_pp1_z1::1",
+        "x": -3.6250000000000004,
+        "y": 1.6999999999999997,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce62_pp0_z1",
+      "region1Id": "cmn_11",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce62_pp0_z1::1",
+        "x": -2.3749999999999996,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce62_pp1_z1",
+      "region1Id": "cmn_11",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce62_pp1_z1::1",
+        "x": -1.7999999999999994,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce63_pp0_z1_cramped",
+      "region1Id": "cmn_11",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce63_pp0_z1_cramped::1",
+        "x": -1.4375,
+        "y": 1.7750000000000004,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce64_pp0_z0_cramped",
+      "region1Id": "cmn_12",
+      "region2Id": "new-cmn_0-1",
+      "d": {
+        "portId": "ce64_pp0_z0_cramped::0",
+        "x": 2.4000000000000004,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce65_pp0_z0",
+      "region1Id": "cmn_12",
+      "region2Id": "cmn_22",
+      "d": {
+        "portId": "ce65_pp0_z0::0",
+        "x": 3.75,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce66_pp0_z0",
+      "region1Id": "cmn_13",
+      "region2Id": "cmn_22",
+      "d": {
+        "portId": "ce66_pp0_z0::0",
+        "x": 4.35,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce67_pp0_z0_cramped",
+      "region1Id": "cmn_15",
+      "region2Id": "cmn_16",
+      "d": {
+        "portId": "ce67_pp0_z0_cramped::0",
+        "x": -1.3000000000000003,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce68_pp0_z0",
+      "region1Id": "cmn_16",
+      "region2Id": "cmn_21",
+      "d": {
+        "portId": "ce68_pp0_z0::0",
+        "x": 1.65,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce69_pp0_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce69_pp0_z1::1",
+        "x": -2.3749999999999996,
+        "y": 1.7000000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce69_pp1_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce69_pp1_z1::1",
+        "x": -1.7999999999999994,
+        "y": 1.7000000000000002,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.5750000000000002
+      }
+    },
+    {
+      "portId": "ce70_pp0_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce70_pp0_z1::1",
+        "x": -1.5749999999999993,
+        "y": 0.525,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666665
+      }
+    },
+    {
+      "portId": "ce70_pp1_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce70_pp1_z1::1",
+        "x": -1.5749999999999993,
+        "y": 0.8416666666666667,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce70_pp2_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce70_pp2_z1::1",
+        "x": -1.5749999999999993,
+        "y": 1.1583333333333334,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.31666666666666676
+      }
+    },
+    {
+      "portId": "ce70_pp3_z1",
+      "region1Id": "cmn_17",
+      "region2Id": "new-cmn_0-0",
+      "d": {
+        "portId": "ce70_pp3_z1::1",
+        "x": -1.5749999999999993,
+        "y": 1.4749999999999999,
+        "z": 1,
+        "distToCentermostPortOnZ": 0.6333333333333332
+      }
+    },
+    {
+      "portId": "ce71_pp0_z0",
+      "region1Id": "cmn_21",
+      "region2Id": "new-cmn_0-1",
+      "d": {
+        "portId": "ce71_pp0_z0::0",
+        "x": 2.25,
+        "y": 2,
+        "z": 0,
+        "distToCentermostPortOnZ": 0
+      }
+    },
+    {
+      "portId": "ce72_pp0_z1_cramped",
+      "region1Id": "new-cmn_0-0",
+      "region2Id": "new-cmn_9-2",
+      "d": {
+        "portId": "ce72_pp0_z1_cramped::1",
+        "x": -1.5749999999999993,
+        "y": 1.7375000000000003,
+        "z": 1,
+        "distToCentermostPortOnZ": 0
+      }
+    }
+  ],
+  "regions": [
+    {
+      "regionId": "cmn_0",
+      "pointIds": [
+        "ce0_pp0_z0",
+        "ce0_pp0_z1",
+        "ce0_pp1_z0",
+        "ce0_pp1_z1",
+        "ce0_pp2_z0",
+        "ce0_pp2_z1",
+        "ce0_pp3_z0",
+        "ce0_pp3_z1",
+        "ce0_pp4_z0",
+        "ce0_pp4_z1",
+        "ce0_pp5_z0",
+        "ce0_pp5_z1",
+        "ce0_pp6_z0",
+        "ce0_pp6_z1",
+        "ce1_pp0_z1",
+        "ce1_pp1_z1",
+        "ce2_pp0_z0",
+        "ce2_pp1_z0",
+        "ce3_pp0_z0",
+        "ce3_pp0_z1",
+        "ce3_pp1_z0",
+        "ce3_pp1_z1",
+        "ce4_pp0_z1",
+        "ce4_pp1_z1",
+        "ce5_pp0_z0",
+        "ce5_pp1_z0",
+        "ce6_pp0_z0",
+        "ce6_pp0_z1",
+        "ce6_pp1_z0",
+        "ce6_pp1_z1",
+        "ce7_pp0_z0",
+        "ce7_pp1_z0",
+        "ce7_pp2_z0",
+        "ce7_pp3_z0",
+        "ce8_pp0_z1",
+        "ce8_pp1_z1",
+        "ce8_pp2_z1",
+        "ce8_pp3_z1",
+        "ce8_pp4_z1",
+        "ce8_pp5_z1",
+        "ce8_pp6_z1",
+        "ce8_pp7_z1",
+        "ce8_pp8_z1",
+        "ce8_pp9_z1",
+        "ce8_pp10_z1",
+        "ce9_pp0_z1",
+        "ce9_pp1_z1",
+        "ce9_pp2_z1",
+        "ce9_pp3_z1",
+        "ce10_pp0_z0",
+        "ce10_pp1_z0",
+        "ce10_pp2_z0",
+        "ce10_pp3_z0",
+        "ce10_pp4_z0",
+        "ce10_pp5_z0",
+        "ce10_pp6_z0",
+        "ce11_pp0_z0",
+        "ce12_pp0_z0_cramped",
+        "ce13_pp0_z0",
+        "ce13_pp1_z0",
+        "ce13_pp2_z0",
+        "ce14_pp0_z0",
+        "ce15_pp0_z0",
+        "ce15_pp1_z0",
+        "ce15_pp2_z0",
+        "ce15_pp3_z0",
+        "ce15_pp4_z0",
+        "ce15_pp5_z0",
+        "ce15_pp6_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_0",
+        "center": {
+          "x": 2.8499999999999996,
+          "y": -2.6125
+        },
+        "width": 8.3,
+        "height": 8.775,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_1",
+      "pointIds": [
+        "ce16_pp0_z0",
+        "ce16_pp0_z1",
+        "ce16_pp1_z0",
+        "ce16_pp1_z1",
+        "ce16_pp2_z0",
+        "ce16_pp2_z1",
+        "ce16_pp3_z0",
+        "ce16_pp3_z1",
+        "ce16_pp4_z0",
+        "ce16_pp4_z1",
+        "ce16_pp5_z0",
+        "ce16_pp5_z1",
+        "ce16_pp6_z0",
+        "ce16_pp6_z1",
+        "ce17_pp0_z0",
+        "ce17_pp1_z0",
+        "ce18_pp0_z1",
+        "ce18_pp1_z1",
+        "ce19_pp0_z0",
+        "ce19_pp0_z1",
+        "ce20_pp0_z0",
+        "ce20_pp0_z1",
+        "ce20_pp1_z0",
+        "ce20_pp1_z1",
+        "ce20_pp2_z0",
+        "ce20_pp2_z1",
+        "ce20_pp3_z0",
+        "ce20_pp3_z1",
+        "ce20_pp4_z0",
+        "ce20_pp4_z1",
+        "ce20_pp5_z0",
+        "ce20_pp5_z1",
+        "ce20_pp6_z0",
+        "ce20_pp6_z1",
+        "ce21_pp0_z1",
+        "ce21_pp1_z1",
+        "ce22_pp0_z0",
+        "ce22_pp1_z0",
+        "ce23_pp0_z0",
+        "ce23_pp0_z1",
+        "ce23_pp1_z0",
+        "ce23_pp1_z1",
+        "ce24_pp0_z1",
+        "ce24_pp1_z1",
+        "ce25_pp0_z0",
+        "ce25_pp1_z0",
+        "ce26_pp0_z0",
+        "ce26_pp0_z1",
+        "ce26_pp1_z0",
+        "ce26_pp1_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_1",
+        "center": {
+          "x": -4.85,
+          "y": -3.35
+        },
+        "width": 4.3,
+        "height": 7.3,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_2",
+      "pointIds": [
+        "ce0_pp0_z0",
+        "ce0_pp0_z1",
+        "ce0_pp1_z0",
+        "ce0_pp1_z1",
+        "ce0_pp2_z0",
+        "ce0_pp2_z1",
+        "ce0_pp3_z0",
+        "ce0_pp3_z1",
+        "ce0_pp4_z0",
+        "ce0_pp4_z1",
+        "ce0_pp5_z0",
+        "ce0_pp5_z1",
+        "ce0_pp6_z0",
+        "ce0_pp6_z1",
+        "ce20_pp0_z0",
+        "ce20_pp0_z1",
+        "ce20_pp1_z0",
+        "ce20_pp1_z1",
+        "ce20_pp2_z0",
+        "ce20_pp2_z1",
+        "ce20_pp3_z0",
+        "ce20_pp3_z1",
+        "ce20_pp4_z0",
+        "ce20_pp4_z1",
+        "ce20_pp5_z0",
+        "ce20_pp5_z1",
+        "ce20_pp6_z0",
+        "ce20_pp6_z1",
+        "ce27_pp0_z1",
+        "ce27_pp1_z1",
+        "ce27_pp2_z1",
+        "ce27_pp3_z1",
+        "ce28_pp0_z0",
+        "ce28_pp1_z0",
+        "ce28_pp2_z0",
+        "ce28_pp3_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_2",
+        "center": {
+          "x": -2,
+          "y": -5.2125
+        },
+        "width": 1.4,
+        "height": 3.575,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_3",
+      "pointIds": [
+        "ce29_pp0_z0",
+        "ce29_pp0_z1",
+        "ce29_pp1_z0",
+        "ce29_pp1_z1",
+        "ce29_pp2_z0",
+        "ce29_pp2_z1",
+        "ce29_pp3_z0",
+        "ce29_pp3_z1",
+        "ce29_pp4_z0",
+        "ce29_pp4_z1",
+        "ce29_pp5_z0",
+        "ce29_pp5_z1",
+        "ce29_pp6_z0",
+        "ce29_pp6_z1",
+        "ce30_pp0_z0",
+        "ce30_pp1_z0",
+        "ce31_pp0_z1",
+        "ce31_pp1_z1",
+        "ce32_pp0_z0",
+        "ce32_pp0_z1",
+        "ce32_pp1_z0",
+        "ce32_pp1_z1",
+        "ce33_pp0_z0",
+        "ce33_pp1_z0",
+        "ce33_pp2_z0",
+        "ce34_pp0_z1",
+        "ce34_pp1_z1",
+        "ce34_pp2_z1",
+        "ce34_pp3_z1",
+        "ce34_pp4_z1",
+        "ce34_pp5_z1",
+        "ce34_pp6_z1",
+        "ce34_pp7_z1",
+        "ce34_pp8_z1",
+        "ce34_pp9_z1",
+        "ce34_pp10_z1",
+        "ce34_pp11_z1",
+        "ce35_pp0_z0",
+        "ce35_pp1_z0",
+        "ce35_pp2_z0",
+        "ce35_pp3_z0",
+        "ce35_pp4_z0",
+        "ce35_pp5_z0",
+        "ce35_pp6_z0",
+        "ce36_pp0_z0",
+        "ce37_pp0_z0_cramped",
+        "ce38_pp0_z0",
+        "ce38_pp1_z0",
+        "ce38_pp2_z0",
+        "ce39_pp0_z0",
+        "ce40_pp0_z0",
+        "ce40_pp1_z0",
+        "ce40_pp2_z0",
+        "ce40_pp3_z0",
+        "ce40_pp4_z0",
+        "ce40_pp5_z0",
+        "ce40_pp6_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_3",
+        "center": {
+          "x": 0,
+          "y": 4.612500000000001
+        },
+        "width": 14,
+        "height": 4.775,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_4",
+      "pointIds": [
+        "ce3_pp0_z0",
+        "ce3_pp0_z1",
+        "ce3_pp1_z0",
+        "ce3_pp1_z1",
+        "ce23_pp0_z0",
+        "ce23_pp0_z1",
+        "ce23_pp1_z0",
+        "ce23_pp1_z1",
+        "ce41_pp0_z1",
+        "ce41_pp1_z1",
+        "ce41_pp2_z1",
+        "ce41_pp3_z1",
+        "ce42_pp0_z0",
+        "ce42_pp1_z0",
+        "ce42_pp2_z0",
+        "ce42_pp3_z0",
+        "ce43_pp0_z1",
+        "ce43_pp1_z1",
+        "ce43_pp2_z1",
+        "ce43_pp3_z1",
+        "ce44_pp0_z0",
+        "ce44_pp1_z0",
+        "ce44_pp2_z0",
+        "ce44_pp3_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_4",
+        "center": {
+          "x": -2,
+          "y": -2
+        },
+        "width": 1.4,
+        "height": 0.8,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_5",
+      "pointIds": [
+        "ce16_pp0_z0",
+        "ce16_pp0_z1",
+        "ce16_pp1_z0",
+        "ce16_pp1_z1",
+        "ce16_pp2_z0",
+        "ce16_pp2_z1",
+        "ce16_pp3_z0",
+        "ce16_pp3_z1",
+        "ce16_pp4_z0",
+        "ce16_pp4_z1",
+        "ce16_pp5_z0",
+        "ce16_pp5_z1",
+        "ce16_pp6_z0",
+        "ce16_pp6_z1",
+        "ce29_pp0_z0",
+        "ce29_pp0_z1",
+        "ce29_pp1_z0",
+        "ce29_pp1_z1",
+        "ce29_pp2_z0",
+        "ce29_pp2_z1",
+        "ce29_pp3_z0",
+        "ce29_pp3_z1",
+        "ce29_pp4_z0",
+        "ce29_pp4_z1",
+        "ce29_pp5_z0",
+        "ce29_pp5_z1",
+        "ce29_pp6_z0",
+        "ce29_pp6_z1",
+        "ce45_pp0_z0",
+        "ce45_pp1_z0",
+        "ce45_pp2_z0",
+        "ce45_pp3_z0",
+        "ce45_pp4_z0",
+        "ce46_pp0_z1",
+        "ce46_pp1_z1",
+        "ce46_pp2_z1",
+        "ce46_pp3_z1",
+        "ce47_pp0_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_5",
+        "center": {
+          "x": -5.7125,
+          "y": 1.2625
+        },
+        "width": 2.575,
+        "height": 1.9250000000000003,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_6",
+      "pointIds": [
+        "ce6_pp0_z0",
+        "ce6_pp0_z1",
+        "ce6_pp1_z0",
+        "ce6_pp1_z1",
+        "ce26_pp0_z0",
+        "ce26_pp0_z1",
+        "ce26_pp1_z0",
+        "ce26_pp1_z1",
+        "ce48_pp0_z0_cramped",
+        "ce48_pp0_z1_cramped",
+        "ce49_pp0_z1",
+        "ce49_pp1_z1",
+        "ce49_pp2_z1",
+        "ce49_pp3_z1",
+        "ce50_pp0_z0",
+        "ce50_pp1_z0",
+        "ce50_pp2_z0",
+        "ce50_pp3_z0",
+        "ce51_pp0_z0",
+        "ce51_pp1_z0",
+        "ce51_pp2_z0",
+        "ce52_pp0_z1",
+        "ce52_pp1_z1",
+        "ce53_pp0_z1_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_6",
+        "center": {
+          "x": -2,
+          "y": -0.13749999999999996
+        },
+        "width": 1.4,
+        "height": 0.875,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_7",
+      "pointIds": [
+        "ce4_pp0_z1",
+        "ce4_pp1_z1",
+        "ce24_pp0_z1",
+        "ce24_pp1_z1",
+        "ce43_pp0_z1",
+        "ce43_pp1_z1",
+        "ce43_pp2_z1",
+        "ce43_pp3_z1",
+        "ce49_pp0_z1",
+        "ce49_pp1_z1",
+        "ce49_pp2_z1",
+        "ce49_pp3_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_7",
+        "center": {
+          "x": -2,
+          "y": -1.0875
+        },
+        "width": 1.4,
+        "height": 1.025,
+        "layer": "top",
+        "availableZ": [
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_8",
+      "pointIds": [
+        "ce1_pp0_z1",
+        "ce1_pp1_z1",
+        "ce21_pp0_z1",
+        "ce21_pp1_z1",
+        "ce27_pp0_z1",
+        "ce27_pp1_z1",
+        "ce27_pp2_z1",
+        "ce27_pp3_z1",
+        "ce41_pp0_z1",
+        "ce41_pp1_z1",
+        "ce41_pp2_z1",
+        "ce41_pp3_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_8",
+        "center": {
+          "x": -2,
+          "y": -2.9124999999999996
+        },
+        "width": 1.4,
+        "height": 1.025,
+        "layer": "top",
+        "availableZ": [
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_9",
+      "pointIds": [
+        "ce19_pp0_z0",
+        "ce19_pp0_z1",
+        "ce32_pp0_z0",
+        "ce32_pp0_z1",
+        "ce32_pp1_z0",
+        "ce32_pp1_z1",
+        "ce48_pp0_z0_cramped",
+        "ce48_pp0_z1_cramped",
+        "ce54_pp0_z0",
+        "ce54_pp1_z0",
+        "ce54_pp2_z0",
+        "ce54_pp3_z0",
+        "ce54_pp4_z0",
+        "ce55_pp0_z1",
+        "ce55_pp1_z1",
+        "ce55_pp2_z1",
+        "ce55_pp3_z1",
+        "ce56_pp0_z1",
+        "ce57_pp0_z0",
+        "ce57_pp1_z0",
+        "ce57_pp2_z0",
+        "ce57_pp3_z0",
+        "ce57_pp4_z0",
+        "ce58_pp0_z1",
+        "ce58_pp1_z1",
+        "ce58_pp2_z1",
+        "ce58_pp3_z1",
+        "ce59_pp0_z1_cramped",
+        "ce60_pp0_z1_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_9",
+        "center": {
+          "x": -3,
+          "y": 1.2625000000000002
+        },
+        "width": 0.8000000000000003,
+        "height": 1.9249999999999998,
+        "layer": "top",
+        "availableZ": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_10",
+      "pointIds": [
+        "ce31_pp0_z1",
+        "ce31_pp1_z1",
+        "ce47_pp0_z1",
+        "ce56_pp0_z1",
+        "ce61_pp0_z1",
+        "ce61_pp1_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_10",
+        "center": {
+          "x": -3.9125,
+          "y": 1.9624999999999997
+        },
+        "width": 1.0249999999999995,
+        "height": 0.5249999999999999,
+        "layer": "top",
+        "availableZ": [
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_11",
+      "pointIds": [
+        "ce8_pp0_z1",
+        "ce8_pp1_z1",
+        "ce8_pp2_z1",
+        "ce8_pp3_z1",
+        "ce8_pp4_z1",
+        "ce8_pp5_z1",
+        "ce8_pp6_z1",
+        "ce8_pp7_z1",
+        "ce8_pp8_z1",
+        "ce8_pp9_z1",
+        "ce8_pp10_z1",
+        "ce34_pp0_z1",
+        "ce34_pp1_z1",
+        "ce34_pp2_z1",
+        "ce34_pp3_z1",
+        "ce34_pp4_z1",
+        "ce34_pp5_z1",
+        "ce34_pp6_z1",
+        "ce34_pp7_z1",
+        "ce34_pp8_z1",
+        "ce34_pp9_z1",
+        "ce34_pp10_z1",
+        "ce34_pp11_z1",
+        "ce59_pp0_z1_cramped",
+        "ce62_pp0_z1",
+        "ce62_pp1_z1",
+        "ce63_pp0_z1_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_11",
+        "center": {
+          "x": 2.2,
+          "y": 2
+        },
+        "width": 9.6,
+        "height": 0.4499999999999995,
+        "layer": "top",
+        "availableZ": [
+          1
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_12",
+      "pointIds": [
+        "ce13_pp0_z0",
+        "ce13_pp1_z0",
+        "ce13_pp2_z0",
+        "ce38_pp0_z0",
+        "ce38_pp1_z0",
+        "ce38_pp2_z0",
+        "ce64_pp0_z0_cramped",
+        "ce65_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_12",
+        "center": {
+          "x": 3.075,
+          "y": 2
+        },
+        "width": 1.3499999999999992,
+        "height": 0.44999999999999973,
+        "layer": "top",
+        "availableZ": [
+          0
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_13",
+      "pointIds": [
+        "ce15_pp0_z0",
+        "ce15_pp1_z0",
+        "ce15_pp2_z0",
+        "ce15_pp3_z0",
+        "ce15_pp4_z0",
+        "ce15_pp5_z0",
+        "ce15_pp6_z0",
+        "ce40_pp0_z0",
+        "ce40_pp1_z0",
+        "ce40_pp2_z0",
+        "ce40_pp3_z0",
+        "ce40_pp4_z0",
+        "ce40_pp5_z0",
+        "ce40_pp6_z0",
+        "ce66_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_13",
+        "center": {
+          "x": 5.675,
+          "y": 2
+        },
+        "width": 2.6500000000000004,
+        "height": 0.4499999999999995,
+        "layer": "top",
+        "availableZ": [
+          0
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_14",
+      "pointIds": [
+        "ce17_pp0_z0",
+        "ce17_pp1_z0",
+        "ce30_pp0_z0",
+        "ce30_pp1_z0",
+        "ce45_pp0_z0",
+        "ce45_pp1_z0",
+        "ce45_pp2_z0",
+        "ce45_pp3_z0",
+        "ce45_pp4_z0",
+        "ce54_pp0_z0",
+        "ce54_pp1_z0",
+        "ce54_pp2_z0",
+        "ce54_pp3_z0",
+        "ce54_pp4_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_14",
+        "center": {
+          "x": -3.9124999999999996,
+          "y": 1.2625
+        },
+        "width": 1.025,
+        "height": 1.9250000000000003,
+        "layer": "top",
+        "availableZ": [
+          0
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_15",
+      "pointIds": [
+        "ce7_pp0_z0",
+        "ce7_pp1_z0",
+        "ce7_pp2_z0",
+        "ce7_pp3_z0",
+        "ce33_pp0_z0",
+        "ce33_pp1_z0",
+        "ce33_pp2_z0",
+        "ce51_pp0_z0",
+        "ce51_pp1_z0",
+        "ce51_pp2_z0",
+        "ce57_pp0_z0",
+        "ce57_pp1_z0",
+        "ce57_pp2_z0",
+        "ce57_pp3_z0",
+        "ce57_pp4_z0",
+        "ce67_pp0_z0_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_15",
+        "center": {
+          "x": -1.95,
+          "y": 1.2625000000000002
+        },
+        "width": 1.2999999999999994,
+        "height": 1.9250000000000005,
+        "layer": "top",
+        "availableZ": [
+          0
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_16",
+      "pointIds": [
+        "ce10_pp0_z0",
+        "ce10_pp1_z0",
+        "ce10_pp2_z0",
+        "ce10_pp3_z0",
+        "ce10_pp4_z0",
+        "ce10_pp5_z0",
+        "ce10_pp6_z0",
+        "ce35_pp0_z0",
+        "ce35_pp1_z0",
+        "ce35_pp2_z0",
+        "ce35_pp3_z0",
+        "ce35_pp4_z0",
+        "ce35_pp5_z0",
+        "ce35_pp6_z0",
+        "ce67_pp0_z0_cramped",
+        "ce68_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_16",
+        "center": {
+          "x": 0.17499999999999982,
+          "y": 2
+        },
+        "width": 2.95,
+        "height": 0.4499999999999995,
+        "layer": "top",
+        "availableZ": [
+          0
+        ]
+      }
+    },
+    {
+      "regionId": "cmn_17",
+      "pointIds": [
+        "ce52_pp0_z1",
+        "ce52_pp1_z1",
+        "ce58_pp0_z1",
+        "ce58_pp1_z1",
+        "ce58_pp2_z1",
+        "ce58_pp3_z1",
+        "ce69_pp0_z1",
+        "ce69_pp1_z1",
+        "ce70_pp0_z1",
+        "ce70_pp1_z1",
+        "ce70_pp2_z1",
+        "ce70_pp3_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_17",
+        "center": {
+          "x": -2.0874999999999995,
+          "y": 1
+        },
+        "width": 1.025,
+        "height": 1.4,
+        "layer": "top",
+        "availableZ": [
+          1
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "cmn_18",
+      "pointIds": [
+        "ce18_pp0_z1",
+        "ce18_pp1_z1",
+        "ce46_pp0_z1",
+        "ce46_pp1_z1",
+        "ce46_pp2_z1",
+        "ce46_pp3_z1",
+        "ce55_pp0_z1",
+        "ce55_pp1_z1",
+        "ce55_pp2_z1",
+        "ce55_pp3_z1",
+        "ce61_pp0_z1",
+        "ce61_pp1_z1"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_18",
+        "center": {
+          "x": -3.9124999999999996,
+          "y": 1
+        },
+        "width": 1.025,
+        "height": 1.4,
+        "layer": "top",
+        "availableZ": [
+          1
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "cmn_19",
+      "pointIds": [
+        "ce2_pp0_z0",
+        "ce2_pp1_z0",
+        "ce22_pp0_z0",
+        "ce22_pp1_z0",
+        "ce28_pp0_z0",
+        "ce28_pp1_z0",
+        "ce28_pp2_z0",
+        "ce28_pp3_z0",
+        "ce42_pp0_z0",
+        "ce42_pp1_z0",
+        "ce42_pp2_z0",
+        "ce42_pp3_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_19",
+        "center": {
+          "x": -2,
+          "y": -2.9124999999999996
+        },
+        "width": 1.4,
+        "height": 1.025,
+        "layer": "top",
+        "availableZ": [
+          0
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "cmn_20",
+      "pointIds": [
+        "ce5_pp0_z0",
+        "ce5_pp1_z0",
+        "ce25_pp0_z0",
+        "ce25_pp1_z0",
+        "ce44_pp0_z0",
+        "ce44_pp1_z0",
+        "ce44_pp2_z0",
+        "ce44_pp3_z0",
+        "ce50_pp0_z0",
+        "ce50_pp1_z0",
+        "ce50_pp2_z0",
+        "ce50_pp3_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_20",
+        "center": {
+          "x": -2,
+          "y": -1.0875
+        },
+        "width": 1.4,
+        "height": 1.025,
+        "layer": "top",
+        "availableZ": [
+          0
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "cmn_21",
+      "pointIds": [
+        "ce11_pp0_z0",
+        "ce36_pp0_z0",
+        "ce68_pp0_z0",
+        "ce71_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_21",
+        "center": {
+          "x": 1.95,
+          "y": 2
+        },
+        "width": 0.6000000000000001,
+        "height": 0.4500000000000002,
+        "layer": "top",
+        "availableZ": [
+          0
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "cmn_22",
+      "pointIds": [
+        "ce14_pp0_z0",
+        "ce39_pp0_z0",
+        "ce65_pp0_z0",
+        "ce66_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "cmn_22",
+        "center": {
+          "x": 4.05,
+          "y": 2
+        },
+        "width": 0.5999999999999996,
+        "height": 0.4500000000000002,
+        "layer": "top",
+        "availableZ": [
+          0
+        ],
+        "_containsObstacle": true,
+        "_containsTarget": true
+      }
+    },
+    {
+      "regionId": "new-cmn_0-0",
+      "pointIds": [
+        "ce9_pp0_z1",
+        "ce9_pp1_z1",
+        "ce9_pp2_z1",
+        "ce9_pp3_z1",
+        "ce53_pp0_z1_cramped",
+        "ce63_pp0_z1_cramped",
+        "ce70_pp0_z1",
+        "ce70_pp1_z1",
+        "ce70_pp2_z1",
+        "ce70_pp3_z1",
+        "ce72_pp0_z1_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "new-cmn_0-0",
+        "center": {
+          "x": -1.4375,
+          "y": 1.0375
+        },
+        "width": 0.2749999999999988,
+        "height": 1.4750000000000003,
+        "availableZ": [
+          1
+        ],
+        "layer": "top"
+      }
+    },
+    {
+      "regionId": "new-cmn_0-1",
+      "pointIds": [
+        "ce12_pp0_z0_cramped",
+        "ce37_pp0_z0_cramped",
+        "ce64_pp0_z0_cramped",
+        "ce71_pp0_z0"
+      ],
+      "d": {
+        "capacityMeshNodeId": "new-cmn_0-1",
+        "center": {
+          "x": 2.325,
+          "y": 2.0000000000000004
+        },
+        "width": 0.15000000000000036,
+        "height": 0.4500000000000002,
+        "availableZ": [
+          0
+        ],
+        "layer": "top"
+      }
+    },
+    {
+      "regionId": "new-cmn_9-2",
+      "pointIds": [
+        "ce60_pp0_z1_cramped",
+        "ce62_pp0_z1",
+        "ce62_pp1_z1",
+        "ce69_pp0_z1",
+        "ce69_pp1_z1",
+        "ce72_pp0_z1_cramped"
+      ],
+      "d": {
+        "capacityMeshNodeId": "new-cmn_9-2",
+        "center": {
+          "x": -2.0874999999999995,
+          "y": 1.7375000000000003
+        },
+        "width": 1.0250000000000004,
+        "height": 0.0750000000000004,
+        "availableZ": [
+          1
+        ],
+        "layer": "top"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "connectionId": "source_net_2",
+      "startRegionId": "cmn_20",
+      "endRegionId": "cmn_22",
+      "mutuallyConnectedNetworkId": "source_net_2"
+    },
+    {
+      "connectionId": "source_net_1",
+      "startRegionId": "cmn_18",
+      "endRegionId": "cmn_21",
+      "mutuallyConnectedNetworkId": "source_net_1"
+    },
+    {
+      "connectionId": "source_net_0",
+      "startRegionId": "cmn_17",
+      "endRegionId": "cmn_19",
+      "mutuallyConnectedNetworkId": "source_net_0"
+    }
+  ],
+  "solvedRoutes": [
+    {
+      "path": [
+        {
+          "portId": "ce5_pp0_z0",
+          "g": 0,
+          "h": 0,
+          "f": 0,
+          "hops": 0,
+          "ripRequired": false,
+          "nextRegionId": "cmn_0"
+        },
+        {
+          "portId": "ce14_pp0_z0",
+          "g": 0,
+          "h": 1.0266446272154215,
+          "f": 0.718651239050795,
+          "hops": 1,
+          "ripRequired": false,
+          "lastPortId": "ce5_pp0_z0",
+          "lastRegionId": "cmn_0",
+          "nextRegionId": "cmn_22"
+        }
+      ],
+      "connection": {
+        "connectionId": "source_net_2",
+        "startRegionId": "cmn_20",
+        "endRegionId": "cmn_22",
+        "mutuallyConnectedNetworkId": "source_net_2"
+      },
+      "requiredRip": false
+    },
+    {
+      "path": [
+        {
+          "portId": "ce55_pp2_z1",
+          "g": 0,
+          "h": 0,
+          "f": 0,
+          "hops": 0,
+          "ripRequired": false,
+          "nextRegionId": "cmn_9"
+        },
+        {
+          "portId": "ce57_pp2_z0",
+          "g": 0,
+          "h": 4.76166056379975,
+          "f": 3.333162394659825,
+          "hops": 1,
+          "ripRequired": false,
+          "lastPortId": "ce55_pp2_z1",
+          "lastRegionId": "cmn_9",
+          "nextRegionId": "cmn_15"
+        },
+        {
+          "portId": "ce67_pp0_z0_cramped",
+          "g": 0,
+          "h": 5.435911311159913,
+          "f": 3.8051379178119387,
+          "hops": 2,
+          "ripRequired": false,
+          "lastPortId": "ce57_pp2_z0",
+          "lastRegionId": "cmn_15",
+          "nextRegionId": "cmn_16"
+        },
+        {
+          "portId": "ce68_pp0_z0",
+          "g": 0,
+          "h": 0.501776428722454,
+          "f": 0.35124350010571775,
+          "hops": 3,
+          "ripRequired": false,
+          "lastPortId": "ce67_pp0_z0_cramped",
+          "lastRegionId": "cmn_16",
+          "nextRegionId": "cmn_21"
+        }
+      ],
+      "connection": {
+        "connectionId": "source_net_1",
+        "startRegionId": "cmn_18",
+        "endRegionId": "cmn_21",
+        "mutuallyConnectedNetworkId": "source_net_1"
+      },
+      "requiredRip": false
+    },
+    {
+      "path": [
+        {
+          "portId": "ce52_pp0_z1",
+          "g": 0,
+          "h": 0,
+          "f": 0,
+          "hops": 0,
+          "ripRequired": false,
+          "nextRegionId": "cmn_6"
+        },
+        {
+          "portId": "ce49_pp1_z1",
+          "g": 0,
+          "h": 2.766978162365077,
+          "f": 1.9368847136555536,
+          "hops": 1,
+          "ripRequired": false,
+          "lastPortId": "ce52_pp0_z1",
+          "lastRegionId": "cmn_6",
+          "nextRegionId": "cmn_7"
+        },
+        {
+          "portId": "ce43_pp1_z1",
+          "g": 0,
+          "h": 1.8378079893883268,
+          "f": 1.2864655925718287,
+          "hops": 2,
+          "ripRequired": false,
+          "lastPortId": "ce49_pp1_z1",
+          "lastRegionId": "cmn_7",
+          "nextRegionId": "cmn_4"
+        },
+        {
+          "portId": "ce42_pp1_z0",
+          "g": 0,
+          "h": 1.12374050951335,
+          "f": 0.7866183566593449,
+          "hops": 3,
+          "ripRequired": false,
+          "lastPortId": "ce43_pp1_z1",
+          "lastRegionId": "cmn_4",
+          "nextRegionId": "cmn_19"
+        }
+      ],
+      "connection": {
+        "connectionId": "source_net_0",
+        "startRegionId": "cmn_17",
+        "endRegionId": "cmn_19",
+        "mutuallyConnectedNetworkId": "source_net_0"
+      },
+      "requiredRip": false
+    }
+  ]
+}
