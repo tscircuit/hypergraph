@@ -10,6 +10,7 @@ export type RegionPort = {
   region1: Region
   region2: Region
   d: any
+  _deadendInSection?: boolean
   assignment?: PortAssignment
   /**
    * The number of times this port has been ripped. Can be used to penalize
@@ -77,6 +78,7 @@ export type SerializedGraphPort = {
   region1Id: RegionId
   region2Id: RegionId
   d: any
+  _deadendInSection?: boolean
 }
 export type SerializedGraphRegion = {
   regionId: RegionId
@@ -96,6 +98,10 @@ export type SerializedHyperGraph = {
   connections?: SerializedConnection[]
   _sectionRouteBindings?: SerializedSectionRouteBinding[]
   _sectionCentralRegionId?: RegionId
+  _portMap?: Map<PortId, SerializedGraphPort>
+  _regionMap?: Map<RegionId, SerializedGraphRegion>
+  _portsByRegionId?: Map<RegionId, SerializedGraphPort[]>
+  _adjacentRegionIdsByRegionId?: Map<RegionId, Set<RegionId>>
 }
 
 export type SerializedCandidate = {

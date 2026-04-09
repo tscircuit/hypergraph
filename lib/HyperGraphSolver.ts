@@ -5,6 +5,7 @@ import { convertSerializedConnectionsToConnections } from "./convertSerializedCo
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
 import { PriorityQueue } from "./PriorityQueue"
 import { clearAssignmentsFromGraph, commitSolvedRoutes } from "./solvedRoutes"
+import { isMarkedDeadEndPort } from "./markDeadEndPorts"
 import type {
   Candidate,
   Connection,
@@ -282,6 +283,7 @@ export class HyperGraphSolver<
     const nextCandidatesByRegion: Record<RegionId, Candidate[]> = {}
     for (const port of currentRegion.ports) {
       if (port === currentCandidate.port) continue
+      if (isMarkedDeadEndPort(port)) continue
       if (
         !this.isTransitionAllowed(
           currentRegion as RegionType,
@@ -431,6 +433,7 @@ export class HyperGraphSolver<
     this.visitedPointsForCurrentConnection.clear()
     this.routeStartedHook(this.currentConnection)
     for (const port of this.currentConnection.startRegion.ports) {
+      if (isMarkedDeadEndPort(port)) continue
       this.candidateQueue.enqueue({
         port,
         g: 0,

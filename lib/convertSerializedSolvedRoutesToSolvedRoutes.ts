@@ -2,8 +2,6 @@ import { convertSerializedConnectionsToConnections } from "./convertSerializedCo
 import type {
   Candidate,
   HyperGraph,
-  Region,
-  RegionId,
   RegionPort,
   SerializedSolvedRoute,
   SolvedRoute,
@@ -52,18 +50,10 @@ export const convertSerializedSolvedRoutesToSolvedRoutes = (
         )
       }
       if (originalCandidate.lastRegionId) {
-        candidate.lastRegion = getRequiredRegion(
-          regionMap,
-          originalCandidate.lastRegionId,
-          inputSolvedRoute.connection.connectionId,
-        )
+        candidate.lastRegion = regionMap.get(originalCandidate.lastRegionId)
       }
       if (originalCandidate.nextRegionId) {
-        candidate.nextRegion = getRequiredRegion(
-          regionMap,
-          originalCandidate.nextRegionId,
-          inputSolvedRoute.connection.connectionId,
-        )
+        candidate.nextRegion = regionMap.get(originalCandidate.nextRegionId)
       }
 
       const parent = path[path.length - 1]
@@ -100,18 +90,4 @@ const getRequiredPort = (
     )
   }
   return port
-}
-
-const getRequiredRegion = (
-  regionMap: Map<RegionId, Region>,
-  regionId: RegionId,
-  connectionId: string,
-): Region => {
-  const region = regionMap.get(regionId)
-  if (!region) {
-    throw new Error(
-      `Region ${regionId} not found while deserializing solved route ${connectionId}`,
-    )
-  }
-  return region
 }

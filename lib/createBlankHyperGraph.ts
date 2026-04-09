@@ -1,49 +1,45 @@
-import { convertConnectionsToSerializedConnections } from "./convertConnectionsToSerializedConnections"
-import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
-import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
-import { convertSerializedSolvedRoutesToSolvedRoutes } from "./convertSerializedSolvedRoutesToSolvedRoutes"
+import { attachSerializedGraphMetadata } from "./serializedGraphMetadata"
 import type {
-  Connection,
-  HyperGraph,
-  Region,
-  RegionPort,
   SerializedHyperGraph,
-  SolvedRoute,
+  SerializedConnection,
+  SerializedGraphPort,
+  SerializedGraphRegion,
+  SerializedSolvedRoute,
 } from "./types"
 
 export const createBlankHyperGraph = (
   inputGraph: SerializedHyperGraph,
 ): SerializedHyperGraph => {
-  const deserializedGraph = convertSerializedHyperGraphToHyperGraph(inputGraph)
+  const graph = attachSerializedGraphMetadata(inputGraph)
   if (!inputGraph.solvedRoutes) {
     throw new Error(
       "createBlankHyperGraph requires graph.solvedRoutes to be present",
     )
   }
-
-  const solvedRoutes = convertSerializedSolvedRoutesToSolvedRoutes(
+  const removableLeafRegionIds = getRemovableLeafRegionIds(graph)
+  const replacedEndpointRegionIds = getReplacedEndpointRegionIds(
     inputGraph.solvedRoutes,
-    deserializedGraph,
+    graph,
   )
-
-  const removableLeafRegionIds = getRemovableLeafRegionIds(deserializedGraph)
-  const replacedEndpointRegionIds = getReplacedEndpointRegionIds(solvedRoutes)
-  const blankGraph = cloneGraphExcludingRegions(
-    deserializedGraph,
+  const blankGraph = cloneSerializedGraphExcludingRegions(
+    graph,
     removableLeafRegionIds,
   )
-  const connections: Connection[] = []
+  const blankGraphWithMetadata = attachSerializedGraphMetadata(blankGraph)
+  const connections: SerializedConnection[] = []
 
-  for (const solvedRoute of solvedRoutes) {
-    const startRegion = getBlankConnectionEndpointRegion({
+  for (const solvedRoute of inputGraph.solvedRoutes) {
+    const startRegionId = getBlankConnectionEndpointRegionId({
       solvedRoute,
-      blankGraph,
+      blankGraph: blankGraphWithMetadata,
+      sourceGraph: graph,
       replacedEndpointRegionIds,
       endpoint: "start",
     })
-    const endRegion = getBlankConnectionEndpointRegion({
+    const endRegionId = getBlankConnectionEndpointRegionId({
       solvedRoute,
-      blankGraph,
+      blankGraph: blankGraphWithMetadata,
+      sourceGraph: graph,
       replacedEndpointRegionIds,
       endpoint: "end",
     })
@@ -52,31 +48,37 @@ export const createBlankHyperGraph = (
       connectionId: solvedRoute.connection.connectionId,
       mutuallyConnectedNetworkId:
         solvedRoute.connection.mutuallyConnectedNetworkId,
-      startRegion,
-      endRegion,
+      startRegionId,
+      endRegionId,
     })
   }
 
-  return {
-    ...convertHyperGraphToSerializedHyperGraph(blankGraph),
-    connections: convertConnectionsToSerializedConnections(connections),
+  return attachSerializedGraphMetadata({
+    ...blankGraphWithMetadata,
     _sectionCentralRegionId: inputGraph._sectionCentralRegionId,
     _sectionRouteBindings: inputGraph._sectionRouteBindings
       ? structuredClone(inputGraph._sectionRouteBindings)
       : undefined,
-  }
+    connections,
+  })
 }
 
-const getRemovableLeafRegionIds = (graph: HyperGraph): Set<string> => {
+const getRemovableLeafRegionIds = (
+  graph: SerializedHyperGraph,
+): Set<string> => {
   return new Set(
     graph.regions
-      .filter((region) => region.ports.length === 1)
+      .filter(
+        (region) =>
+          (graph._portsByRegionId?.get(region.regionId)?.length ?? 0) === 1,
+      )
       .map((region) => region.regionId),
   )
 }
 
 const getReplacedEndpointRegionIds = (
-  solvedRoutes: SolvedRoute[],
+  solvedRoutes: SerializedSolvedRoute[],
+  graph: SerializedHyperGraph,
 ): Set<string> => {
   const replacedEndpointRegionIds = new Set<string>()
 
@@ -85,22 +87,24 @@ const getReplacedEndpointRegionIds = (
     if (
       startCandidate &&
       shouldReplaceEndpointRegion(
-        solvedRoute.connection.startRegion,
+        solvedRoute.connection.startRegionId,
         startCandidate,
+        graph,
       )
     ) {
-      replacedEndpointRegionIds.add(solvedRoute.connection.startRegion.regionId)
+      replacedEndpointRegionIds.add(solvedRoute.connection.startRegionId)
     }
 
     const endCandidate = solvedRoute.path[solvedRoute.path.length - 1]
     if (
       endCandidate &&
       shouldReplaceEndpointRegion(
-        solvedRoute.connection.endRegion,
+        solvedRoute.connection.endRegionId,
         endCandidate,
+        graph,
       )
     ) {
-      replacedEndpointRegionIds.add(solvedRoute.connection.endRegion.regionId)
+      replacedEndpointRegionIds.add(solvedRoute.connection.endRegionId)
     }
   }
 
@@ -108,77 +112,83 @@ const getReplacedEndpointRegionIds = (
 }
 
 const shouldReplaceEndpointRegion = (
-  endpointRegion: Region,
-  endpointCandidate: SolvedRoute["path"][number],
+  endpointRegionId: string,
+  endpointCandidate: SerializedSolvedRoute["path"][number],
+  graph: SerializedHyperGraph,
 ): boolean => {
+  const endpointRegion = graph._regionMap?.get(endpointRegionId)
   return (
-    endpointRegion.ports.length === 1 &&
-    endpointRegion.ports[0]?.portId === endpointCandidate.port.portId
+    (endpointRegion?.pointIds.length ?? 0) === 1 &&
+    endpointRegion?.pointIds[0] === endpointCandidate.portId
   )
 }
 
-const cloneGraphExcludingRegions = (
-  graph: HyperGraph,
+const cloneSerializedGraphExcludingRegions = (
+  graph: SerializedHyperGraph,
   excludedRegionIds: Set<string>,
-): HyperGraph => {
-  const clonedRegionMap = new Map<string, Region>()
-  const clonedPorts: RegionPort[] = []
+): SerializedHyperGraph => {
+  const clonedRegionMap = new Map<string, SerializedGraphRegion>()
+  const clonedPorts: SerializedGraphPort[] = []
 
   for (const region of graph.regions) {
     if (excludedRegionIds.has(region.regionId)) continue
     clonedRegionMap.set(region.regionId, {
       regionId: region.regionId,
-      ports: [],
-      d: region.d ? structuredClone(region.d) : region.d,
-      assignments: [],
+      pointIds: [],
+      d: region.d,
     })
   }
 
   for (const port of graph.ports) {
     if (
-      excludedRegionIds.has(port.region1.regionId) ||
-      excludedRegionIds.has(port.region2.regionId)
+      excludedRegionIds.has(port.region1Id) ||
+      excludedRegionIds.has(port.region2Id)
     ) {
       continue
     }
 
-    const clonedPort: RegionPort = {
+    const clonedPort: SerializedGraphPort = {
       portId: port.portId,
-      region1: clonedRegionMap.get(port.region1.regionId)!,
-      region2: clonedRegionMap.get(port.region2.regionId)!,
-      d: port.d ? structuredClone(port.d) : port.d,
+      region1Id: port.region1Id,
+      region2Id: port.region2Id,
+      d: port.d,
+      _deadendInSection: port._deadendInSection,
     }
-    clonedPort.region1.ports.push(clonedPort)
-    clonedPort.region2.ports.push(clonedPort)
+    clonedRegionMap.get(port.region1Id)?.pointIds.push(clonedPort.portId)
+    clonedRegionMap.get(port.region2Id)?.pointIds.push(clonedPort.portId)
     clonedPorts.push(clonedPort)
   }
 
-  return {
+  return attachSerializedGraphMetadata({
     regions: Array.from(clonedRegionMap.values()),
     ports: clonedPorts,
-  }
+  })
 }
 
-const getBlankConnectionEndpointRegion = (input: {
-  solvedRoute: SolvedRoute
-  blankGraph: HyperGraph
+const getBlankConnectionEndpointRegionId = (input: {
+  solvedRoute: SerializedSolvedRoute
+  blankGraph: SerializedHyperGraph
+  sourceGraph: SerializedHyperGraph
   replacedEndpointRegionIds: Set<string>
   endpoint: "start" | "end"
-}): Region => {
-  const { solvedRoute, blankGraph, replacedEndpointRegionIds, endpoint } = input
+}): string => {
+  const {
+    solvedRoute,
+    blankGraph,
+    sourceGraph,
+    replacedEndpointRegionIds,
+    endpoint,
+  } = input
   const originalRegion =
     endpoint === "start"
-      ? solvedRoute.connection.startRegion
-      : solvedRoute.connection.endRegion
+      ? solvedRoute.connection.startRegionId
+      : solvedRoute.connection.endRegionId
 
-  const existingRegion = blankGraph.regions.find(
-    (region) => region.regionId === originalRegion.regionId,
-  )
-  if (existingRegion) return existingRegion
+  if (blankGraph._regionMap?.has(originalRegion)) return originalRegion
 
-  if (!replacedEndpointRegionIds.has(originalRegion.regionId)) {
+  if (!replacedEndpointRegionIds.has(originalRegion)) {
     throw new Error(
-      `Connection endpoint region ${originalRegion.regionId} is missing from blank graph`,
+      `Connection endpoint region ${originalRegion} is missing from blank graph`,
     )
   }
 
@@ -193,12 +203,13 @@ const getBlankConnectionEndpointRegion = (input: {
   }
 
   const attachedRegionId = getAttachedRegionId({
-    port: endpointCandidate.port,
-    originalRegionId: originalRegion.regionId,
+    port: getRequiredSerializedPort(sourceGraph, endpointCandidate.portId),
+    blankGraph,
+    originalRegionId: originalRegion,
     preferredRegionId:
       endpoint === "start"
-        ? endpointCandidate.nextRegion?.regionId
-        : endpointCandidate.lastRegion?.regionId,
+        ? endpointCandidate.nextRegionId
+        : endpointCandidate.lastRegionId,
   })
   if (!attachedRegionId) {
     throw new Error(
@@ -206,48 +217,96 @@ const getBlankConnectionEndpointRegion = (input: {
     )
   }
 
-  const attachedRegion = blankGraph.regions.find(
-    (region) => region.regionId === attachedRegionId,
-  )
-  if (!attachedRegion) {
+  if (!blankGraph._regionMap?.has(attachedRegionId)) {
     throw new Error(
       `Region ${attachedRegionId} not found in blank graph for connection ${solvedRoute.connection.connectionId}`,
     )
   }
 
-  const connectionRegion: Region = {
-    regionId: `connection:${solvedRoute.connection.connectionId}:${endpoint}`,
-    ports: [],
-    d: originalRegion.d ? structuredClone(originalRegion.d) : originalRegion.d,
-    assignments: [],
+  const connectionRegionId = `connection:${solvedRoute.connection.connectionId}:${endpoint}`
+  const originalRegionData = sourceGraph._regionMap?.get(originalRegion)
+  const endpointPort = getRequiredSerializedPort(
+    sourceGraph,
+    endpointCandidate.portId,
+  )
+  const connectionRegion: SerializedGraphRegion = {
+    regionId: connectionRegionId,
+    pointIds: [],
+    d: originalRegionData?.d,
   }
   blankGraph.regions.push(connectionRegion)
+  blankGraph._regionMap?.set(connectionRegion.regionId, connectionRegion)
+  blankGraph._portsByRegionId?.set(connectionRegion.regionId, [])
+  blankGraph._adjacentRegionIdsByRegionId?.set(
+    connectionRegion.regionId,
+    new Set(),
+  )
 
-  const connectionPort: RegionPort = {
-    portId: `connection:${solvedRoute.connection.connectionId}:${endpoint}-port`,
-    region1: connectionRegion,
-    region2: attachedRegion,
-    d: endpointCandidate.port.d
-      ? structuredClone(endpointCandidate.port.d)
-      : endpointCandidate.port.d,
+  const connectionPortId = `connection:${solvedRoute.connection.connectionId}:${endpoint}-port`
+  const connectionPort: SerializedGraphPort = {
+    portId: connectionPortId,
+    region1Id: connectionRegionId,
+    region2Id: attachedRegionId,
+    d: endpointPort.d,
+    _deadendInSection: endpointPort._deadendInSection,
   }
-  connectionRegion.ports.push(connectionPort)
-  attachedRegion.ports.push(connectionPort)
+  connectionRegion.pointIds.push(connectionPort.portId)
+  blankGraph._regionMap
+    ?.get(attachedRegionId)
+    ?.pointIds.push(connectionPort.portId)
   blankGraph.ports.push(connectionPort)
+  blankGraph._portMap?.set(connectionPort.portId, connectionPort)
+  blankGraph._portsByRegionId?.get(connectionRegionId)?.push(connectionPort)
+  blankGraph._portsByRegionId?.get(attachedRegionId)?.push(connectionPort)
+  blankGraph._adjacentRegionIdsByRegionId
+    ?.get(connectionRegionId)
+    ?.add(attachedRegionId)
+  blankGraph._adjacentRegionIdsByRegionId
+    ?.get(attachedRegionId)
+    ?.add(connectionRegionId)
 
-  return connectionRegion
+  return connectionRegionId
 }
 
 const getAttachedRegionId = (input: {
-  port: RegionPort
+  port: SerializedGraphPort
+  blankGraph: SerializedHyperGraph
   originalRegionId: string
   preferredRegionId?: string
 }): string | undefined => {
-  const { port, originalRegionId, preferredRegionId } = input
-  if (preferredRegionId && preferredRegionId !== originalRegionId) {
+  const { port, blankGraph, originalRegionId, preferredRegionId } = input
+  const blankGraphRegionIds = blankGraph._regionMap
+
+  if (
+    preferredRegionId &&
+    preferredRegionId !== originalRegionId &&
+    blankGraphRegionIds?.has(preferredRegionId)
+  ) {
     return preferredRegionId
   }
-  if (port.region1.regionId !== originalRegionId) return port.region1.regionId
-  if (port.region2.regionId !== originalRegionId) return port.region2.regionId
+
+  if (
+    port.region1Id !== originalRegionId &&
+    blankGraphRegionIds?.has(port.region1Id)
+  ) {
+    return port.region1Id
+  }
+  if (
+    port.region2Id !== originalRegionId &&
+    blankGraphRegionIds?.has(port.region2Id)
+  ) {
+    return port.region2Id
+  }
   return undefined
+}
+
+const getRequiredSerializedPort = (
+  graph: SerializedHyperGraph,
+  portId: string,
+): SerializedGraphPort => {
+  const port = graph._portMap?.get(portId)
+  if (!port) {
+    throw new Error(`Port ${portId} not found while creating blank graph`)
+  }
+  return port
 }

@@ -8,7 +8,8 @@ import { convertSolvedRoutesToSerializedSolvedRoutes } from "../convertSolvedRou
 import { createBlankHyperGraph } from "../createBlankHyperGraph"
 import { extractSectionOfHyperGraph } from "../extractSectionOfHyperGraph"
 import { HyperGraphSolver } from "../HyperGraphSolver"
-import { pruneDeadEndPorts } from "../pruneDeadEndPorts"
+import { markDeadEndPorts } from "../markDeadEndPorts"
+import { markDeadEndPortsInSerializedGraph } from "../markDeadEndPortsInSerializedGraph"
 import { reattachSectionToGraph } from "../reattachSectionToGraph"
 import { commitSolvedRoutes } from "../solvedRoutes"
 import type {
@@ -303,9 +304,10 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
       centralRegionId: targetRegion.regionId,
       expansionHopsFromCentralRegion: this.config.sectionExpansionHops,
     })
-    const prunedSection = this.pruneSectionForBlanking(extractedSection)
+    const sectionWithDeadEndMarks =
+      this.markSectionDeadEndsForBlanking(extractedSection)
 
-    if ((prunedSection.connections?.length ?? 0) === 0) {
+    if ((sectionWithDeadEndMarks.connections?.length ?? 0) === 0) {
       return null
     }
 
@@ -314,7 +316,7 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
       targetRegionId: targetRegion.regionId,
       sectionRegionIds,
       fullGraphSnapshot,
-      blankSectionProblem: createBlankHyperGraph(prunedSection),
+      blankSectionProblem: createBlankHyperGraph(sectionWithDeadEndMarks),
       currentSectionCost: this.getSectionCost({
         solvedGraph: fullGraphSnapshot,
         sectionRegionIds,
@@ -395,35 +397,15 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
     )
   }
 
-  private pruneSectionForBlanking(
+  private markSectionDeadEndsForBlanking(
     extractedSection: SerializedHyperGraph,
   ): SerializedHyperGraph {
-    const mutableSectionGraph =
-      convertSerializedHyperGraphToHyperGraph(extractedSection)
     const retainedPortIds =
-      extractedSection.solvedRoutes?.flatMap((solvedRoute) => {
-        const firstPortId = solvedRoute.path[0]?.portId
-        const lastPortId = solvedRoute.path[solvedRoute.path.length - 1]?.portId
-        return [firstPortId, lastPortId].filter((portId): portId is string =>
-          Boolean(portId),
-        )
-      }) ?? []
+      extractedSection.solvedRoutes?.flatMap((solvedRoute) =>
+        solvedRoute.path.map((candidate) => candidate.portId),
+      ) ?? []
 
-    pruneDeadEndPorts(mutableSectionGraph, retainedPortIds)
-
-    return {
-      ...convertHyperGraphToSerializedHyperGraph(mutableSectionGraph),
-      connections: extractedSection.connections
-        ? structuredClone(extractedSection.connections)
-        : undefined,
-      solvedRoutes: extractedSection.solvedRoutes
-        ? structuredClone(extractedSection.solvedRoutes)
-        : undefined,
-      _sectionCentralRegionId: extractedSection._sectionCentralRegionId,
-      _sectionRouteBindings: extractedSection._sectionRouteBindings
-        ? structuredClone(extractedSection._sectionRouteBindings)
-        : undefined,
-    }
+    return markDeadEndPortsInSerializedGraph(extractedSection, retainedPortIds)
   }
 
   private getRegionSolutionCost(

@@ -54,7 +54,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
         portId: port.portId,
         region1: clonedRegionMap.get(port.region1.regionId)!,
         region2: clonedRegionMap.get(port.region2.regionId)!,
-        d: port.d,
+        d: port.d ? structuredClone(port.d) : port.d,
       }
       clonedPort.region1.ports.push(clonedPort)
       clonedPort.region2.ports.push(clonedPort)
@@ -71,7 +71,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       portId: port.portId,
       region1: clonedRegionMap.get(insideRegion.regionId)!,
       region2: boundaryRegion,
-      d: port.d,
+      d: port.d ? structuredClone(port.d) : port.d,
     }
     clonedPort.region1.ports.push(clonedPort)
     clonedPort.region2.ports.push(clonedPort)
@@ -134,6 +134,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       startRegion = boundaryRegion
       if (!sectionRegionMap.has(startRegionId)) {
         sectionRegionMap.set(startRegionId, boundaryRegion)
+        sectionGraph.regions.push(boundaryRegion)
       }
     }
 
@@ -152,6 +153,7 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
       endRegion = boundaryRegion
       if (!sectionRegionMap.has(endRegionId)) {
         sectionRegionMap.set(endRegionId, boundaryRegion)
+        sectionGraph.regions.push(boundaryRegion)
       }
     }
     if (!startRegion) {

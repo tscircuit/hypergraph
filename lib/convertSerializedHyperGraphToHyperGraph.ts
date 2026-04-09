@@ -46,6 +46,7 @@ export const convertSerializedHyperGraphToHyperGraph = (
       region1,
       region2,
       d: port.d,
+      _deadendInSection: port._deadendInSection,
     }
 
     portMap.set(port.portId, deserializedPort)
