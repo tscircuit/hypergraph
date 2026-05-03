@@ -200,6 +200,8 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
         solvedRoute.connection.mutuallyConnectedNetworkId,
       startRegion,
       endRegion,
+      startPortId: startCandidate.port.portId,
+      endPortId: endCandidate.port.portId,
     }
     const rawPath = solvedRoute.path.slice(
       solvedPathStartIndex,

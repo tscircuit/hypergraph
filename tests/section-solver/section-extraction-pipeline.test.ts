@@ -80,6 +80,8 @@ test("section extraction pipeline preserves section ports and produces a blank g
   expect(sectionGraph.solvedRoutes?.[0]!.connection.endRegionId).toBe(
     "__section_boundary__p-ef",
   )
+  expect(sectionGraph.solvedRoutes?.[0]!.connection.startPortId).toBe("p-ab")
+  expect(sectionGraph.solvedRoutes?.[0]!.connection.endPortId).toBe("p-ef")
 
   const prunedSectionGraph = pruneSerializedSectionGraph(sectionGraph)
   expect(prunedSectionGraph.ports.map((port) => port.portId)).toEqual([
@@ -110,6 +112,12 @@ test("section extraction pipeline preserves section ports and produces a blank g
   )
   expect(blankGraph.connections?.[0]!.endRegionId).toBe(
     "connection:route-main:end",
+  )
+  expect(blankGraph.connections?.[0]!.startPortId).toBe(
+    "connection:route-main:start-port",
+  )
+  expect(blankGraph.connections?.[0]!.endPortId).toBe(
+    "connection:route-main:end-port",
   )
 
   const blankSolver = new SimpleSectionSolver({
@@ -150,6 +158,12 @@ test("section extraction pipeline preserves section ports and produces a blank g
       blankGraph.connections ?? [],
       deserializedBlankGraph,
     )
+  expect(deserializedBlankConnections[0]?.startPortId).toBe(
+    "connection:route-main:start-port",
+  )
+  expect(deserializedBlankConnections[0]?.endPortId).toBe(
+    "connection:route-main:end-port",
+  )
   const deserializedReattachedGraph =
     convertSerializedHyperGraphToHyperGraph(reattachedGraph)
   const deserializedReattachedRoutes =

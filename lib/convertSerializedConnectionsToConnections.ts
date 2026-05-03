@@ -17,6 +17,8 @@ export const convertSerializedConnectionsToConnections = (
         endRegion: graph.regions.find(
           (region) => region.regionId === inputConn.endRegionId,
         )!,
+        startPortId: inputConn.startPortId,
+        endPortId: inputConn.endPortId,
       })
     } else {
       connections.push(inputConn)
