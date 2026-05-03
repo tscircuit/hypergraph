@@ -35,13 +35,13 @@ export const createBlankHyperGraph = (
   const connections: Connection[] = []
 
   for (const solvedRoute of solvedRoutes) {
-    const startRegion = getBlankConnectionEndpointRegion({
+    const startEndpoint = getBlankConnectionEndpointRegion({
       solvedRoute,
       blankGraph,
       replacedEndpointRegionIds,
       endpoint: "start",
     })
-    const endRegion = getBlankConnectionEndpointRegion({
+    const endEndpoint = getBlankConnectionEndpointRegion({
       solvedRoute,
       blankGraph,
       replacedEndpointRegionIds,
@@ -52,8 +52,10 @@ export const createBlankHyperGraph = (
       connectionId: solvedRoute.connection.connectionId,
       mutuallyConnectedNetworkId:
         solvedRoute.connection.mutuallyConnectedNetworkId,
-      startRegion,
-      endRegion,
+      startRegion: startEndpoint.region,
+      endRegion: endEndpoint.region,
+      startPortId: startEndpoint.portId,
+      endPortId: endEndpoint.portId,
     })
   }
 
@@ -164,17 +166,27 @@ const getBlankConnectionEndpointRegion = (input: {
   blankGraph: HyperGraph
   replacedEndpointRegionIds: Set<string>
   endpoint: "start" | "end"
-}): Region => {
+}): { region: Region; portId?: string } => {
   const { solvedRoute, blankGraph, replacedEndpointRegionIds, endpoint } = input
   const originalRegion =
     endpoint === "start"
       ? solvedRoute.connection.startRegion
       : solvedRoute.connection.endRegion
+  const originalPortId =
+    endpoint === "start"
+      ? solvedRoute.connection.startPortId
+      : solvedRoute.connection.endPortId
+  const fallbackPortId =
+    endpoint === "start"
+      ? solvedRoute.path[0]?.port.portId
+      : solvedRoute.path[solvedRoute.path.length - 1]?.port.portId
 
   const existingRegion = blankGraph.regions.find(
     (region) => region.regionId === originalRegion.regionId,
   )
-  if (existingRegion) return existingRegion
+  if (existingRegion) {
+    return { region: existingRegion, portId: originalPortId ?? fallbackPortId }
+  }
 
   if (!replacedEndpointRegionIds.has(originalRegion.regionId)) {
     throw new Error(
@@ -235,7 +247,7 @@ const getBlankConnectionEndpointRegion = (input: {
   attachedRegion.ports.push(connectionPort)
   blankGraph.ports.push(connectionPort)
 
-  return connectionRegion
+  return { region: connectionRegion, portId: connectionPort.portId }
 }
 
 const getAttachedRegionId = (input: {

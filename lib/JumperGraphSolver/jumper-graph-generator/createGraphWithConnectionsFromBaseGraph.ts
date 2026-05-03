@@ -53,9 +53,11 @@ export const createGraphWithConnectionsFromBaseGraph = (
       baseGraph.regions,
       graphBounds,
     )
+    let startPortId: string | undefined
     if (startBoundary) {
+      startPortId = `conn:${connectionId}:start-port`
       const startPort = createConnectionPort(
-        `conn:${connectionId}:start-port`,
+        startPortId,
         startRegion,
         startBoundary.region,
         startBoundary.portPosition,
@@ -69,9 +71,11 @@ export const createGraphWithConnectionsFromBaseGraph = (
       baseGraph.regions,
       graphBounds,
     )
+    let endPortId: string | undefined
     if (endBoundary) {
+      endPortId = `conn:${connectionId}:end-port`
       const endPort = createConnectionPort(
-        `conn:${connectionId}:end-port`,
+        endPortId,
         endRegion,
         endBoundary.region,
         endBoundary.portPosition,
@@ -84,6 +88,8 @@ export const createGraphWithConnectionsFromBaseGraph = (
       mutuallyConnectedNetworkId: connectionId,
       startRegion,
       endRegion,
+      startPortId,
+      endPortId,
     }
     connections.push(connection)
   }

@@ -127,11 +127,15 @@ export type Connection = {
   mutuallyConnectedNetworkId: NetworkId
   startRegion: Region
   endRegion: Region
+  startPortId?: PortId
+  endPortId?: PortId
 }
 
 export type SerializedConnection = {
   connectionId: ConnectionId
   startRegionId: RegionId
   endRegionId: RegionId
+  startPortId?: PortId
+  endPortId?: PortId
   mutuallyConnectedNetworkId?: NetworkId
 }

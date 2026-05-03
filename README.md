@@ -42,6 +42,8 @@ interface Connection {
   mutuallyConnectedNetworkId: string
   startRegion: Region
   endRegion: Region
+  startPortId?: string
+  endPortId?: string
 }
 
 interface HyperGraph {
@@ -200,6 +202,8 @@ interface SerializedConnection {
   mutuallyConnectedNetworkId: string
   startRegionId: string
   endRegionId: string
+  startPortId?: string
+  endPortId?: string
 }
 ```
 
