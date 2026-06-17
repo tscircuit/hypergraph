@@ -121,6 +121,11 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
     return this.solvedRoutes
   }
 
+  override tryFinalAcceptance() {
+    this.clearActiveAttempt()
+    this.solved = true
+  }
+
   override _setup() {
     this.startNextSectionAttempt()
   }
@@ -411,18 +416,59 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
 
     pruneDeadEndPorts(mutableSectionGraph, retainedPortIds)
 
+    const prunedSerializedGraph =
+      convertHyperGraphToSerializedHyperGraph(mutableSectionGraph)
+    const remainingPortIds = new Set(
+      prunedSerializedGraph.ports.map((port) => port.portId),
+    )
+    const remainingRegionIds = new Set(
+      prunedSerializedGraph.regions.map((region) => region.regionId),
+    )
+    const prunedSolvedRoutes: SerializedSolvedRoute[] = []
+    for (const solvedRoute of extractedSection.solvedRoutes ?? []) {
+      const filteredPath = solvedRoute.path.filter((candidate) =>
+        remainingPortIds.has(candidate.portId),
+      )
+      if (filteredPath.length === 0) continue
+
+      const normalizedPath = normalizeSerializedSolvedPath(
+        filteredPath,
+        prunedSerializedGraph,
+      )
+      const normalizedConnection = normalizeSerializedConnectionEndpoints({
+        connection: solvedRoute.connection,
+        path: normalizedPath,
+        graph: prunedSerializedGraph,
+      })
+      if (
+        !remainingRegionIds.has(normalizedConnection.startRegionId) ||
+        !remainingRegionIds.has(normalizedConnection.endRegionId)
+      ) {
+        continue
+      }
+
+      prunedSolvedRoutes.push({
+        ...solvedRoute,
+        connection: normalizedConnection,
+        path: normalizedPath,
+      })
+    }
+    const remainingConnectionIds = new Set(
+      prunedSolvedRoutes.map(
+        (solvedRoute) => solvedRoute.connection.connectionId,
+      ),
+    )
+
     return {
-      ...convertHyperGraphToSerializedHyperGraph(mutableSectionGraph),
-      connections: extractedSection.connections
-        ? structuredClone(extractedSection.connections)
-        : undefined,
-      solvedRoutes: extractedSection.solvedRoutes
-        ? structuredClone(extractedSection.solvedRoutes)
-        : undefined,
+      ...prunedSerializedGraph,
+      connections: prunedSolvedRoutes.map(
+        (solvedRoute) => solvedRoute.connection,
+      ),
+      solvedRoutes: prunedSolvedRoutes,
       _sectionCentralRegionId: extractedSection._sectionCentralRegionId,
-      _sectionRouteBindings: extractedSection._sectionRouteBindings
-        ? structuredClone(extractedSection._sectionRouteBindings)
-        : undefined,
+      _sectionRouteBindings: extractedSection._sectionRouteBindings?.filter(
+        (binding) => remainingConnectionIds.has(binding.connectionId),
+      ),
     }
   }
 
@@ -445,6 +491,125 @@ export class HyperGraphSectionOptimizer2 extends BaseSolver {
     solver.currentConnection = previousConnection
     return totalCost
   }
+}
+
+const normalizeSerializedSolvedPath = (
+  path: NonNullable<SerializedHyperGraph["solvedRoutes"]>[number]["path"],
+  graph: Pick<SerializedHyperGraph, "ports">,
+) => {
+  const portMap = new Map(graph.ports.map((port) => [port.portId, port]))
+
+  return path.map((candidate, index) => {
+    const previousCandidate = index > 0 ? path[index - 1] : undefined
+    const nextCandidate = index < path.length - 1 ? path[index + 1] : undefined
+
+    return {
+      ...candidate,
+      hops: index,
+      lastPortId: previousCandidate?.portId,
+      lastRegionId: previousCandidate
+        ? getSharedRegionId(portMap, previousCandidate.portId, candidate.portId)
+        : candidate.lastRegionId,
+      nextRegionId: nextCandidate
+        ? getSharedRegionId(portMap, candidate.portId, nextCandidate.portId)
+        : candidate.nextRegionId,
+    }
+  })
+}
+
+const normalizeSerializedConnectionEndpoints = (input: {
+  connection: SerializedSolvedRoute["connection"]
+  path: SerializedSolvedRoute["path"]
+  graph: Pick<SerializedHyperGraph, "ports" | "regions">
+}): SerializedSolvedRoute["connection"] => {
+  const { connection, path, graph } = input
+  const regionIds = new Set(graph.regions.map((region) => region.regionId))
+  const portMap = new Map(graph.ports.map((port) => [port.portId, port]))
+  const firstCandidate = path[0]
+  const lastCandidate = path[path.length - 1]
+
+  const startRegionId =
+    firstCandidate &&
+    inferEndpointRegionId({
+      portMap,
+      path,
+      endpoint: "start",
+      preferredRegionId:
+        firstCandidate.lastRegionId ?? connection.startRegionId,
+    })
+  const endRegionId =
+    lastCandidate &&
+    inferEndpointRegionId({
+      portMap,
+      path,
+      endpoint: "end",
+      preferredRegionId: lastCandidate.nextRegionId ?? connection.endRegionId,
+    })
+
+  return {
+    ...connection,
+    startRegionId:
+      startRegionId && regionIds.has(startRegionId)
+        ? startRegionId
+        : connection.startRegionId,
+    endRegionId:
+      endRegionId && regionIds.has(endRegionId)
+        ? endRegionId
+        : connection.endRegionId,
+  }
+}
+
+const inferEndpointRegionId = (input: {
+  portMap: Map<string, SerializedHyperGraph["ports"][number]>
+  path: SerializedSolvedRoute["path"]
+  endpoint: "start" | "end"
+  preferredRegionId?: string
+}): string | undefined => {
+  const { portMap, path, endpoint, preferredRegionId } = input
+  if (preferredRegionId) return preferredRegionId
+
+  if (path.length === 0) return undefined
+
+  const candidate = endpoint === "start" ? path[0]! : path[path.length - 1]!
+  const adjacentCandidate =
+    endpoint === "start"
+      ? path.length > 1
+        ? path[1]
+        : undefined
+      : path.length > 1
+        ? path[path.length - 2]
+        : undefined
+  const port = portMap.get(candidate.portId)
+  if (!port) return undefined
+
+  if (!adjacentCandidate) {
+    return port.region1Id
+  }
+
+  const sharedRegionId =
+    endpoint === "start"
+      ? getSharedRegionId(portMap, candidate.portId, adjacentCandidate.portId)
+      : getSharedRegionId(portMap, adjacentCandidate.portId, candidate.portId)
+
+  if (sharedRegionId === port.region1Id) return port.region2Id
+  if (sharedRegionId === port.region2Id) return port.region1Id
+  return port.region1Id
+}
+
+const getSharedRegionId = (
+  portMap: Map<string, SerializedHyperGraph["ports"][number]>,
+  firstPortId: string,
+  secondPortId: string,
+): string | undefined => {
+  const firstPort = portMap.get(firstPortId)
+  const secondPort = portMap.get(secondPortId)
+  if (!firstPort || !secondPort) return undefined
+
+  const firstRegionIds = [firstPort.region1Id, firstPort.region2Id]
+  return firstRegionIds.find(
+    (regionId) =>
+      regionId === secondPort.region1Id || regionId === secondPort.region2Id,
+  )
 }
 
 const normalizeInput = (

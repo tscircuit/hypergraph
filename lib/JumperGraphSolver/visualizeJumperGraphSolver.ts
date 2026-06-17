@@ -18,6 +18,7 @@ export const visualizeJumperGraphWithSolvedRoutes = (input: {
   connections: Connection[]
   solvedRoutes: SolvedRoute[]
   hideInitialGeometry?: boolean
+  hideRegionPortLines?: boolean
   priorSolvedRoutes?: SolvedRoute[]
   title?: string
 }): GraphicsObject => {
@@ -29,7 +30,9 @@ export const visualizeJumperGraphWithSolvedRoutes = (input: {
           hideConnectionLines: true,
           hidePortPoints: true,
         }
-      : {}),
+      : {
+          hideRegionPortLines: input.hideRegionPortLines,
+        }),
   }) as Required<GraphicsObject>
 
   if (!input.hideInitialGeometry) {

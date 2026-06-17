@@ -1,0 +1,636 @@
+{
+  "effort": 1,
+  "sampleCount": 105,
+  "samples": [
+    {
+      "sampleName": "sample001",
+      "circuitKey": "circuit001",
+      "circuitId": "001",
+      "stepsToPortPointSolve": 1126
+    },
+    {
+      "sampleName": "sample002",
+      "circuitKey": "circuit002",
+      "circuitId": "002",
+      "stepsToPortPointSolve": 18568
+    },
+    {
+      "sampleName": "sample003",
+      "circuitKey": "circuit003",
+      "circuitId": "003",
+      "stepsToPortPointSolve": 9577
+    },
+    {
+      "sampleName": "sample004",
+      "circuitKey": "circuit004",
+      "circuitId": "004",
+      "stepsToPortPointSolve": 8806
+    },
+    {
+      "sampleName": "sample005",
+      "circuitKey": "circuit005",
+      "circuitId": "005",
+      "stepsToPortPointSolve": 752
+    },
+    {
+      "sampleName": "sample006",
+      "circuitKey": "circuit006",
+      "circuitId": "006",
+      "stepsToPortPointSolve": 1193
+    },
+    {
+      "sampleName": "sample007",
+      "circuitKey": "circuit007",
+      "circuitId": "007",
+      "stepsToPortPointSolve": 921
+    },
+    {
+      "sampleName": "sample008",
+      "circuitKey": "circuit010",
+      "circuitId": "010",
+      "stepsToPortPointSolve": 954
+    },
+    {
+      "sampleName": "sample009",
+      "circuitKey": "circuit011",
+      "circuitId": "011",
+      "stepsToPortPointSolve": 3667
+    },
+    {
+      "sampleName": "sample010",
+      "circuitKey": "circuit012",
+      "circuitId": "012",
+      "stepsToPortPointSolve": 2634
+    },
+    {
+      "sampleName": "sample011",
+      "circuitKey": "circuit013",
+      "circuitId": "013",
+      "stepsToPortPointSolve": 772
+    },
+    {
+      "sampleName": "sample012",
+      "circuitKey": "circuit014",
+      "circuitId": "014",
+      "stepsToPortPointSolve": 3216
+    },
+    {
+      "sampleName": "sample013",
+      "circuitKey": "circuit015",
+      "circuitId": "015",
+      "stepsToPortPointSolve": 6358
+    },
+    {
+      "sampleName": "sample014",
+      "circuitKey": "circuit018",
+      "circuitId": "018",
+      "stepsToPortPointSolve": 973
+    },
+    {
+      "sampleName": "sample015",
+      "circuitKey": "circuit019",
+      "circuitId": "019",
+      "stepsToPortPointSolve": 605
+    },
+    {
+      "sampleName": "sample016",
+      "circuitKey": "circuit020",
+      "circuitId": "020",
+      "stepsToPortPointSolve": 710
+    },
+    {
+      "sampleName": "sample017",
+      "circuitKey": "circuit021",
+      "circuitId": "021",
+      "stepsToPortPointSolve": 1704
+    },
+    {
+      "sampleName": "sample018",
+      "circuitKey": "circuit100",
+      "circuitId": "100",
+      "stepsToPortPointSolve": 23587
+    },
+    {
+      "sampleName": "sample019",
+      "circuitKey": "circuit101",
+      "circuitId": "101",
+      "stepsToPortPointSolve": 1447
+    },
+    {
+      "sampleName": "sample020",
+      "circuitKey": "circuit102",
+      "circuitId": "102",
+      "stepsToPortPointSolve": 23447
+    },
+    {
+      "sampleName": "sample021",
+      "circuitKey": "circuit103",
+      "circuitId": "103",
+      "stepsToPortPointSolve": 27957
+    },
+    {
+      "sampleName": "sample022",
+      "circuitKey": "circuit104",
+      "circuitId": "104",
+      "stepsToPortPointSolve": 9513
+    },
+    {
+      "sampleName": "sample023",
+      "circuitKey": "circuit105",
+      "circuitId": "105",
+      "stepsToPortPointSolve": 26913
+    },
+    {
+      "sampleName": "sample024",
+      "circuitKey": "circuit106",
+      "circuitId": "106",
+      "stepsToPortPointSolve": 28936
+    },
+    {
+      "sampleName": "sample025",
+      "circuitKey": "circuit107",
+      "circuitId": "107",
+      "stepsToPortPointSolve": 3922
+    },
+    {
+      "sampleName": "sample026",
+      "circuitKey": "circuit108",
+      "circuitId": "108",
+      "stepsToPortPointSolve": 23901
+    },
+    {
+      "sampleName": "sample027",
+      "circuitKey": "circuit109",
+      "circuitId": "109",
+      "stepsToPortPointSolve": 31494
+    },
+    {
+      "sampleName": "sample028",
+      "circuitKey": "circuit110",
+      "circuitId": "110",
+      "stepsToPortPointSolve": 4871
+    },
+    {
+      "sampleName": "sample029",
+      "circuitKey": "circuit111",
+      "circuitId": "111",
+      "stepsToPortPointSolve": 21033
+    },
+    {
+      "sampleName": "sample030",
+      "circuitKey": "circuit112",
+      "circuitId": "112",
+      "stepsToPortPointSolve": 10195
+    },
+    {
+      "sampleName": "sample031",
+      "circuitKey": "circuit113",
+      "circuitId": "113",
+      "stepsToPortPointSolve": 12811
+    },
+    {
+      "sampleName": "sample032",
+      "circuitKey": "circuit114",
+      "circuitId": "114",
+      "stepsToPortPointSolve": 26897
+    },
+    {
+      "sampleName": "sample033",
+      "circuitKey": "circuit115",
+      "circuitId": "115",
+      "stepsToPortPointSolve": 680
+    },
+    {
+      "sampleName": "sample034",
+      "circuitKey": "circuit116",
+      "circuitId": "116",
+      "stepsToPortPointSolve": 3462
+    },
+    {
+      "sampleName": "sample035",
+      "circuitKey": "circuit118",
+      "circuitId": "118",
+      "stepsToPortPointSolve": 20559
+    },
+    {
+      "sampleName": "sample036",
+      "circuitKey": "circuit119",
+      "circuitId": "119",
+      "stepsToPortPointSolve": 553
+    },
+    {
+      "sampleName": "sample037",
+      "circuitKey": "circuit120",
+      "circuitId": "120",
+      "stepsToPortPointSolve": 27557
+    },
+    {
+      "sampleName": "sample038",
+      "circuitKey": "circuit121",
+      "circuitId": "121",
+      "stepsToPortPointSolve": 4354
+    },
+    {
+      "sampleName": "sample039",
+      "circuitKey": "circuit123",
+      "circuitId": "123",
+      "stepsToPortPointSolve": 26039
+    },
+    {
+      "sampleName": "sample040",
+      "circuitKey": "circuit124",
+      "circuitId": "124",
+      "stepsToPortPointSolve": 5354
+    },
+    {
+      "sampleName": "sample041",
+      "circuitKey": "circuit125",
+      "circuitId": "125",
+      "stepsToPortPointSolve": 26423
+    },
+    {
+      "sampleName": "sample042",
+      "circuitKey": "circuit126",
+      "circuitId": "126",
+      "stepsToPortPointSolve": 5504
+    },
+    {
+      "sampleName": "sample043",
+      "circuitKey": "circuit127",
+      "circuitId": "127",
+      "stepsToPortPointSolve": 1377
+    },
+    {
+      "sampleName": "sample044",
+      "circuitKey": "circuit128",
+      "circuitId": "128",
+      "stepsToPortPointSolve": 18257
+    },
+    {
+      "sampleName": "sample045",
+      "circuitKey": "circuit129",
+      "circuitId": "129",
+      "stepsToPortPointSolve": 1114
+    },
+    {
+      "sampleName": "sample046",
+      "circuitKey": "circuit130",
+      "circuitId": "130",
+      "stepsToPortPointSolve": 281
+    },
+    {
+      "sampleName": "sample047",
+      "circuitKey": "circuit131",
+      "circuitId": "131",
+      "stepsToPortPointSolve": 2266
+    },
+    {
+      "sampleName": "sample048",
+      "circuitKey": "circuit132",
+      "circuitId": "132",
+      "stepsToPortPointSolve": 2761
+    },
+    {
+      "sampleName": "sample049",
+      "circuitKey": "circuit133",
+      "circuitId": "133",
+      "stepsToPortPointSolve": 5283
+    },
+    {
+      "sampleName": "sample050",
+      "circuitKey": "circuit134",
+      "circuitId": "134",
+      "stepsToPortPointSolve": 29230
+    },
+    {
+      "sampleName": "sample051",
+      "circuitKey": "circuit135",
+      "circuitId": "135",
+      "stepsToPortPointSolve": 10217
+    },
+    {
+      "sampleName": "sample052",
+      "circuitKey": "circuit136",
+      "circuitId": "136",
+      "stepsToPortPointSolve": 4846
+    },
+    {
+      "sampleName": "sample053",
+      "circuitKey": "circuit137",
+      "circuitId": "137",
+      "stepsToPortPointSolve": 21239
+    },
+    {
+      "sampleName": "sample054",
+      "circuitKey": "circuit138",
+      "circuitId": "138",
+      "stepsToPortPointSolve": 31810
+    },
+    {
+      "sampleName": "sample055",
+      "circuitKey": "circuit139",
+      "circuitId": "139",
+      "stepsToPortPointSolve": 31653
+    },
+    {
+      "sampleName": "sample056",
+      "circuitKey": "circuit140",
+      "circuitId": "140",
+      "stepsToPortPointSolve": 25285
+    },
+    {
+      "sampleName": "sample057",
+      "circuitKey": "circuit141",
+      "circuitId": "141",
+      "stepsToPortPointSolve": 19302
+    },
+    {
+      "sampleName": "sample058",
+      "circuitKey": "circuit142",
+      "circuitId": "142",
+      "stepsToPortPointSolve": 26591
+    },
+    {
+      "sampleName": "sample059",
+      "circuitKey": "circuit143",
+      "circuitId": "143",
+      "stepsToPortPointSolve": 22250
+    },
+    {
+      "sampleName": "sample060",
+      "circuitKey": "circuit144",
+      "circuitId": "144",
+      "stepsToPortPointSolve": 28257
+    },
+    {
+      "sampleName": "sample061",
+      "circuitKey": "circuit145",
+      "circuitId": "145",
+      "stepsToPortPointSolve": 27425
+    },
+    {
+      "sampleName": "sample062",
+      "circuitKey": "circuit146",
+      "circuitId": "146",
+      "stepsToPortPointSolve": 28480
+    },
+    {
+      "sampleName": "sample063",
+      "circuitKey": "circuit147",
+      "circuitId": "147",
+      "stepsToPortPointSolve": 1169
+    },
+    {
+      "sampleName": "sample064",
+      "circuitKey": "circuit148",
+      "circuitId": "148",
+      "stepsToPortPointSolve": 5384
+    },
+    {
+      "sampleName": "sample065",
+      "circuitKey": "circuit149",
+      "circuitId": "149",
+      "stepsToPortPointSolve": 27344
+    },
+    {
+      "sampleName": "sample066",
+      "circuitKey": "circuit150",
+      "circuitId": "150",
+      "stepsToPortPointSolve": 2503
+    },
+    {
+      "sampleName": "sample067",
+      "circuitKey": "circuit151",
+      "circuitId": "151",
+      "stepsToPortPointSolve": 30748
+    },
+    {
+      "sampleName": "sample068",
+      "circuitKey": "circuit152",
+      "circuitId": "152",
+      "stepsToPortPointSolve": 24374
+    },
+    {
+      "sampleName": "sample069",
+      "circuitKey": "circuit153",
+      "circuitId": "153",
+      "stepsToPortPointSolve": 736
+    },
+    {
+      "sampleName": "sample070",
+      "circuitKey": "circuit155",
+      "circuitId": "155",
+      "stepsToPortPointSolve": 20009
+    },
+    {
+      "sampleName": "sample071",
+      "circuitKey": "circuit156",
+      "circuitId": "156",
+      "stepsToPortPointSolve": 33338
+    },
+    {
+      "sampleName": "sample072",
+      "circuitKey": "circuit157",
+      "circuitId": "157",
+      "stepsToPortPointSolve": 3911
+    },
+    {
+      "sampleName": "sample073",
+      "circuitKey": "circuit158",
+      "circuitId": "158",
+      "stepsToPortPointSolve": 15915
+    },
+    {
+      "sampleName": "sample074",
+      "circuitKey": "circuit160",
+      "circuitId": "160",
+      "stepsToPortPointSolve": 1075
+    },
+    {
+      "sampleName": "sample075",
+      "circuitKey": "circuit161",
+      "circuitId": "161",
+      "stepsToPortPointSolve": 358
+    },
+    {
+      "sampleName": "sample076",
+      "circuitKey": "circuit162",
+      "circuitId": "162",
+      "stepsToPortPointSolve": 22128
+    },
+    {
+      "sampleName": "sample077",
+      "circuitKey": "circuit164",
+      "circuitId": "164",
+      "stepsToPortPointSolve": 28741
+    },
+    {
+      "sampleName": "sample078",
+      "circuitKey": "circuit165",
+      "circuitId": "165",
+      "stepsToPortPointSolve": 1141
+    },
+    {
+      "sampleName": "sample079",
+      "circuitKey": "circuit166",
+      "circuitId": "166",
+      "stepsToPortPointSolve": 784
+    },
+    {
+      "sampleName": "sample080",
+      "circuitKey": "circuit167",
+      "circuitId": "167",
+      "stepsToPortPointSolve": 1627
+    },
+    {
+      "sampleName": "sample081",
+      "circuitKey": "circuit168",
+      "circuitId": "168",
+      "stepsToPortPointSolve": 1686
+    },
+    {
+      "sampleName": "sample082",
+      "circuitKey": "circuit172",
+      "circuitId": "172",
+      "stepsToPortPointSolve": 1463
+    },
+    {
+      "sampleName": "sample083",
+      "circuitKey": "circuit173",
+      "circuitId": "173",
+      "stepsToPortPointSolve": 27097
+    },
+    {
+      "sampleName": "sample084",
+      "circuitKey": "circuit174",
+      "circuitId": "174",
+      "stepsToPortPointSolve": 1285
+    },
+    {
+      "sampleName": "sample085",
+      "circuitKey": "circuit175",
+      "circuitId": "175",
+      "stepsToPortPointSolve": 6283
+    },
+    {
+      "sampleName": "sample086",
+      "circuitKey": "circuit176",
+      "circuitId": "176",
+      "stepsToPortPointSolve": 13917
+    },
+    {
+      "sampleName": "sample087",
+      "circuitKey": "circuit177",
+      "circuitId": "177",
+      "stepsToPortPointSolve": 2565
+    },
+    {
+      "sampleName": "sample088",
+      "circuitKey": "circuit178",
+      "circuitId": "178",
+      "stepsToPortPointSolve": 23470
+    },
+    {
+      "sampleName": "sample089",
+      "circuitKey": "circuit179",
+      "circuitId": "179",
+      "stepsToPortPointSolve": 17889
+    },
+    {
+      "sampleName": "sample090",
+      "circuitKey": "circuit180",
+      "circuitId": "180",
+      "stepsToPortPointSolve": 1877
+    },
+    {
+      "sampleName": "sample091",
+      "circuitKey": "circuit181",
+      "circuitId": "181",
+      "stepsToPortPointSolve": 28369
+    },
+    {
+      "sampleName": "sample092",
+      "circuitKey": "circuit182",
+      "circuitId": "182",
+      "stepsToPortPointSolve": 2673
+    },
+    {
+      "sampleName": "sample093",
+      "circuitKey": "circuit184",
+      "circuitId": "184",
+      "stepsToPortPointSolve": 28740
+    },
+    {
+      "sampleName": "sample094",
+      "circuitKey": "circuit185",
+      "circuitId": "185",
+      "stepsToPortPointSolve": 20533
+    },
+    {
+      "sampleName": "sample095",
+      "circuitKey": "circuit186",
+      "circuitId": "186",
+      "stepsToPortPointSolve": 985
+    },
+    {
+      "sampleName": "sample096",
+      "circuitKey": "circuit187",
+      "circuitId": "187",
+      "stepsToPortPointSolve": 775
+    },
+    {
+      "sampleName": "sample097",
+      "circuitKey": "circuit188",
+      "circuitId": "188",
+      "stepsToPortPointSolve": 20052
+    },
+    {
+      "sampleName": "sample098",
+      "circuitKey": "circuit189",
+      "circuitId": "189",
+      "stepsToPortPointSolve": 25273
+    },
+    {
+      "sampleName": "sample099",
+      "circuitKey": "circuit190",
+      "circuitId": "190",
+      "stepsToPortPointSolve": 8890
+    },
+    {
+      "sampleName": "sample100",
+      "circuitKey": "circuit192",
+      "circuitId": "192",
+      "stepsToPortPointSolve": 6950
+    },
+    {
+      "sampleName": "sample101",
+      "circuitKey": "circuit193",
+      "circuitId": "193",
+      "stepsToPortPointSolve": 7390
+    },
+    {
+      "sampleName": "sample102",
+      "circuitKey": "circuit194",
+      "circuitId": "194",
+      "stepsToPortPointSolve": 1559
+    },
+    {
+      "sampleName": "sample103",
+      "circuitKey": "circuit195",
+      "circuitId": "195",
+      "stepsToPortPointSolve": 1381
+    },
+    {
+      "sampleName": "sample104",
+      "circuitKey": "circuit196",
+      "circuitId": "196",
+      "stepsToPortPointSolve": 786
+    },
+    {
+      "sampleName": "sample105",
+      "circuitKey": "circuit197",
+      "circuitId": "197",
+      "stepsToPortPointSolve": 5764
+    }
+  ]
+}
