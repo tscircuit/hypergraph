@@ -207,6 +207,35 @@ interface SerializedConnection {
 }
 ```
 
+Immutable pre-existing traces can be carried with the graph without changing
+its topology:
+
+```typescript
+const graph: SerializedHyperGraph = {
+  regions,
+  ports,
+  connections,
+  fixedOccupancy: {
+    segments: [
+      {
+        regionId: "region-12",
+        fromPortId: "port-8",
+        toPortId: "port-11",
+        networkId: "GND",
+        geometry: {
+          start: { x: 2.1, y: 4.8 },
+          end: { x: 3.4, y: 4.8 },
+        },
+      },
+    ],
+  },
+}
+```
+
+Fixed occupancy is preserved by serialized/hydrated graph conversion. Topology
+subsetting removes reservations and segments whose referenced entities are no
+longer present.
+
 The solver automatically converts serialized inputs to hydrated object references.
 
 ## Algorithm

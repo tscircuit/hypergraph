@@ -107,6 +107,22 @@ export const applyTransformToGraph = (
   return {
     regions: transformedRegions,
     ports: transformedPorts,
+    ...(graph.fixedOccupancy && {
+      fixedOccupancy: {
+        portReservations: structuredClone(
+          graph.fixedOccupancy.portReservations ?? [],
+        ),
+        segments: (graph.fixedOccupancy.segments ?? []).map((segment) => ({
+          ...structuredClone(segment),
+          geometry: segment.geometry
+            ? {
+                start: applyToPoint(matrix, segment.geometry.start),
+                end: applyToPoint(matrix, segment.geometry.end),
+              }
+            : undefined,
+        })),
+      },
+    }),
     ...(transformedJumperLocations && {
       jumperLocations: transformedJumperLocations,
     }),

@@ -70,6 +70,11 @@ export type Candidate<
 export type HyperGraph = {
   ports: RegionPort[]
   regions: Region[]
+  /**
+   * Immutable pre-existing routing occupancy. It references graph entities by
+   * id so it can pass through serialized and hydrated graph representations.
+   */
+  fixedOccupancy?: FixedOccupancy
 }
 
 export type SerializedGraphPort = {
@@ -89,9 +94,34 @@ export type SerializedRegionPortAssignment = {
   regionPort2Id: PortId
   connectionId: ConnectionId
 }
+export type FixedPortReservation = {
+  portId: PortId
+  networkId: NetworkId
+  d?: any
+}
+export type FixedRegionSegment = {
+  regionId: RegionId
+  fromPortId: PortId
+  toPortId: PortId
+  networkId: NetworkId
+  /**
+   * Optional exact physical geometry for consumers whose topology ports are
+   * quantized approximations of the occupied trace.
+   */
+  geometry?: {
+    start: { x: number; y: number }
+    end: { x: number; y: number }
+  }
+  d?: any
+}
+export type FixedOccupancy = {
+  portReservations?: FixedPortReservation[]
+  segments?: FixedRegionSegment[]
+}
 export type SerializedHyperGraph = {
   ports: SerializedGraphPort[]
   regions: SerializedGraphRegion[]
+  fixedOccupancy?: FixedOccupancy
   solvedRoutes?: SerializedSolvedRoute[]
   connections?: SerializedConnection[]
   _sectionRouteBindings?: SerializedSectionRouteBinding[]

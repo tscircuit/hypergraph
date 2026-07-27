@@ -14,6 +14,7 @@ import { getOrCreateBoundaryRegion } from "../getOrCreateBoundaryRegion"
 import { sliceSolvedRouteIntoLocalSection } from "../routes/sliceSolvedRouteIntoLocalSection"
 import { getRouteSectionSpan } from "./getRouteSectionSpan"
 import { getSectionRegionIds } from "./getSectionRegionIds"
+import { filterFixedOccupancy } from "../../fixedOccupancy"
 
 /** Extracts a focused section of the graph together with its local routes. */
 export const getSectionOfHyperGraphAsHyperGraph = (input: {
@@ -81,6 +82,16 @@ export const getSectionOfHyperGraphAsHyperGraph = (input: {
   const sectionGraph: HyperGraph = {
     regions: [...clonedRegionMap.values(), ...boundaryRegionMap.values()],
     ports: clonedPorts,
+    ...(graph.fixedOccupancy && {
+      fixedOccupancy: filterFixedOccupancy(
+        graph.fixedOccupancy,
+        new Set([
+          ...clonedRegionMap.keys(),
+          ...[...boundaryRegionMap.values()].map((region) => region.regionId),
+        ]),
+        new Set(clonedPorts.map((port) => port.portId)),
+      ),
+    }),
   }
 
   const sectionRoutes: SectionRoute[] = []

@@ -2,6 +2,7 @@ import { convertConnectionsToSerializedConnections } from "./convertConnectionsT
 import { convertHyperGraphToSerializedHyperGraph } from "./convertHyperGraphToSerializedHyperGraph"
 import { convertSerializedHyperGraphToHyperGraph } from "./convertSerializedHyperGraphToHyperGraph"
 import { convertSerializedSolvedRoutesToSolvedRoutes } from "./convertSerializedSolvedRoutesToSolvedRoutes"
+import { filterFixedOccupancy } from "./fixedOccupancy"
 import type {
   Connection,
   HyperGraph,
@@ -158,6 +159,13 @@ const cloneGraphExcludingRegions = (
   return {
     regions: Array.from(clonedRegionMap.values()),
     ports: clonedPorts,
+    ...(graph.fixedOccupancy && {
+      fixedOccupancy: filterFixedOccupancy(
+        graph.fixedOccupancy,
+        new Set(clonedRegionMap.keys()),
+        new Set(clonedPorts.map((port) => port.portId)),
+      ),
+    }),
   }
 }
 

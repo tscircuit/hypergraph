@@ -1,4 +1,5 @@
 import type { HyperGraph, PortId, RegionPort } from "./types"
+import { filterFixedOccupancy } from "./fixedOccupancy"
 
 export const pruneDeadEndPorts = (
   graph: HyperGraph,
@@ -28,6 +29,16 @@ export const pruneDeadEndPorts = (
 
   graph.ports = nextPorts
   graph.regions = graph.regions.filter((region) => region.ports.length > 0)
+  const filteredFixedOccupancy = filterFixedOccupancy(
+    graph.fixedOccupancy,
+    new Set(graph.regions.map((region) => region.regionId)),
+    new Set(graph.ports.map((port) => port.portId)),
+  )
+  if (filteredFixedOccupancy) {
+    graph.fixedOccupancy = filteredFixedOccupancy
+  } else {
+    delete graph.fixedOccupancy
+  }
 
   return graph
 }

@@ -5,6 +5,7 @@ import type {
   SerializedGraphRegion,
   SolvedRoute,
 } from "./types"
+import { cloneFixedOccupancy } from "./fixedOccupancy"
 
 export const convertHyperGraphToSerializedHyperGraph = (
   graph: HyperGraph,
@@ -27,5 +28,8 @@ export const convertHyperGraphToSerializedHyperGraph = (
   return {
     ports: serializedPorts,
     regions: serializedRegions,
+    ...(graph.fixedOccupancy && {
+      fixedOccupancy: cloneFixedOccupancy(graph.fixedOccupancy),
+    }),
   }
 }

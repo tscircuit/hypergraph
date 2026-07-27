@@ -1,4 +1,4 @@
-import type { HyperGraph, Region, RegionPort } from "../types"
+import type { FixedOccupancy, HyperGraph, Region, RegionPort } from "../types"
 import type { Bounds } from "./Bounds"
 
 export interface JRegion extends Region {
@@ -29,6 +29,7 @@ export interface JPort extends RegionPort {
 export type JumperGraph = {
   regions: JRegion[]
   ports: JPort[]
+  fixedOccupancy?: FixedOccupancy
   jumperLocations?: Array<{
     center: { x: number; y: number }
     orientation: "vertical" | "horizontal"
