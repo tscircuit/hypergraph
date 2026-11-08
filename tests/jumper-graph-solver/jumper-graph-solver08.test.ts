@@ -8,7 +8,6 @@ import type { JRegion, JumperGraph } from "lib/JumperGraphSolver/jumper-types"
 import { getTraceIntersectionsOutsideThroughJumpers } from "./assertNoTraceIntersectionsOutsideThroughJumpers"
 
 test("jumper-graph-solver08: no non-through-jumper intersections in 4x3 staggered grid", {
-  // @ts-expect-error bun:test types don't include timeout option
   timeout: 30000,
 }, () => {
   const baseGraph = generate0603JumperHyperGraph({
