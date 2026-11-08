@@ -7,7 +7,6 @@ import type { JumperGraph } from "lib/JumperGraphSolver/jumper-types"
 import { assertNoTraceIntersectionsOutsideThroughJumpers } from "./assertNoTraceIntersectionsOutsideThroughJumpers"
 
 test("jumper-graph-solver06: solve generated 0603 vertical 2x3 grid", {
-  // @ts-expect-error bun:test types don't include timeout option
   timeout: 30000,
 }, () => {
   const baseGraph = generate0603JumperHyperGraph({

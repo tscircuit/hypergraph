@@ -11,7 +11,9 @@
       "!**/cosmos-export",
       "!**/dist",
       "!**/package.json",
-      "!**/datasets/**"
+      "!**/datasets/**",
+      "!**/*.yml",
+      "!**/*.md"
     ]
   },
   "javascript": {
