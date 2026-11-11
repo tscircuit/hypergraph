@@ -77,20 +77,25 @@ if (solver.solved) {
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `inputGraph` | `HyperGraph \| SerializedHyperGraph` | required | The graph with regions and ports |
-| `inputConnections` | `Connection[]` | required | Connections to route |
-| `greedyMultiplier` | `number` | `1.0` | Weight for heuristic score (higher = greedier search) |
-| `rippingEnabled` | `boolean` | `false` | Allow rerouting existing paths to resolve conflicts |
-| `ripCost` | `number` | `0` | Additional cost penalty when ripping is required |
+| Option             | Type                                 | Default  | Description                                           |
+| ------------------ | ------------------------------------ | -------- | ----------------------------------------------------- |
+| `inputGraph`       | `HyperGraph \| SerializedHyperGraph` | required | The graph with regions and ports                      |
+| `inputConnections` | `Connection[]`                       | required | Connections to route                                  |
+| `greedyMultiplier` | `number`                             | `1.0`    | Weight for heuristic score (higher = greedier search) |
+| `rippingEnabled`   | `boolean`                            | `false`  | Allow rerouting existing paths to resolve conflicts   |
+| `ripCost`          | `number`                             | `0`      | Additional cost penalty when ripping is required      |
 
 ## Creating a Custom Solver
 
 HyperGraphSolver is designed to be extended. Override these methods to customize behavior for your domain:
 
 ```typescript
-import { HyperGraphSolver, Region, RegionPort, Candidate } from "@tscircuit/hypergraph"
+import {
+  HyperGraphSolver,
+  Region,
+  RegionPort,
+  Candidate,
+} from "@tscircuit/hypergraph"
 
 class MyCustomSolver extends HyperGraphSolver<MyRegion, MyPort> {
   /**
@@ -123,7 +128,7 @@ class MyCustomSolver extends HyperGraphSolver<MyRegion, MyPort> {
   computeIncreasedRegionCostIfPortsAreUsed(
     region: MyRegion,
     port1: MyPort,
-    port2: MyPort
+    port2: MyPort,
   ): number {
     return 0
   }
@@ -135,7 +140,7 @@ class MyCustomSolver extends HyperGraphSolver<MyRegion, MyPort> {
   getRipsRequiredForPortUsage(
     region: MyRegion,
     port1: MyPort,
-    port2: MyPort
+    port2: MyPort,
   ): RegionPortAssignment[] {
     return []
   }
@@ -144,7 +149,7 @@ class MyCustomSolver extends HyperGraphSolver<MyRegion, MyPort> {
    * Filter candidates entering a region to reduce redundant exploration.
    */
   selectCandidatesForEnteringRegion(
-    candidates: Candidate<MyRegion, MyPort>[]
+    candidates: Candidate<MyRegion, MyPort>[],
   ): Candidate<MyRegion, MyPort>[] {
     return candidates
   }
@@ -163,19 +168,19 @@ class MyCustomSolver extends HyperGraphSolver<MyRegion, MyPort> {
 After calling `solve()`, access results via:
 
 ```typescript
-solver.solved         // boolean - true if all connections routed
-solver.solvedRoutes   // SolvedRoute[] - array of solved paths
-solver.iterations     // number - iterations used
-solver.failed         // boolean - true if max iterations exceeded
+solver.solved // boolean - true if all connections routed
+solver.solvedRoutes // SolvedRoute[] - array of solved paths
+solver.iterations // number - iterations used
+solver.failed // boolean - true if max iterations exceeded
 ```
 
 Each `SolvedRoute` contains:
 
 ```typescript
 interface SolvedRoute {
-  connection: Connection      // The connection that was routed
-  path: Candidate[]           // Sequence of candidates forming the path
-  requiredRip: boolean        // Whether ripping was needed
+  connection: Connection // The connection that was routed
+  path: Candidate[] // Sequence of candidates forming the path
+  requiredRip: boolean // Whether ripping was needed
 }
 ```
 

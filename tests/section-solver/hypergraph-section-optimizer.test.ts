@@ -11,7 +11,6 @@ const getTotalScore = (solver: JumperGraphSolver) => {
 }
 
 test("score should be lower", {
-  // @ts-expect-error bun:test types don't include timeout option
   timeout: 30000,
 }, () => {
   const baseGraph = generate0603JumperHyperGraph({
