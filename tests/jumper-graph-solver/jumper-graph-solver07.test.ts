@@ -6,7 +6,6 @@ import { createProblemFromBaseGraph } from "lib/JumperGraphSolver/jumper-graph-g
 import type { JumperGraph } from "lib/JumperGraphSolver/jumper-types"
 
 test.skip("jumper-graph-solver07: solve generated 0603 staggered 3x2 grid", {
-  // @ts-expect-error bun:test types don't include timeout option
   timeout: 30000,
 }, () => {
   const baseGraph = generate0603JumperHyperGraph({
